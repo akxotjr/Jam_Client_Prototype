@@ -50,19 +50,21 @@ void Game::Update()
 		_targetPos = InputManager::GetInstance()->GetMousePos();
 		_dir = { static_cast<float>(_targetPos.x) - _currentPos.x, static_cast<float>(_targetPos.y) - _currentPos.y };
 		_dir.Normalize();
-
-		//_onClickDelegate();
 	}
 
 
 	Vec2 nextPos = _currentPos + _dir * _speed;
-	if (_targetPos.x == static_cast<int32>(_currentPos.x) && _targetPos.y == static_cast<int32>(_currentPos.y))
+
+	float distanceNext = (nextPos - _targetPos).Length();
+	float distanceCurrent = (_currentPos - _targetPos).Length();
+
+	if (distanceNext > distanceCurrent)
 	{
-		/*_bIsArrived = true;*/
+		_currentPos = _targetPos;
 		return;
 	}
 
-	//if (_bIsArrived == true)
+	//if (_targetPos.x == static_cast<int32>(_currentPos.x) && _targetPos.y == static_cast<int32>(_currentPos.y))
 	//{
 	//	return;
 	//}
