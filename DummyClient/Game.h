@@ -11,26 +11,26 @@ class Game
 public:
 	Game();
 	~Game();
-	void			Init(HWND hwnd);
-	void			Update();
-	void			Render();;
+	void Init(HWND hwnd);
+	void Update();
+	void Render();;
 
 private:
-	HWND			_hwnd;
-	HDC				_hdc;
+	HWND _hwnd;
+	HDC _hdc;
 
-	RECT			_rect;
-	HDC				_hdcBack = {};
-	HBITMAP			_bmpBack = {};
+	RECT _rect;
+	HDC _hdcBack = {};
+	HBITMAP _bmpBack = {};
 
-	ServiceRef		_service;
-	SessionFactory	_factory;
+	ServiceRef _service;
+	SessionFactory _factory;
 
 private:
-	//* Character Move *//
-	Vec2			_targetPos = {};
-	Vec2			_currentPos = {};
-	float			_speed = 0.1f;
-	Vec2			_dir = { 0, 0 };
+	// Character Move
+	Vec2 _targetPos = {};
+	Vec2 _currentPos = {};
+	float _speed = 0.1f;
+	Vec2 _dir = { 0, 0 };
 };
 

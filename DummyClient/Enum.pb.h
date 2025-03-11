@@ -60,6 +60,7 @@ enum PlayerType : int {
   PLAYER_TYPE_KNIGHT = 1,
   PLAYER_TYPE_MAGE = 2,
   PLAYER_TYPE_ARCHER = 3,
+  PLAYER_TYPE_HEALER = 4,
   PlayerType_INT_MIN_SENTINEL_DO_NOT_USE_ =
       std::numeric_limits<::int32_t>::min(),
   PlayerType_INT_MAX_SENTINEL_DO_NOT_USE_ =
@@ -69,8 +70,8 @@ enum PlayerType : int {
 bool PlayerType_IsValid(int value);
 extern const uint32_t PlayerType_internal_data_[];
 constexpr PlayerType PlayerType_MIN = static_cast<PlayerType>(0);
-constexpr PlayerType PlayerType_MAX = static_cast<PlayerType>(3);
-constexpr int PlayerType_ARRAYSIZE = 3 + 1;
+constexpr PlayerType PlayerType_MAX = static_cast<PlayerType>(4);
+constexpr int PlayerType_ARRAYSIZE = 4 + 1;
 const ::google::protobuf::EnumDescriptor*
 PlayerType_descriptor();
 template <typename T>
@@ -83,7 +84,7 @@ const std::string& PlayerType_Name(T value) {
 template <>
 inline const std::string& PlayerType_Name(PlayerType value) {
   return ::google::protobuf::internal::NameOfDenseEnum<PlayerType_descriptor,
-                                                 0, 3>(
+                                                 0, 4>(
       static_cast<int>(value));
 }
 inline bool PlayerType_Parse(absl::string_view name, PlayerType* value) {

@@ -38,7 +38,7 @@ public:
 	}
 
 	{%- for pkt in parser.send_pkt %}
-	static SendBufferRef MakeSendBuffer(Protocol::{{pkt.name}}&pkt) { return MakeSendBuffer(pkt, PKT_{{pkt.name}}); }
+	static SendBufferRef MakeSendBuffer(Protocol::{{pkt.name}}& pkt) { return MakeSendBuffer(pkt, PKT_{{pkt.name}}); }
 	{%- endfor %}
 
 private:
@@ -53,7 +53,7 @@ private:
 	}
 
 	template<typename T>
-	static SendBufferRef MakeSendBuffer(T & pkt, uint16 pktId)
+	static SendBufferRef MakeSendBuffer(T& pkt, uint16 pktId)
 	{
 		const uint16 dataSize = static_cast<uint16>(pkt.ByteSizeLong());
 		const uint16 packetSize = dataSize + sizeof(PacketHeader);

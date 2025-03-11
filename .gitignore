@@ -28,6 +28,8 @@ x86/
 [Aa][Rr][Mm]64/
 bld/
 [Bb]in/
+!Common/Protobuf/bin/
+!Common/Protobuf/bin/*
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
