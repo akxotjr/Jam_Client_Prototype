@@ -28,7 +28,7 @@ private:
 
 private:
 	// Character Move
-	Vec2Int _targetPos = {};
+	Vec2 _targetPos = {};
 	Vec2 _currentPos = {};
 	float _speed = 0.1f;
 	Vec2 _dir = { 0, 0 };

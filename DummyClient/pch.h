@@ -5,11 +5,9 @@
 
 
 #ifdef _DEBUG
-#pragma comment(lib, "ClientNetworkCore\\Debug\\ClientNetworkCore.lib")
-#pragma comment(lib, "Protobuf\\Debug\\libprotobufd.lib")
+#pragma comment(lib, "Debug\\ClientNetworkCore.lib")
 #else
-#pragma comment(lib, "ClientNetworkCore\\Release\\ClientNetworkCore.lib")
-#pragma comment(lib, "Protobuf\\Release\\libprotobuf.lib")
+#pragma comment(lib, "Release\\ClientNetworkCore.lib")
 #endif
 
 

@@ -41,3 +41,10 @@ bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
 	std::cout << pkt.msg() << std::endl;
 	return true;
 }
+
+bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
+{
+	// TODO
+
+	return true;
+}

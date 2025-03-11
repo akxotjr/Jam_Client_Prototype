@@ -48,24 +48,26 @@ void Game::Update()
 	if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
 	{
 		_targetPos = InputManager::GetInstance()->GetMousePos();
-		_dir = { static_cast<float>(_targetPos.x) - _currentPos.x, static_cast<float>(_targetPos.y) - _currentPos.y };
+		_dir = _targetPos - _currentPos;
 		_dir.Normalize();
-
-		//_onClickDelegate();
 	}
 
-
 	Vec2 nextPos = _currentPos + _dir * _speed;
-	if (_targetPos.x == static_cast<int32>(_currentPos.x) && _targetPos.y == static_cast<int32>(_currentPos.y))
+	
+	float distanceNext = (nextPos + _targetPos).Length();
+	float distanceCurrent = (_currentPos - _targetPos).Length();
+
+	//if (distanceNext > distanceCurrent)
+	//{
+	//	_currentPos = _targetPos;
+	//	return;
+	//}
+	
+	if ((_targetPos - _currentPos).Length() < 1.5f)
 	{
 		/*_bIsArrived = true;*/
 		return;
 	}
-
-	//if (_bIsArrived == true)
-	//{
-	//	return;
-	//}
 
 	_currentPos = nextPos;
 }
