@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "TimeManager.h"
+#include "SendBuffer.h"
+#include "ServerPacketHandler.h"
+#include <boost/asio.hpp>
 
 unique_ptr<TimeManager> TimeManager::instance = nullptr;
 
@@ -7,6 +10,10 @@ void TimeManager::Init()
 {
 	::QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&_frequency));
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&_prevCount));
+
+	//Protocol::C_TIMESTAMP timestampPkt;
+	//auto sendBuffer = ServerPacketHandler::MakeSendBuffer(timestampPkt);
+
 }
 
 void TimeManager::Update()
@@ -20,6 +27,8 @@ void TimeManager::Update()
 
 	_frameCount++;
 	_frameTime += _deltaTime * _timeScale;
+
+	_timestamp += _deltaTime;
 
 	if (_frameTime >= 1.f)
 	{

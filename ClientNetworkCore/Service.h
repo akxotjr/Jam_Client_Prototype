@@ -2,6 +2,8 @@
 #include <functional>
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/any_io_executor.hpp>
+
+
 using SessionFactory = function<SessionRef(ServiceRef, boost::asio::any_io_executor)>;
 
 struct NetAddress
@@ -10,13 +12,44 @@ struct NetAddress
 	string port;
 };
 
-//enum class SessionType
-//{
-//	GAME_SESSION,
-//	CHATTING_SESSION,
-//
-//	COUNT
-//};
+enum SessionType
+{
+	NONE = 0,
+	GAME_SESSION,
+	CHAT_SESSION,
+
+	MAX
+};
+
+class SessionIdBuilder
+{
+public:
+	SessionIdBuilder() {};
+	~SessionIdBuilder() {};
+
+
+	int32 GenerateId(SessionType sessionType)
+	{
+		if (sessionType == SessionType::NONE)
+		{
+			return 0;
+		}
+
+		if (_typesToCount.find(sessionType) == _typesToCount.end())
+		{
+			_typesToCount[sessionType] = 0;
+		}
+
+		int32 count = ++_typesToCount[sessionType];
+		int32 id = sessionType * 1000 + count;
+
+		return id;
+	}
+
+private:
+	unordered_map<SessionType, int32> _typesToCount;
+};
+
 
 class Service : public enable_shared_from_this<Service>
 {   
@@ -76,5 +109,6 @@ private:
 	int32								_sessionCount = 0;
 	int32								_maxSessionCount = 1;
 	SessionFactory						_sessionFactory;
-};
 
+	SessionIdBuilder					_sessionIdBuilder;
+};

@@ -1,6 +1,6 @@
 #pragma once
 
-class Actor
+class Actor : public enable_shared_from_this<Actor>
 {
 public:
 	Actor();
@@ -13,11 +13,11 @@ public:
 	Vec2& GetPosition() { return _position; }
 	void SetPosition(Vec2 position) { _position = position; }
 
-	float& GetTimestamp() { return _timestamp; }
+	//float& GetTimestamp() { return _timestamp; }
 
 
-private:
+protected:
 	Vec2 _position = {};
-	float _timestamp = 0.f;
+	//float _timestamp = 0.f;
 };
 

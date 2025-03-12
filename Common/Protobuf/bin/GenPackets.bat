@@ -1,7 +1,11 @@
+@echo off
 pushd %~dp0
-protoc.exe -I=./ --cpp_out=./ ./Enum.proto
-protoc.exe -I=./ --cpp_out=./ ./Struct.proto
-protoc.exe -I=./ --cpp_out=./ ./Protocol.proto
+
+set PROTOC_PATH=C:\Users\akxotjr\vcpkg\installed\x64-windows\tools\protobuf
+
+"%PROTOC_PATH%\protoc.exe" -I=./ --cpp_out=./ ./Enum.proto
+"%PROTOC_PATH%\protoc.exe" -I=./ --cpp_out=./ ./Struct.proto
+"%PROTOC_PATH%\protoc.exe" -I=./ --cpp_out=./ ./Protocol.proto
 
 GenPackets.exe --path=./Protocol.proto --output=ClientPacketHandler --recv=C_ --send=S_
 GenPackets.exe --path=./Protocol.proto --output=ServerPacketHandler --recv=S_ --send=C_

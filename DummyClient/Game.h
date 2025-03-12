@@ -5,6 +5,7 @@ class Session;
 class SendBuffer;
 class BufferWriter;
 class ServerPacketHandler;
+class Scene;
 
 class Game
 {
@@ -32,5 +33,9 @@ private:
 	Vec2 _currentPos = {};
 	float _speed = 0.1f;
 	Vec2 _dir = { 0, 0 };
+
+
+private:
+	shared_ptr<Scene> _scene = nullptr;
 };
 

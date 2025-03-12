@@ -7,11 +7,13 @@
 #include "BufferWriter.h"
 #include "ServerPacketHandler.h"
 #include "InputManager.h"
+#include "Scene.h"
 
 #include "boost/asio.hpp"
 
 Game::Game()
 {
+	_scene = make_shared<Scene>();
 }
 
 Game::~Game()
@@ -38,47 +40,49 @@ void Game::Init(HWND hwnd)
 	_service->AddSession(_factory);
 	_service->Start();
 
-	_currentPos = { 400, 300 };
+	_scene->Init();
+
+	//_currentPos = { 400, 300 };
 }
 
 void Game::Update()
 {
 	InputManager::GetInstance()->Update();
 
-	if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
-	{
-		_targetPos = InputManager::GetInstance()->GetMousePos();
-		_dir = _targetPos - _currentPos;
-		_dir.Normalize();
-	}
+	_scene->Update();
 
-	Vec2 nextPos = _currentPos + _dir * _speed;
-	
-	float distanceNext = (nextPos + _targetPos).Length();
-	float distanceCurrent = (_currentPos - _targetPos).Length();
-
-	//if (distanceNext > distanceCurrent)
+	//if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
 	//{
-	//	_currentPos = _targetPos;
+	//	_targetPos = InputManager::GetInstance()->GetMousePos();
+	//	_dir = _targetPos - _currentPos;
+	//	_dir.Normalize();
+	//}
+
+	//Vec2 nextPos = _currentPos + _dir * _speed;
+	//
+	//float distanceNext = (nextPos + _targetPos).Length();
+	//float distanceCurrent = (_currentPos - _targetPos).Length();
+
+	////if (distanceNext > distanceCurrent)
+	////{
+	////	_currentPos = _targetPos;
+	////	return;
+	////}
+	//
+	//if ((_targetPos - _currentPos).Length() < 1.5f)
+	//{
+	//	/*_bIsArrived = true;*/
 	//	return;
 	//}
-	
-	if ((_targetPos - _currentPos).Length() < 1.5f)
-	{
-		/*_bIsArrived = true;*/
-		return;
-	}
 
-	_currentPos = nextPos;
+	//_currentPos = nextPos;
 }
 
 void Game::Render()
 {
-	POINT mousePos = InputManager::GetInstance()->GetMousePos();
-	//wstring str = std::format(L"Mouse({0}, {1})", mousePos.x, mousePos.y);
-	//Utils::PrintText(_hdcBack, mousePos, str);
-	Utils::DrawCircle(_hdcBack, _currentPos, 10);
-
+	//POINT mousePos = InputManager::GetInstance()->GetMousePos();
+	//Utils::DrawCircle(_hdcBack, _currentPos, 10);
+	_scene->Render(_hdcBack);
 
 	::BitBlt(_hdc, 0, 0, _rect.right, _rect.bottom, _hdcBack, 0, 0, SRCCOPY);
 	::PatBlt(_hdcBack, 0, 0, _rect.right, _rect.bottom, WHITENESS);

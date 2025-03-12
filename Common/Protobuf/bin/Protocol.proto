@@ -46,3 +46,12 @@ message S_SPAWN_ACTOR
 	bool success = 1;
 	
 }
+
+message C_TIMESTAMP
+{
+}
+
+message S_TIMESTAMP
+{
+	float timestamp = 1;
+}

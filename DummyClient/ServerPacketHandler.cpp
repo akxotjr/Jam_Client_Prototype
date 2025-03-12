@@ -48,3 +48,10 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 
 	return true;
 }
+
+bool Handle_S_TIMESTAMP(PacketSessionRef& session, Protocol::S_TIMESTAMP& pkt)
+{
+	//TODO
+	return true;
+}
+ 

@@ -16,6 +16,12 @@
     <Filter Include="02.Manager">
       <UniqueIdentifier>{40d1d8f2-95c7-40b6-8451-fd630af9c3de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Actor">
+      <UniqueIdentifier>{f5306d3b-445a-4752-baec-ed6809da2cf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04.Scene">
+      <UniqueIdentifier>{e93c8b37-6fe0-44ba-b79d-6d93a682b5a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -51,6 +57,18 @@
     <ClInclude Include="GameSession.h">
       <Filter>01.Network</Filter>
     </ClInclude>
+    <ClInclude Include="TimeManager.h">
+      <Filter>02.Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>03.Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>03.Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>04.Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -82,6 +100,18 @@
     </ClCompile>
     <ClCompile Include="ServerPacketHandler.cpp">
       <Filter>01.Network</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeManager.cpp">
+      <Filter>02.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>03.Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>03.Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>04.Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

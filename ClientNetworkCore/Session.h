@@ -1,12 +1,9 @@
 #pragma once
 
-//#include <asio.hpp>
 #include <boost/asio.hpp>
 #include "Service.h"
 
 using boost::asio::ip::tcp;
-
-class Service;
 
 class Session : public enable_shared_from_this<Session>
 {

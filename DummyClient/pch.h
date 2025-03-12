@@ -15,3 +15,4 @@
 #include "Types.h"
 #include "Utils.h"
 #include "Enum.pb.h"
+#include "Protocol.pb.h"

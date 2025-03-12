@@ -26,6 +26,31 @@ namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
 namespace Protocol {
 
+inline constexpr S_TIMESTAMP::Impl_::Impl_(
+    ::_pbi::ConstantInitialized) noexcept
+      : timestamp_{0},
+        _cached_size_{0} {}
+
+template <typename>
+PROTOBUF_CONSTEXPR S_TIMESTAMP::S_TIMESTAMP(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(_class_data_.base()),
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(),
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      _impl_(::_pbi::ConstantInitialized()) {
+}
+struct S_TIMESTAMPDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR S_TIMESTAMPDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~S_TIMESTAMPDefaultTypeInternal() {}
+  union {
+    S_TIMESTAMP _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_TIMESTAMPDefaultTypeInternal _S_TIMESTAMP_default_instance_;
+
 inline constexpr S_SPAWN_ACTOR::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : success_{false},
@@ -103,6 +128,24 @@ struct S_CHATDefaultTypeInternal {
 
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
     PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 S_CHATDefaultTypeInternal _S_CHAT_default_instance_;
+              template <typename>
+PROTOBUF_CONSTEXPR C_TIMESTAMP::C_TIMESTAMP(::_pbi::ConstantInitialized)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(_class_data_.base()){}
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase() {
+}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+struct C_TIMESTAMPDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR C_TIMESTAMPDefaultTypeInternal() : _instance(::_pbi::ConstantInitialized{}) {}
+  ~C_TIMESTAMPDefaultTypeInternal() {}
+  union {
+    C_TIMESTAMP _instance;
+  };
+};
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 C_TIMESTAMPDefaultTypeInternal _C_TIMESTAMP_default_instance_;
               template <typename>
 PROTOBUF_CONSTEXPR C_SPAWN_ACTOR::C_SPAWN_ACTOR(::_pbi::ConstantInitialized)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
@@ -297,6 +340,23 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::S_SPAWN_ACTOR, _impl_.success_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::C_TIMESTAMP, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::S_TIMESTAMP, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::S_TIMESTAMP, _impl_.timestamp_),
 };
 
 static const ::_pbi::MigrationSchema
@@ -309,6 +369,8 @@ static const ::_pbi::MigrationSchema
         {45, -1, -1, sizeof(::Protocol::S_CHAT)},
         {55, -1, -1, sizeof(::Protocol::C_SPAWN_ACTOR)},
         {63, -1, -1, sizeof(::Protocol::S_SPAWN_ACTOR)},
+        {72, -1, -1, sizeof(::Protocol::C_TIMESTAMP)},
+        {80, -1, -1, sizeof(::Protocol::S_TIMESTAMP)},
 };
 static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_C_LOGIN_default_instance_._instance,
@@ -319,6 +381,8 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_S_CHAT_default_instance_._instance,
     &::Protocol::_C_SPAWN_ACTOR_default_instance_._instance,
     &::Protocol::_S_SPAWN_ACTOR_default_instance_._instance,
+    &::Protocol::_C_TIMESTAMP_default_instance_._instance,
+    &::Protocol::_S_TIMESTAMP_default_instance_._instance,
 };
 const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -329,7 +393,9 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "\001(\004\"\037\n\014S_ENTER_GAME\022\017\n\007success\030\001 \001(\010\"\025\n\006"
     "C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006S_CHAT\022\020\n\010playerI"
     "d\030\001 \001(\004\022\013\n\003msg\030\002 \001(\t\"\017\n\rC_SPAWN_ACTOR\" \n"
-    "\rS_SPAWN_ACTOR\022\017\n\007success\030\001 \001(\010b\006proto3"
+    "\rS_SPAWN_ACTOR\022\017\n\007success\030\001 \001(\010\"\r\n\013C_TIM"
+    "ESTAMP\" \n\013S_TIMESTAMP\022\021\n\ttimestamp\030\001 \001(\002"
+    "b\006proto3"
 };
 static const ::_pbi::DescriptorTable* const descriptor_table_Protocol_2eproto_deps[2] =
     {
@@ -340,13 +406,13 @@ static ::absl::once_flag descriptor_table_Protocol_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Protocol_2eproto = {
     false,
     false,
-    319,
+    368,
     descriptor_table_protodef_Protocol_2eproto,
     "Protocol.proto",
     &descriptor_table_Protocol_2eproto_once,
     descriptor_table_Protocol_2eproto_deps,
     2,
-    8,
+    10,
     schemas,
     file_default_instances,
     TableStruct_Protocol_2eproto::offsets,
@@ -1937,6 +2003,315 @@ void S_SPAWN_ACTOR::InternalSwap(S_SPAWN_ACTOR* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata S_SPAWN_ACTOR::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class C_TIMESTAMP::_Internal {
+ public:
+};
+
+C_TIMESTAMP::C_TIMESTAMP(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(arena_constructor:Protocol.C_TIMESTAMP)
+}
+C_TIMESTAMP::C_TIMESTAMP(
+    ::google::protobuf::Arena* arena,
+    const C_TIMESTAMP& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::internal::ZeroFieldsBase(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::internal::ZeroFieldsBase(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  C_TIMESTAMP* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.C_TIMESTAMP)
+}
+
+inline void* C_TIMESTAMP::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) C_TIMESTAMP(arena);
+}
+constexpr auto C_TIMESTAMP::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(C_TIMESTAMP),
+                                            alignof(C_TIMESTAMP));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull C_TIMESTAMP::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_C_TIMESTAMP_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &C_TIMESTAMP::MergeImpl,
+        ::google::protobuf::internal::ZeroFieldsBase::GetNewImpl<C_TIMESTAMP>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &C_TIMESTAMP::SharedDtor,
+        ::google::protobuf::internal::ZeroFieldsBase::GetClearImpl<C_TIMESTAMP>(), &C_TIMESTAMP::ByteSizeLong,
+            &C_TIMESTAMP::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(C_TIMESTAMP, _impl_._cached_size_),
+        false,
+    },
+    &C_TIMESTAMP::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* C_TIMESTAMP::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 0, 0, 0, 2> C_TIMESTAMP::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    0, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967295,  // skipmap
+    offsetof(decltype(_table_), field_names),  // no field_entries
+    0,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::C_TIMESTAMP>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    {::_pbi::TcParser::MiniParse, {}},
+  }}, {{
+    65535, 65535
+  }},
+  // no field_entries, or aux_entries
+  {{
+  }},
+};
+
+
+
+
+
+
+
+
+::google::protobuf::Metadata C_TIMESTAMP::GetMetadata() const {
+  return ::google::protobuf::internal::ZeroFieldsBase::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class S_TIMESTAMP::_Internal {
+ public:
+};
+
+S_TIMESTAMP::S_TIMESTAMP(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.S_TIMESTAMP)
+}
+S_TIMESTAMP::S_TIMESTAMP(
+    ::google::protobuf::Arena* arena, const S_TIMESTAMP& from)
+    : S_TIMESTAMP(arena) {
+  MergeFrom(from);
+}
+inline PROTOBUF_NDEBUG_INLINE S_TIMESTAMP::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : _cached_size_{0} {}
+
+inline void S_TIMESTAMP::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.timestamp_ = {};
+}
+S_TIMESTAMP::~S_TIMESTAMP() {
+  // @@protoc_insertion_point(destructor:Protocol.S_TIMESTAMP)
+  SharedDtor(*this);
+}
+inline void S_TIMESTAMP::SharedDtor(MessageLite& self) {
+  S_TIMESTAMP& this_ = static_cast<S_TIMESTAMP&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+inline void* S_TIMESTAMP::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) S_TIMESTAMP(arena);
+}
+constexpr auto S_TIMESTAMP::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::ZeroInit(sizeof(S_TIMESTAMP),
+                                            alignof(S_TIMESTAMP));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull S_TIMESTAMP::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_S_TIMESTAMP_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &S_TIMESTAMP::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<S_TIMESTAMP>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &S_TIMESTAMP::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<S_TIMESTAMP>(), &S_TIMESTAMP::ByteSizeLong,
+            &S_TIMESTAMP::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(S_TIMESTAMP, _impl_._cached_size_),
+        false,
+    },
+    &S_TIMESTAMP::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* S_TIMESTAMP::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 0, 2> S_TIMESTAMP::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::S_TIMESTAMP>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // float timestamp = 1;
+    {::_pbi::TcParser::FastF32S1,
+     {13, 63, 0, PROTOBUF_FIELD_OFFSET(S_TIMESTAMP, _impl_.timestamp_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // float timestamp = 1;
+    {PROTOBUF_FIELD_OFFSET(S_TIMESTAMP, _impl_.timestamp_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+  }},
+  // no aux_entries
+  {{
+  }},
+};
+
+PROTOBUF_NOINLINE void S_TIMESTAMP::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.S_TIMESTAMP)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.timestamp_ = 0;
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* S_TIMESTAMP::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const S_TIMESTAMP& this_ = static_cast<const S_TIMESTAMP&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* S_TIMESTAMP::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const S_TIMESTAMP& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.S_TIMESTAMP)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // float timestamp = 1;
+          if (::absl::bit_cast<::uint32_t>(this_._internal_timestamp()) != 0) {
+            target = stream->EnsureSpace(target);
+            target = ::_pbi::WireFormatLite::WriteFloatToArray(
+                1, this_._internal_timestamp(), target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.S_TIMESTAMP)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t S_TIMESTAMP::ByteSizeLong(const MessageLite& base) {
+          const S_TIMESTAMP& this_ = static_cast<const S_TIMESTAMP&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t S_TIMESTAMP::ByteSizeLong() const {
+          const S_TIMESTAMP& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.S_TIMESTAMP)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+           {
+            // float timestamp = 1;
+            if (::absl::bit_cast<::uint32_t>(this_._internal_timestamp()) != 0) {
+              total_size += 5;
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void S_TIMESTAMP::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<S_TIMESTAMP*>(&to_msg);
+  auto& from = static_cast<const S_TIMESTAMP&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.S_TIMESTAMP)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (::absl::bit_cast<::uint32_t>(from._internal_timestamp()) != 0) {
+    _this->_impl_.timestamp_ = from._impl_.timestamp_;
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void S_TIMESTAMP::CopyFrom(const S_TIMESTAMP& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.S_TIMESTAMP)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void S_TIMESTAMP::InternalSwap(S_TIMESTAMP* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+        swap(_impl_.timestamp_, other->_impl_.timestamp_);
+}
+
+::google::protobuf::Metadata S_TIMESTAMP::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

@@ -24,11 +24,13 @@ public:
 
 private:
 	/*Character Movement*/
-	void CharacterMovement();
+	void UpdateCharacterMovement();
 
 private:
 	Vec2 _velocity = {};
 	Vec2 _direction = {};
 	float _speed = 0.f;
+
+	Vec2 _targetPos = {};
 };
 

@@ -18,7 +18,7 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
 	// TODO:packetId 대역 체크
-	//ServerPacketHandler::HandlePacket(session, buffer, len);
+	ServerPacketHandler::HandlePacket(session, buffer, len);
 }
 
 void GameSession::OnSend(int32 len)
