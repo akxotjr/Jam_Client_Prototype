@@ -4,6 +4,7 @@
 class GameSession : public PacketSession
 {
 public:
+	GameSession(ServiceRef service, boost::asio::any_io_executor executor);
 	~GameSession() {};
 
 	virtual void OnConnected() override;

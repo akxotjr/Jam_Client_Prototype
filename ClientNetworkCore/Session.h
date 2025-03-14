@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include "boost/asio.hpp"
 #include "Service.h"
 
 using boost::asio::ip::tcp;
@@ -30,6 +30,10 @@ public:
 	bool			IsConnected() { return _connected; }
 	SessionRef		GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
 
+	//temp
+	void SetId(int32 id) { _id = id; }
+	int32 GetId() { return _id; }
+
 private:
 	void DoSend();
 
@@ -48,6 +52,7 @@ private:
 
 	Atomic<bool>            _connected = false;
 
+	int32 _id = -1;
 
 private:
 	Atomic<bool> _sendRegistered = false;

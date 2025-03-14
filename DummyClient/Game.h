@@ -2,40 +2,45 @@
 
 class Service;
 class Session;
-class SendBuffer;
-class BufferWriter;
-class ServerPacketHandler;
 class Scene;
+
+// temp
+enum class SessionType : int32
+{
+	None = 0,
+	GAME_SESSION,
+	CHAT_SESSION,
+
+	COUNT
+};
+
 
 class Game
 {
 public:
 	Game();
 	~Game();
-	void Init(HWND hwnd);
-	void Update();
-	void Render();;
+	void				Init(HWND hwnd);
+	void				Update();
+	void				Render();;
 
 private:
-	HWND _hwnd;
-	HDC _hdc;
 
-	RECT _rect;
-	HDC _hdcBack = {};
-	HBITMAP _bmpBack = {};
+	/* Rendering */
+	HWND				_hwnd;
+	HDC					_hdc;
 
-	ServiceRef _service;
-	SessionFactory _factory;
-
-private:
-	// Character Move
-	Vec2 _targetPos = {};
-	Vec2 _currentPos = {};
-	float _speed = 0.1f;
-	Vec2 _dir = { 0, 0 };
+	RECT				_rect;
+	HDC					_hdcBack = {};
+	HBITMAP				_bmpBack = {};
 
 
-private:
-	shared_ptr<Scene> _scene = nullptr;
+	/* Network */
+	ServiceRef			_service;
+	SessionFactory		_factory;
+
+		
+	/* Contents */
+	shared_ptr<Scene>	_scene = nullptr;
 };
 

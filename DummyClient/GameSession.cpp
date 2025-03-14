@@ -4,6 +4,11 @@
 
 #include "ServerPacketHandler.h"
 
+GameSession::GameSession(ServiceRef service, boost::asio::any_io_executor executor)
+	: PacketSession(service, executor)
+{
+}
+
 void GameSession::OnConnected()
 {
 }

@@ -46,16 +46,16 @@ void Service::Broadcast(SendBufferRef sendBuffer)
 
 bool Service::AddSession(SessionFactory factory)
 {
-	if (_sessionCount + 1 > _maxSessionCount)
-		return false;
+	//if (_sessionCount + 1 > _maxSessionCount)
+	//	return false;
 
-	SessionRef session = factory(shared_from_this(), _pool.get_executor());
+	//SessionRef session = factory(shared_from_this(), _pool.get_executor());
 
-	if (session == nullptr) return false;
+	//if (session == nullptr) return false;
 
-	WRITE_LOCK
-	_sessions.insert({ _sessionCount, session });
-	_sessionCount++;
+	//WRITE_LOCK
+	//_sessions.insert({ _sessionCount, session });
+	//_sessionCount++;
 
 	return true;
 }
