@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ServerPacketHandler.h"
+#include "TimeManager.h"
 
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
@@ -52,6 +53,10 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 bool Handle_S_TIMESTAMP(PacketSessionRef& session, Protocol::S_TIMESTAMP& pkt)
 {
 	//TODO
+	float timestamp = pkt.timestamp();
+
+	TimeManager::GetInstance()->SetTimestamp(timestamp);
+
 	return true;
 }
  
