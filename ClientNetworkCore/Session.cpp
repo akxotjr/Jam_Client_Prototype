@@ -4,12 +4,12 @@
 #include <boost/system/error_code.hpp>
 
 Session::Session(ServiceRef service, boost::asio::any_io_executor executor)
-	: _service(service), _executor(executor), _socket(boost::asio::system_executor())
+	: _service(service), _executor(executor), /*_socket(boost::asio::system_executor())*/ _socket(executor)
 {
 	auto owner = _service.lock();
 	if (!owner) return;
 
-	_socket = tcp::socket(_executor);
+	//_socket = tcp::socket(_executor);
 
 	_netAddress = owner->GetNetAddress();
 }

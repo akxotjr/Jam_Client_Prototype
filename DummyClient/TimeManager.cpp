@@ -10,10 +10,6 @@ void TimeManager::Init()
 {
 	::QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&_frequency));
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&_prevCount));
-
-	//Protocol::C_TIMESTAMP timestampPkt;
-	//auto sendBuffer = ServerPacketHandler::MakeSendBuffer(timestampPkt);
-
 }
 
 void TimeManager::Update()

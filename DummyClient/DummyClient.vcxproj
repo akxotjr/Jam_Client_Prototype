@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)ClientNetworkCore\;$(SolutionDir)Libraries\Include\;$(SolutionDir)Libraries\Include\asio\include\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Libraries\Libs\;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\akxotjr\vcpkg\installed\x64-windows￦include\;$(SolutionDir)ClientNetworkCore\;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\akxotjr\vcpkg\installed\x64-windows\lib\;$(SolutionDir)Libraries\Libs\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -81,7 +81,7 @@
     <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(VcpkgRoot)\installed\x64-windows\include;$(SolutionDir)ClientNetworkCore\;$(SolutionDir)Libraries\Include\;$(SolutionDir)Libraries\Include\asio\include\;$(IncludePath)</IncludePath>
+    <IncludePath>$(VcpkgRoot)\installed\x64-windows\include;$(SolutionDir)ClientNetworkCore\;$(IncludePath)</IncludePath>
     <LibraryPath>$(VcpkgRoot)\installed\x64-windows\lib;$(SolutionDir)Libraries\Libs\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -90,9 +90,9 @@
     <LibraryPath>$(SolutionDir)Libraries\Libs\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
   </PropertyGroup>
-  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <VcpkgInstalledDir>
-    </VcpkgInstalledDir>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <VcpkgInstalledDir>C:\Users\akxotjr\vcpkg\installed\x64-windows</VcpkgInstalledDir>
+    <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
