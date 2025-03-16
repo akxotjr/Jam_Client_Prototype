@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "Character.h"
 #include "InputManager.h"
+#include "Scene.h"
+#include "Game.h"
+#include "SendBuffer.h"
+#include "ServerPacketHandler.h"
+
 
 Character::Character()
 {
@@ -10,15 +15,25 @@ Character::~Character()
 {
 }
 
-void Character::Init()
+void Character::Init(shared_ptr<Scene> owner)
 {
-	Super::Init();
+	Super::Init(owner);
 	SetPosition(Vec2{ 400, 300 });
 }
 
 void Character::Update()
 {
 	Super::Update();
+
+	auto owner = _owner.lock();
+
+	auto session = owner->GetSessionByType(SessionType::GAME_SESSION);
+	Protocol::C_CHAT chatPkt;
+	chatPkt.set_msg("Hello");
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
+
+	session->Send(sendBuffer);
+
 	UpdateCharacterMovement();
 }
 

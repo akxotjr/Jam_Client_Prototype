@@ -66,28 +66,17 @@ public:
 	bool			CanStart() { return _sessionFactory != nullptr; }
 
 	template<typename T>
-	bool CreateSession(int32 id)
-	{
-		if (_sessionCount + 1 > _maxSessionCount)
-			return false;
-
-		shared_ptr<T> session = MakeShared<T>(shared_from_this(), GetExecutor());
-
-		if (session == nullptr) return false;
-
-		session->SetId(id);
-
-		WRITE_LOCK
-		_sessions[id] = session;	// temp
-		_sessionCount++;
-
-		return true;
-	}
+	bool			CreateSession(int32 id);
 
 	void			Broadcast(SendBufferRef sendBuffer);
 
 	bool			AddSession(SessionFactory factory);
 	void			ReleaseSession(SessionRef session);
+
+	SessionRef		GetSessionById(int32 id) { return _sessions[id]; }
+
+	template<typename SessionType>
+	SessionRef		GetSessionByType(SessionType type);
 
 	int32			GetCurrentSessionCount() { return _sessionCount; }
 	int32			GetMaxSessionCount() { return _maxSessionCount; }
@@ -107,10 +96,50 @@ private:
 
 	//unordered_map<uint32, SessionRef>	_sessions;  // key - session count, value - session ref
 
-	unordered_map<int32, SessionRef> _sessions; // key - session id, value - session ref
+	unordered_map<int32, SessionRef>	_sessions; // key - session id, value - session ref
 
 	int32								_sessionCount = 0;
 	int32								_maxSessionCount = 1;
 	SessionFactory						_sessionFactory;
 
 };
+
+template<typename T>
+inline bool Service::CreateSession(int32 id)
+{
+	if (_sessionCount + 1 > _maxSessionCount)
+		return false;
+
+	shared_ptr<T> session = MakeShared<T>(shared_from_this(), GetExecutor());
+
+	if (session == nullptr) return false;
+
+	session->SetId(id);
+
+	WRITE_LOCK
+	_sessions[id] = session;	// temp
+	_sessionCount++;
+
+	return true;
+}
+
+template<typename SessionType>
+inline SessionRef Service::GetSessionByType(SessionType type)
+{
+	auto typeValue = static_cast<int32>(type);
+
+	if (typeValue == 0)
+	{
+		return nullptr;
+	}
+
+	for (auto& [id, session] : _sessions)
+	{
+		if (id == typeValue)
+		{
+			return session;
+		}
+	}
+
+	return nullptr;
+}

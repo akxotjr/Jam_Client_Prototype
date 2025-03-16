@@ -16,32 +16,6 @@
 
 using namespace std;
 
-//int main()
-//{
-//	ServiceRef service = make_shared<Service>(NetAddress{ "127.0.0.1", "7777" }, 1);
-//
-//	SessionFactory factory = [service](ServiceRef serviceRef, asio::any_io_executor executor) -> SessionRef {
-//		return MakeShared<Session>(serviceRef, executor);
-//	};
-//
-//	service->AddSession(factory);
-//
-//	service->Start();
-//
-//	Protocol::C_CHAT chatPkt;
-//	chatPkt.set_msg("Hello world");
-//	//chatPkt.set_msg(u8"Hello world!");
-//	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
-//
-//	while (true)
-//	{
-//		service->Broadcast(sendBuffer);
-//		this_thread::sleep_for(1s);
-//	}
-//
-//	return 0;
-//}
-
 
 #define GWinSizeX 800
 #define GWinSizeY 600

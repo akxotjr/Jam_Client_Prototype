@@ -15,14 +15,16 @@ enum class SessionType : int32
 };
 
 
-class Game
+class Game : public enable_shared_from_this<Game>
 {
 public:
 	Game();
 	~Game();
 	void				Init(HWND hwnd);
 	void				Update();
-	void				Render();;
+	void				Render();
+
+	ServiceRef			GetService() { return _service; }
 
 private:
 

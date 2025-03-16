@@ -1,12 +1,14 @@
 #pragma once
 
+class Scene;
+
 class Actor : public enable_shared_from_this<Actor>
 {
 public:
 	Actor();
 	virtual ~Actor();
 
-	virtual void Init();
+	virtual void Init(shared_ptr<Scene> owner);
 	virtual void Update();
 	virtual void Render(HDC hdc);
 
@@ -19,5 +21,7 @@ public:
 protected:
 	Vec2 _position = {};
 	//float _timestamp = 0.f;
+
+	weak_ptr<Scene> _owner;
 };
 

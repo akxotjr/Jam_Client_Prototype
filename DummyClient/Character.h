@@ -9,7 +9,7 @@ public:
 	Character();
 	virtual ~Character();
 
-	virtual void Init() override;
+	virtual void Init(shared_ptr<Scene> owner) override;
 	virtual void Update() override;
 	virtual void Render(HDC hdc) override;
 

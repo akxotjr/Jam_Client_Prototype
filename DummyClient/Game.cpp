@@ -49,7 +49,7 @@ void Game::Init(HWND hwnd)
 	//_service->AddSession(_factory);
 	_service->Start();
 
-	_scene->Init();
+    _scene->Init(shared_from_this());
 }
 
 void Game::Update()

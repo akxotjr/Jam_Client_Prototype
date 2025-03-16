@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "Game.h"
 #include "Scene.h"
 #include "Actor.h"
 #include "Character.h"
@@ -12,18 +13,20 @@ Scene::~Scene()
 {
 }
 
-void Scene::Init()
+void Scene::Init(shared_ptr<Game> game)
 {
+	_game = game;
+
 	if (_player)
 	{
-		_player->Init();
+		_player->Init(shared_from_this());
 	}
 
 	for (auto actor : _otherActors)
 	{
 		if (actor)
 		{
-			actor->Init();
+			actor->Init(shared_from_this());
 		}
 	}
 }
@@ -58,4 +61,13 @@ void Scene::Render(HDC hdc)
 			actor->Render(hdc);
 		}
 	}
+}
+
+SessionRef Scene::GetSessionByType(SessionType type)  
+{  
+	if (auto game = _game.lock())  
+	{  
+		return game->GetService()->GetSessionByType(type);  
+	}  
+	return nullptr;  
 }
