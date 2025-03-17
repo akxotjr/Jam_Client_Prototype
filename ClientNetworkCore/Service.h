@@ -135,7 +135,7 @@ inline SessionRef Service::GetSessionByType(SessionType type)
 
 	for (auto& [id, session] : _sessions)
 	{
-		if (id == typeValue)
+		if (id % 1000 == typeValue)
 		{
 			return session;
 		}

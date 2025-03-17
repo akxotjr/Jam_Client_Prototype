@@ -44,13 +44,13 @@ void Session::DoSend()
 	if (IsConnected() == false || _socket.is_open() == false)
 		return;
 
-	if (_sendQueue.empty())
-		return;
-
 	vector<boost::asio::const_buffer> sendBuffers;
 
 	{
 		WRITE_LOCK
+
+		if (_sendQueue.empty())
+			return;
 
 		int32 writeSize = 0;
 		while (_sendQueue.empty() == false)
@@ -76,8 +76,11 @@ void Session::DoSend()
 			{
 				std::cout << "Bytes sent: " << bytes_transferred << std::endl;
 				_sendRegistered.store(false);
-				WRITE_LOCK
-				_currentSendBuffers.clear();
+
+				{
+					WRITE_LOCK
+					_currentSendBuffers.clear();
+				}
 
 				OnSend(static_cast<int32>(bytes_transferred));
 			}
@@ -86,12 +89,14 @@ void Session::DoSend()
 				std::cout << "Error: " << ec.message() << std::endl;
 
 				// retry send
-				WRITE_LOCK
-				for (auto& buffer : _currentSendBuffers)
 				{
-					_sendQueue.push(buffer);
+					WRITE_LOCK
+					for (auto& buffer : _currentSendBuffers)
+					{
+						_sendQueue.push(buffer);
+					}
+					_currentSendBuffers.clear();
 				}
-				_currentSendBuffers.clear();
 			}
 		});
 }

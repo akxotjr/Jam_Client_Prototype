@@ -25,14 +25,19 @@ void Character::Update()
 {
 	Super::Update();
 
-	auto owner = _owner.lock();
+	//if (auto owner = _owner.lock())
+	//{
+	//	if (auto session = owner->GetSessionByType(SessionType::GAME_SESSION))
+	//	{
+	//		Protocol::C_CHAT chatPkt;
+	//		chatPkt.set_msg("Hello");
+	//		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
 
-	auto session = owner->GetSessionByType(SessionType::GAME_SESSION);
-	Protocol::C_CHAT chatPkt;
-	chatPkt.set_msg("Hello");
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
+	//		session->Send(sendBuffer);
+	//	}
+	//}
 
-	session->Send(sendBuffer);
+	//auto session = owner->GetSessionByType(SessionType::GAME_SESSION);
 
 	UpdateCharacterMovement();
 }
