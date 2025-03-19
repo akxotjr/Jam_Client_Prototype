@@ -24,7 +24,12 @@ void TimeManager::Update()
 	_frameCount++;
 	_frameTime += _deltaTime * _timeScale;
 
-	_timestamp += _deltaTime;
+	//_timestamp += _deltaTime;
+
+	if (_timestamp > 0.f)
+	{
+		int a = 0;
+	}
 
 	if (_frameTime >= 1.f)
 	{

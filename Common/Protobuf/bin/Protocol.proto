@@ -36,22 +36,12 @@ message S_CHAT
 	string msg = 2;
 }
 
-message C_SPAWN_ACTOR
+message C_TIMESYNC
 {
-	
+
 }
 
-message S_SPAWN_ACTOR
-{
-	bool success = 1;
-	
-}
-
-message C_TIMESTAMP
-{
-}
-
-message S_TIMESTAMP
+message S_TIMESYNC
 {
 	float timestamp = 1;
 }

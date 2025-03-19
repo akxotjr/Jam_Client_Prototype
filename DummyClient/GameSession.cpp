@@ -1,8 +1,7 @@
-
 #include "pch.h"
 #include "GameSession.h"
-
 #include "ServerPacketHandler.h"
+
 
 GameSession::GameSession(ServiceRef service, boost::asio::any_io_executor executor)
 	: PacketSession(service, executor)
@@ -11,6 +10,10 @@ GameSession::GameSession(ServiceRef service, boost::asio::any_io_executor execut
 
 void GameSession::OnConnected()
 {
+	Protocol::C_TIMESYNC timesyncPkt;
+
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(timesyncPkt);
+	Send(sendBuffer);
 }
 
 void GameSession::OnDisconnected()

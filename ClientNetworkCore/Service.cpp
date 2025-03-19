@@ -15,6 +15,13 @@ Service::~Service()
 
 bool Service::Start()
 {
+	for (int i = 0; i < 4; i++)
+	{
+		boost::asio::post(_pool, [this]()
+			{
+				_io_context.run();
+			});
+	}
 
 	//if (!CanStart()) return false;
 

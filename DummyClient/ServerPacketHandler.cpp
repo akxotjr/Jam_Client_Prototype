@@ -43,16 +43,10 @@ bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
 	return true;
 }
 
-bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
-{
-	// TODO
-
-	return true;
-}
-
-bool Handle_S_TIMESTAMP(PacketSessionRef& session, Protocol::S_TIMESTAMP& pkt)
+bool Handle_S_TIMESYNC(PacketSessionRef& session, Protocol::S_TIMESYNC& pkt)
 {
 	float timestamp = pkt.timestamp();
+
 	TimeManager::GetInstance()->SetTimestamp(timestamp);
 
 	return true;

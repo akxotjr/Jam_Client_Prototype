@@ -64,12 +64,9 @@ extern C_ENTER_GAMEDefaultTypeInternal _C_ENTER_GAME_default_instance_;
 class C_LOGIN;
 struct C_LOGINDefaultTypeInternal;
 extern C_LOGINDefaultTypeInternal _C_LOGIN_default_instance_;
-class C_SPAWN_ACTOR;
-struct C_SPAWN_ACTORDefaultTypeInternal;
-extern C_SPAWN_ACTORDefaultTypeInternal _C_SPAWN_ACTOR_default_instance_;
-class C_TIMESTAMP;
-struct C_TIMESTAMPDefaultTypeInternal;
-extern C_TIMESTAMPDefaultTypeInternal _C_TIMESTAMP_default_instance_;
+class C_TIMESYNC;
+struct C_TIMESYNCDefaultTypeInternal;
+extern C_TIMESYNCDefaultTypeInternal _C_TIMESYNC_default_instance_;
 class S_CHAT;
 struct S_CHATDefaultTypeInternal;
 extern S_CHATDefaultTypeInternal _S_CHAT_default_instance_;
@@ -79,12 +76,9 @@ extern S_ENTER_GAMEDefaultTypeInternal _S_ENTER_GAME_default_instance_;
 class S_LOGIN;
 struct S_LOGINDefaultTypeInternal;
 extern S_LOGINDefaultTypeInternal _S_LOGIN_default_instance_;
-class S_SPAWN_ACTOR;
-struct S_SPAWN_ACTORDefaultTypeInternal;
-extern S_SPAWN_ACTORDefaultTypeInternal _S_SPAWN_ACTOR_default_instance_;
-class S_TIMESTAMP;
-struct S_TIMESTAMPDefaultTypeInternal;
-extern S_TIMESTAMPDefaultTypeInternal _S_TIMESTAMP_default_instance_;
+class S_TIMESYNC;
+struct S_TIMESYNCDefaultTypeInternal;
+extern S_TIMESYNCDefaultTypeInternal _S_TIMESYNC_default_instance_;
 }  // namespace Protocol
 namespace google {
 namespace protobuf {
@@ -98,31 +92,31 @@ namespace Protocol {
 
 // -------------------------------------------------------------------
 
-class S_TIMESTAMP final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:Protocol.S_TIMESTAMP) */ {
+class S_TIMESYNC final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.S_TIMESYNC) */ {
  public:
-  inline S_TIMESTAMP() : S_TIMESTAMP(nullptr) {}
-  ~S_TIMESTAMP() PROTOBUF_FINAL;
+  inline S_TIMESYNC() : S_TIMESYNC(nullptr) {}
+  ~S_TIMESYNC() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(S_TIMESTAMP* msg, std::destroying_delete_t) {
+  void operator delete(S_TIMESYNC* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(S_TIMESTAMP));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(S_TIMESYNC));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR S_TIMESTAMP(
+  explicit PROTOBUF_CONSTEXPR S_TIMESYNC(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline S_TIMESTAMP(const S_TIMESTAMP& from) : S_TIMESTAMP(nullptr, from) {}
-  inline S_TIMESTAMP(S_TIMESTAMP&& from) noexcept
-      : S_TIMESTAMP(nullptr, std::move(from)) {}
-  inline S_TIMESTAMP& operator=(const S_TIMESTAMP& from) {
+  inline S_TIMESYNC(const S_TIMESYNC& from) : S_TIMESYNC(nullptr, from) {}
+  inline S_TIMESYNC(S_TIMESYNC&& from) noexcept
+      : S_TIMESYNC(nullptr, std::move(from)) {}
+  inline S_TIMESYNC& operator=(const S_TIMESYNC& from) {
     CopyFrom(from);
     return *this;
   }
-  inline S_TIMESTAMP& operator=(S_TIMESTAMP&& from) noexcept {
+  inline S_TIMESYNC& operator=(S_TIMESYNC&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -150,16 +144,16 @@ class S_TIMESTAMP final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const S_TIMESTAMP& default_instance() {
+  static const S_TIMESYNC& default_instance() {
     return *internal_default_instance();
   }
-  static inline const S_TIMESTAMP* internal_default_instance() {
-    return reinterpret_cast<const S_TIMESTAMP*>(
-        &_S_TIMESTAMP_default_instance_);
+  static inline const S_TIMESYNC* internal_default_instance() {
+    return reinterpret_cast<const S_TIMESYNC*>(
+        &_S_TIMESYNC_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 9;
-  friend void swap(S_TIMESTAMP& a, S_TIMESTAMP& b) { a.Swap(&b); }
-  inline void Swap(S_TIMESTAMP* other) {
+  static constexpr int kIndexInFileMessages = 7;
+  friend void swap(S_TIMESYNC& a, S_TIMESYNC& b) { a.Swap(&b); }
+  inline void Swap(S_TIMESYNC* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -167,7 +161,7 @@ class S_TIMESTAMP final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(S_TIMESTAMP* other) {
+  void UnsafeArenaSwap(S_TIMESYNC* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -175,13 +169,13 @@ class S_TIMESTAMP final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  S_TIMESTAMP* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<S_TIMESTAMP>(arena);
+  S_TIMESYNC* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<S_TIMESYNC>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const S_TIMESTAMP& from);
+  void CopyFrom(const S_TIMESYNC& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const S_TIMESTAMP& from) { S_TIMESTAMP::MergeImpl(*this, from); }
+  void MergeFrom(const S_TIMESYNC& from) { S_TIMESYNC::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -218,18 +212,18 @@ class S_TIMESTAMP final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(S_TIMESTAMP* other);
+  void InternalSwap(S_TIMESYNC* other);
  private:
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.S_TIMESTAMP"; }
+  static ::absl::string_view FullMessageName() { return "Protocol.S_TIMESYNC"; }
 
  protected:
-  explicit S_TIMESTAMP(::google::protobuf::Arena* arena);
-  S_TIMESTAMP(::google::protobuf::Arena* arena, const S_TIMESTAMP& from);
-  S_TIMESTAMP(::google::protobuf::Arena* arena, S_TIMESTAMP&& from) noexcept
-      : S_TIMESTAMP(arena) {
+  explicit S_TIMESYNC(::google::protobuf::Arena* arena);
+  S_TIMESYNC(::google::protobuf::Arena* arena, const S_TIMESYNC& from);
+  S_TIMESYNC(::google::protobuf::Arena* arena, S_TIMESYNC&& from) noexcept
+      : S_TIMESYNC(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -256,7 +250,7 @@ class S_TIMESTAMP final : public ::google::protobuf::Message
   void _internal_set_timestamp(float value);
 
   public:
-  // @@protoc_insertion_point(class_scope:Protocol.S_TIMESTAMP)
+  // @@protoc_insertion_point(class_scope:Protocol.S_TIMESYNC)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
@@ -278,198 +272,8 @@ class S_TIMESTAMP final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const S_TIMESTAMP& from_msg);
+                          const S_TIMESYNC& from_msg);
     float timestamp_;
-    ::google::protobuf::internal::CachedSize _cached_size_;
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_Protocol_2eproto;
-};
-// -------------------------------------------------------------------
-
-class S_SPAWN_ACTOR final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:Protocol.S_SPAWN_ACTOR) */ {
- public:
-  inline S_SPAWN_ACTOR() : S_SPAWN_ACTOR(nullptr) {}
-  ~S_SPAWN_ACTOR() PROTOBUF_FINAL;
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(S_SPAWN_ACTOR* msg, std::destroying_delete_t) {
-    SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(S_SPAWN_ACTOR));
-  }
-#endif
-
-  template <typename = void>
-  explicit PROTOBUF_CONSTEXPR S_SPAWN_ACTOR(
-      ::google::protobuf::internal::ConstantInitialized);
-
-  inline S_SPAWN_ACTOR(const S_SPAWN_ACTOR& from) : S_SPAWN_ACTOR(nullptr, from) {}
-  inline S_SPAWN_ACTOR(S_SPAWN_ACTOR&& from) noexcept
-      : S_SPAWN_ACTOR(nullptr, std::move(from)) {}
-  inline S_SPAWN_ACTOR& operator=(const S_SPAWN_ACTOR& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline S_SPAWN_ACTOR& operator=(S_SPAWN_ACTOR&& from) noexcept {
-    if (this == &from) return *this;
-    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::google::protobuf::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::google::protobuf::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const S_SPAWN_ACTOR& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const S_SPAWN_ACTOR* internal_default_instance() {
-    return reinterpret_cast<const S_SPAWN_ACTOR*>(
-        &_S_SPAWN_ACTOR_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages = 7;
-  friend void swap(S_SPAWN_ACTOR& a, S_SPAWN_ACTOR& b) { a.Swap(&b); }
-  inline void Swap(S_SPAWN_ACTOR* other) {
-    if (other == this) return;
-    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(S_SPAWN_ACTOR* other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  S_SPAWN_ACTOR* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<S_SPAWN_ACTOR>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const S_SPAWN_ACTOR& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const S_SPAWN_ACTOR& from) { S_SPAWN_ACTOR::MergeImpl(*this, from); }
-
-  private:
-  static void MergeImpl(
-      ::google::protobuf::MessageLite& to_msg,
-      const ::google::protobuf::MessageLite& from_msg);
-
-  public:
-  bool IsInitialized() const {
-    return true;
-  }
-  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
-  #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  static ::uint8_t* _InternalSerialize(
-      const MessageLite& msg, ::uint8_t* target,
-      ::google::protobuf::io::EpsCopyOutputStream* stream);
-
-  public:
-  ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
-  ::uint8_t* _InternalSerialize(
-      ::uint8_t* target,
-      ::google::protobuf::io::EpsCopyOutputStream* stream) const {
-    return _InternalSerialize(*this, target, stream);
-  }
-  #else   // PROTOBUF_CUSTOM_VTABLE
-  ::size_t ByteSizeLong() const final;
-  ::uint8_t* _InternalSerialize(
-      ::uint8_t* target,
-      ::google::protobuf::io::EpsCopyOutputStream* stream) const final;
-  #endif  // PROTOBUF_CUSTOM_VTABLE
-  int GetCachedSize() const { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::google::protobuf::Arena* arena);
-  static void SharedDtor(MessageLite& self);
-  void InternalSwap(S_SPAWN_ACTOR* other);
- private:
-  template <typename T>
-  friend ::absl::string_view(
-      ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.S_SPAWN_ACTOR"; }
-
- protected:
-  explicit S_SPAWN_ACTOR(::google::protobuf::Arena* arena);
-  S_SPAWN_ACTOR(::google::protobuf::Arena* arena, const S_SPAWN_ACTOR& from);
-  S_SPAWN_ACTOR(::google::protobuf::Arena* arena, S_SPAWN_ACTOR&& from) noexcept
-      : S_SPAWN_ACTOR(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
-  static void* PlacementNew_(const void*, void* mem,
-                             ::google::protobuf::Arena* arena);
-  static constexpr auto InternalNewImpl_();
-  static const ::google::protobuf::internal::ClassDataFull _class_data_;
-
- public:
-  ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  enum : int {
-    kSuccessFieldNumber = 1,
-  };
-  // bool success = 1;
-  void clear_success() ;
-  bool success() const;
-  void set_success(bool value);
-
-  private:
-  bool _internal_success() const;
-  void _internal_set_success(bool value);
-
-  public:
-  // @@protoc_insertion_point(class_scope:Protocol.S_SPAWN_ACTOR)
- private:
-  class _Internal;
-  friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<
-      0, 1, 0,
-      0, 2>
-      _table_;
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(
-        ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                          ::google::protobuf::Arena* arena);
-    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                          ::google::protobuf::Arena* arena, const Impl_& from,
-                          const S_SPAWN_ACTOR& from_msg);
-    bool success_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -876,30 +680,30 @@ class S_CHAT final : public ::google::protobuf::Message
 };
 // -------------------------------------------------------------------
 
-class C_TIMESTAMP final : public ::google::protobuf::internal::ZeroFieldsBase
-/* @@protoc_insertion_point(class_definition:Protocol.C_TIMESTAMP) */ {
+class C_TIMESYNC final : public ::google::protobuf::internal::ZeroFieldsBase
+/* @@protoc_insertion_point(class_definition:Protocol.C_TIMESYNC) */ {
  public:
-  inline C_TIMESTAMP() : C_TIMESTAMP(nullptr) {}
+  inline C_TIMESYNC() : C_TIMESYNC(nullptr) {}
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(C_TIMESTAMP* msg, std::destroying_delete_t) {
+  void operator delete(C_TIMESYNC* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(C_TIMESTAMP));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(C_TIMESYNC));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR C_TIMESTAMP(
+  explicit PROTOBUF_CONSTEXPR C_TIMESYNC(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline C_TIMESTAMP(const C_TIMESTAMP& from) : C_TIMESTAMP(nullptr, from) {}
-  inline C_TIMESTAMP(C_TIMESTAMP&& from) noexcept
-      : C_TIMESTAMP(nullptr, std::move(from)) {}
-  inline C_TIMESTAMP& operator=(const C_TIMESTAMP& from) {
+  inline C_TIMESYNC(const C_TIMESYNC& from) : C_TIMESYNC(nullptr, from) {}
+  inline C_TIMESYNC(C_TIMESYNC&& from) noexcept
+      : C_TIMESYNC(nullptr, std::move(from)) {}
+  inline C_TIMESYNC& operator=(const C_TIMESYNC& from) {
     CopyFrom(from);
     return *this;
   }
-  inline C_TIMESTAMP& operator=(C_TIMESTAMP&& from) noexcept {
+  inline C_TIMESYNC& operator=(C_TIMESYNC&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -927,161 +731,16 @@ class C_TIMESTAMP final : public ::google::protobuf::internal::ZeroFieldsBase
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const C_TIMESTAMP& default_instance() {
+  static const C_TIMESYNC& default_instance() {
     return *internal_default_instance();
   }
-  static inline const C_TIMESTAMP* internal_default_instance() {
-    return reinterpret_cast<const C_TIMESTAMP*>(
-        &_C_TIMESTAMP_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages = 8;
-  friend void swap(C_TIMESTAMP& a, C_TIMESTAMP& b) { a.Swap(&b); }
-  inline void Swap(C_TIMESTAMP* other) {
-    if (other == this) return;
-    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(C_TIMESTAMP* other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  C_TIMESTAMP* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<C_TIMESTAMP>(arena);
-  }
-  using ::google::protobuf::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const C_TIMESTAMP& from) {
-    ::google::protobuf::internal::ZeroFieldsBase::CopyImpl(*this, from);
-  }
-  using ::google::protobuf::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const C_TIMESTAMP& from) {
-    ::google::protobuf::internal::ZeroFieldsBase::MergeImpl(*this, from);
-  }
-
-  public:
-  bool IsInitialized() const {
-    return true;
-  }
- private:
-  template <typename T>
-  friend ::absl::string_view(
-      ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.C_TIMESTAMP"; }
-
- protected:
-  explicit C_TIMESTAMP(::google::protobuf::Arena* arena);
-  C_TIMESTAMP(::google::protobuf::Arena* arena, const C_TIMESTAMP& from);
-  C_TIMESTAMP(::google::protobuf::Arena* arena, C_TIMESTAMP&& from) noexcept
-      : C_TIMESTAMP(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
-  static void* PlacementNew_(const void*, void* mem,
-                             ::google::protobuf::Arena* arena);
-  static constexpr auto InternalNewImpl_();
-  static const ::google::protobuf::internal::ClassDataFull _class_data_;
-
- public:
-  ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  // @@protoc_insertion_point(class_scope:Protocol.C_TIMESTAMP)
- private:
-  class _Internal;
-  friend class ::google::protobuf::internal::TcParser;
-  static const ::google::protobuf::internal::TcParseTable<
-      0, 0, 0,
-      0, 2>
-      _table_;
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(
-        ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                          ::google::protobuf::Arena* arena);
-    inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                          ::google::protobuf::Arena* arena, const Impl_& from,
-                          const C_TIMESTAMP& from_msg);
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  friend struct ::TableStruct_Protocol_2eproto;
-};
-// -------------------------------------------------------------------
-
-class C_SPAWN_ACTOR final : public ::google::protobuf::internal::ZeroFieldsBase
-/* @@protoc_insertion_point(class_definition:Protocol.C_SPAWN_ACTOR) */ {
- public:
-  inline C_SPAWN_ACTOR() : C_SPAWN_ACTOR(nullptr) {}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(C_SPAWN_ACTOR* msg, std::destroying_delete_t) {
-    SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(C_SPAWN_ACTOR));
-  }
-#endif
-
-  template <typename = void>
-  explicit PROTOBUF_CONSTEXPR C_SPAWN_ACTOR(
-      ::google::protobuf::internal::ConstantInitialized);
-
-  inline C_SPAWN_ACTOR(const C_SPAWN_ACTOR& from) : C_SPAWN_ACTOR(nullptr, from) {}
-  inline C_SPAWN_ACTOR(C_SPAWN_ACTOR&& from) noexcept
-      : C_SPAWN_ACTOR(nullptr, std::move(from)) {}
-  inline C_SPAWN_ACTOR& operator=(const C_SPAWN_ACTOR& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline C_SPAWN_ACTOR& operator=(C_SPAWN_ACTOR&& from) noexcept {
-    if (this == &from) return *this;
-    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields()
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::google::protobuf::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::google::protobuf::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const C_SPAWN_ACTOR& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const C_SPAWN_ACTOR* internal_default_instance() {
-    return reinterpret_cast<const C_SPAWN_ACTOR*>(
-        &_C_SPAWN_ACTOR_default_instance_);
+  static inline const C_TIMESYNC* internal_default_instance() {
+    return reinterpret_cast<const C_TIMESYNC*>(
+        &_C_TIMESYNC_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 6;
-  friend void swap(C_SPAWN_ACTOR& a, C_SPAWN_ACTOR& b) { a.Swap(&b); }
-  inline void Swap(C_SPAWN_ACTOR* other) {
+  friend void swap(C_TIMESYNC& a, C_TIMESYNC& b) { a.Swap(&b); }
+  inline void Swap(C_TIMESYNC* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -1089,7 +748,7 @@ class C_SPAWN_ACTOR final : public ::google::protobuf::internal::ZeroFieldsBase
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(C_SPAWN_ACTOR* other) {
+  void UnsafeArenaSwap(C_TIMESYNC* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -1097,15 +756,15 @@ class C_SPAWN_ACTOR final : public ::google::protobuf::internal::ZeroFieldsBase
 
   // implements Message ----------------------------------------------
 
-  C_SPAWN_ACTOR* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<C_SPAWN_ACTOR>(arena);
+  C_TIMESYNC* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::internal::ZeroFieldsBase::DefaultConstruct<C_TIMESYNC>(arena);
   }
   using ::google::protobuf::internal::ZeroFieldsBase::CopyFrom;
-  inline void CopyFrom(const C_SPAWN_ACTOR& from) {
+  inline void CopyFrom(const C_TIMESYNC& from) {
     ::google::protobuf::internal::ZeroFieldsBase::CopyImpl(*this, from);
   }
   using ::google::protobuf::internal::ZeroFieldsBase::MergeFrom;
-  void MergeFrom(const C_SPAWN_ACTOR& from) {
+  void MergeFrom(const C_TIMESYNC& from) {
     ::google::protobuf::internal::ZeroFieldsBase::MergeImpl(*this, from);
   }
 
@@ -1117,13 +776,13 @@ class C_SPAWN_ACTOR final : public ::google::protobuf::internal::ZeroFieldsBase
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.C_SPAWN_ACTOR"; }
+  static ::absl::string_view FullMessageName() { return "Protocol.C_TIMESYNC"; }
 
  protected:
-  explicit C_SPAWN_ACTOR(::google::protobuf::Arena* arena);
-  C_SPAWN_ACTOR(::google::protobuf::Arena* arena, const C_SPAWN_ACTOR& from);
-  C_SPAWN_ACTOR(::google::protobuf::Arena* arena, C_SPAWN_ACTOR&& from) noexcept
-      : C_SPAWN_ACTOR(arena) {
+  explicit C_TIMESYNC(::google::protobuf::Arena* arena);
+  C_TIMESYNC(::google::protobuf::Arena* arena, const C_TIMESYNC& from);
+  C_TIMESYNC(::google::protobuf::Arena* arena, C_TIMESYNC&& from) noexcept
+      : C_TIMESYNC(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -1137,7 +796,7 @@ class C_SPAWN_ACTOR final : public ::google::protobuf::internal::ZeroFieldsBase
   // nested types ----------------------------------------------------
 
   // accessors -------------------------------------------------------
-  // @@protoc_insertion_point(class_scope:Protocol.C_SPAWN_ACTOR)
+  // @@protoc_insertion_point(class_scope:Protocol.C_TIMESYNC)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
@@ -1159,7 +818,7 @@ class C_SPAWN_ACTOR final : public ::google::protobuf::internal::ZeroFieldsBase
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const C_SPAWN_ACTOR& from_msg);
+                          const C_TIMESYNC& from_msg);
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   friend struct ::TableStruct_Protocol_2eproto;
@@ -2172,60 +1831,30 @@ inline void S_CHAT::set_allocated_msg(std::string* value) {
 
 // -------------------------------------------------------------------
 
-// C_SPAWN_ACTOR
+// C_TIMESYNC
 
 // -------------------------------------------------------------------
 
-// S_SPAWN_ACTOR
-
-// bool success = 1;
-inline void S_SPAWN_ACTOR::clear_success() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.success_ = false;
-}
-inline bool S_SPAWN_ACTOR::success() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_SPAWN_ACTOR.success)
-  return _internal_success();
-}
-inline void S_SPAWN_ACTOR::set_success(bool value) {
-  _internal_set_success(value);
-  // @@protoc_insertion_point(field_set:Protocol.S_SPAWN_ACTOR.success)
-}
-inline bool S_SPAWN_ACTOR::_internal_success() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.success_;
-}
-inline void S_SPAWN_ACTOR::_internal_set_success(bool value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.success_ = value;
-}
-
-// -------------------------------------------------------------------
-
-// C_TIMESTAMP
-
-// -------------------------------------------------------------------
-
-// S_TIMESTAMP
+// S_TIMESYNC
 
 // float timestamp = 1;
-inline void S_TIMESTAMP::clear_timestamp() {
+inline void S_TIMESYNC::clear_timestamp() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.timestamp_ = 0;
 }
-inline float S_TIMESTAMP::timestamp() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_TIMESTAMP.timestamp)
+inline float S_TIMESYNC::timestamp() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_TIMESYNC.timestamp)
   return _internal_timestamp();
 }
-inline void S_TIMESTAMP::set_timestamp(float value) {
+inline void S_TIMESYNC::set_timestamp(float value) {
   _internal_set_timestamp(value);
-  // @@protoc_insertion_point(field_set:Protocol.S_TIMESTAMP.timestamp)
+  // @@protoc_insertion_point(field_set:Protocol.S_TIMESYNC.timestamp)
 }
-inline float S_TIMESTAMP::_internal_timestamp() const {
+inline float S_TIMESYNC::_internal_timestamp() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.timestamp_;
 }
-inline void S_TIMESTAMP::_internal_set_timestamp(float value) {
+inline void S_TIMESYNC::_internal_set_timestamp(float value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.timestamp_ = value;
 }

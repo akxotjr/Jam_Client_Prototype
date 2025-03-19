@@ -12,16 +12,6 @@ struct NetAddress
 	string port;
 };
 
-//enum SessionType
-//{
-//	NONE = 0,
-//	GAME_SESSION,
-//	CHAT_SESSION,
-//
-//	MAX
-//};
-
-
 template<typename SessionType>
 class SessionIdBuilder
 {
@@ -92,6 +82,7 @@ private:
 
 	NetAddress							_address = {};
 
+	boost::asio::io_context				_io_context;
 	boost::asio::thread_pool			_pool;
 
 	//unordered_map<uint32, SessionRef>	_sessions;  // key - session count, value - session ref
