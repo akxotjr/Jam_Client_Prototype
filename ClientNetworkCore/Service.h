@@ -52,7 +52,7 @@ public:
 	Service(NetAddress address, int32 maxSessionCount = 1);
 	virtual ~Service();
 
-	bool			Start();
+	void			Start();
 	bool			CanStart() { return _sessionFactory != nullptr; }
 
 	template<typename T>
@@ -75,7 +75,9 @@ public:
 	string			GetIpAddress() { return _address.ip; }
 	string			GetPort() { return _address.port; }
 
-	boost::asio::any_io_executor GetExecutor() { return _pool.get_executor(); }
+	ServiceRef		GetService() { return static_pointer_cast<Service>(shared_from_this()); }
+
+	boost::asio::any_io_executor GetExecutor() { return _io_context.get_executor(); }
 
 private:
 	USE_LOCK
@@ -83,7 +85,7 @@ private:
 	NetAddress							_address = {};
 
 	boost::asio::io_context				_io_context;
-	boost::asio::thread_pool			_pool;
+	//boost::asio::thread_pool			_pool;
 
 	//unordered_map<uint32, SessionRef>	_sessions;  // key - session count, value - session ref
 
@@ -101,7 +103,7 @@ inline bool Service::CreateSession(int32 id)
 	if (_sessionCount + 1 > _maxSessionCount)
 		return false;
 
-	shared_ptr<T> session = MakeShared<T>(shared_from_this(), GetExecutor());
+	shared_ptr<T> session = MakeShared<T>(GetService(), GetExecutor());
 
 	if (session == nullptr) return false;
 

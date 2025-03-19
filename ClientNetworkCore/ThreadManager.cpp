@@ -62,7 +62,7 @@ void ThreadManager::DoGlobalQueueWork()
 			break;
 
 		JobQueueRef jobQueue = GGlobalQueue->Pop();
-		if (jobQueue == nullptr)
+		if (jobQueue == nullptr) 
 			break;
 
 		jobQueue->Execute();

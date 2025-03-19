@@ -2,8 +2,11 @@
 
 #include "boost/asio.hpp"
 #include "Service.h"
+#include "RecvBuffer.h"
+
 
 using boost::asio::ip::tcp;
+
 
 class Session : public enable_shared_from_this<Session>
 {
@@ -17,7 +20,7 @@ public:
 
 public:
 	void					Send(SendBufferRef sendBuffer);
-	bool					Connect();
+	void					Connect();
 	void					Disconnect(const string cause);
 
 
@@ -34,8 +37,11 @@ public:
 	void SetId(int32 id) { _id = id; }
 	int32 GetId() { return _id; }
 
+	void DoRecv();
+
 private:
 	void DoSend();
+	
 
 protected:
 
@@ -45,19 +51,21 @@ protected:
 	virtual void	OnDisconnected() {}
 
 private:
-	weak_ptr<Service>		_service;
-	tcp::socket				_socket;
-	boost::asio::any_io_executor	_executor;
-	NetAddress				_netAddress;
+	weak_ptr<Service>					_service;
+	tcp::socket							_socket;
+	boost::asio::any_io_executor		_executor;
+	NetAddress							_netAddress;
 
-	Atomic<bool>            _connected = false;
+	Atomic<bool>						_connected = false;
 
 	int32 _id = -1;
 
 private:
-	Atomic<bool> _sendRegistered = false;
-	queue<SendBufferRef> _sendQueue;
-	Vector<SendBufferRef> _currentSendBuffers;
+	Atomic<bool>						_sendRegistered = false;
+	queue<SendBufferRef>				_sendQueue;
+	Vector<SendBufferRef>				_currentSendBuffers;
+
+	RecvBuffer							_recvBuffer;
 };
 
 

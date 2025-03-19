@@ -43,6 +43,7 @@ void Game::Init(HWND hwnd)
 	_service->CreateSession<GameSession>(id);
 	//_factory = [this](ServiceRef serviceRef, boost::asio::any_io_executor executor) -> SessionRef {return MakeShared<Session>(serviceRef, executor); };
 	//_service->AddSession(_factory);
+	/*ASSERT_CRASH(_service->Start());*/
 	_service->Start();
 
     _scene->Init(shared_from_this());

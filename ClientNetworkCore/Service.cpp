@@ -1,35 +1,43 @@
 #include "pch.h"
 #include "Service.h"
 #include "Session.h"
+#include "ThreadManager.h"
 
 Service::Service(NetAddress address, int32 maxSessionCount)
-	: _address(address), _maxSessionCount(maxSessionCount), _pool(4)
+	: _address(address), _maxSessionCount(maxSessionCount)/*, _pool(4)*/
 {
 	
 }
 
 Service::~Service()
 {
-	_pool.join();
+	//_pool.join();
+	GThreadManager->Join();
 }
 
-bool Service::Start()
+void Service::Start()
 {
 	for (int i = 0; i < 4; i++)
 	{
-		boost::asio::post(_pool, [this]()
+		//boost::asio::post(_pool, [this]()
+		//	{
+		//		_io_context.run();
+		//	});
+
+		GThreadManager->Launch([this]() 
 			{
 				_io_context.run();
 			});
 	}
 
+	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
 	//if (!CanStart()) return false;
 
 	for (auto& session : _sessions)
 	{
-		if (session.second->Connect() == false) return false;
+		session.second->Connect();
 	}
-	return true;
 }
 
 void Service::Broadcast(SendBufferRef sendBuffer)

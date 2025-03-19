@@ -4,12 +4,10 @@
 #include <boost/system/error_code.hpp>
 
 Session::Session(ServiceRef service, boost::asio::any_io_executor executor)
-	: _service(service), _executor(executor), /*_socket(boost::asio::system_executor())*/ _socket(executor)
+	: _service(service), _executor(executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
 {
 	auto owner = _service.lock();
 	if (!owner) return;
-
-	//_socket = tcp::socket(_executor);
 
 	_netAddress = owner->GetNetAddress();
 }
@@ -69,7 +67,6 @@ void Session::DoSend()
 
 	// Scatter-Gather
 
-
 	boost::asio::async_write(_socket, sendBuffers,
 		[this](const boost::system::error_code& ec, std::size_t bytes_transferred) {
 			if (!ec) 
@@ -101,7 +98,32 @@ void Session::DoSend()
 		});
 }
 
-bool Session::Connect()
+void Session::DoRecv()
+{
+	if (IsConnected() == false || _socket.is_open() == false)
+		return;
+
+	_socket.async_read_some(
+		boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()),
+		[this](boost::system::error_code ec, size_t bytes_transferred) {
+			if (!ec) {
+				_recvBuffer.OnWrite(bytes_transferred);
+
+				while (_recvBuffer.DataSize() >= sizeof(PacketHeader)) {
+					PacketHeader* header = reinterpret_cast<PacketHeader*>(_recvBuffer.ReadPos());
+					if (_recvBuffer.DataSize() < header->size)
+						break;
+
+					OnRecv(_recvBuffer.ReadPos(), header->size);
+					_recvBuffer.OnRead(header->size);
+				}
+
+				DoRecv(); // 계속 등록
+			}
+		});
+}
+
+void Session::Connect()
 {
 	tcp::resolver resolver(_executor);
 
@@ -109,21 +131,25 @@ bool Session::Connect()
 
 	bool result = true;
 
+	auto service = _service.lock();
+	
+
 	boost::asio::async_connect(_socket, endpoints,
 		[&result, this](const boost::system::error_code& ec, const tcp::endpoint& endpoint) {
 			if (!ec) 
 			{
 				std::cout << "Connected to: " << endpoint << std::endl;
 				_connected.store(true);
+
 				OnConnected();
+				DoRecv();
 			}
 			else 
 			{
 				std::cout << "Connection failed: " << ec.message() << std::endl;
+				OnConnected();
 			}
 		});
-
-	return result;
 }
 
 void Session::Disconnect(const string cause)
