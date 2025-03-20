@@ -39,6 +39,12 @@ public:
 
 	void DoRecv();
 
+	//temp
+	void DoRecvHeader();
+	void DoRecvBody(int32 bodySize);
+
+	void ProcessRecv(size_t bytes_transferred);
+
 private:
 	void DoSend();
 	

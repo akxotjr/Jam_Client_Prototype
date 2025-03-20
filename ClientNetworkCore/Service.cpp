@@ -26,11 +26,12 @@ void Service::Start()
 
 		GThreadManager->Launch([this]() 
 			{
-				_io_context.run();
+				while (true)
+				{
+					_io_context.run();
+				}
 			});
 	}
-
-	//std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	//if (!CanStart()) return false;
 

@@ -34,6 +34,8 @@ void Game::Init(HWND hwnd)
 	HBITMAP prev = (HBITMAP)::SelectObject(_hdcBack, _bmpBack);
 	::DeleteObject(prev);
 
+	ServerPacketHandler::Init();
+
 	InputManager::GetInstance()->Init(hwnd);
 	TimeManager::GetInstance()->Init();
 

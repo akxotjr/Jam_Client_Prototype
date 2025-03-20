@@ -98,29 +98,107 @@ void Session::DoSend()
 		});
 }
 
-void Session::DoRecv()
+//void Session::DoRecv()  
+//{  
+//if (IsConnected() == false || _socket.is_open() == false)  
+//	return;  
+//
+//_recvBuffer.Clean();  
+//
+////_socket.async_read_some(  
+////	boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()),  
+////	[this](boost::system::error_code ec, size_t bytes_transferred) {  
+////		if (!ec) {  
+////			ProcessRecv(bytes_transferred);  
+////		}  
+////	});  
+//
+//	boost::asio::async_read(_socket, boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()), boost::asio::transfer_at_least(2),  
+//		[this](const boost::system::error_code& ec, size_t bytes_transferred) {  
+//			if (!ec) {  
+//				ProcessRecv(bytes_transferred);  
+//			}  
+//		});  
+//}
+
+void Session::DoRecvHeader()
 {
-	if (IsConnected() == false || _socket.is_open() == false)
+	if (!IsConnected() || !_socket.is_open())
 		return;
 
-	_socket.async_read_some(
-		boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()),
-		[this](boost::system::error_code ec, size_t bytes_transferred) {
-			if (!ec) {
+	_recvBuffer.Clean();
+
+	// 헤더 크기만큼 정확히 읽기
+	boost::asio::async_read(_socket,
+		boost::asio::buffer(_recvBuffer.WritePos(), sizeof(PacketHeader)),
+		boost::asio::transfer_exactly(sizeof(PacketHeader)),
+		[this](boost::system::error_code ec, size_t bytes_transferred)
+		{
+			if (!ec)
+			{
 				_recvBuffer.OnWrite(bytes_transferred);
-
-				while (_recvBuffer.DataSize() >= sizeof(PacketHeader)) {
-					PacketHeader* header = reinterpret_cast<PacketHeader*>(_recvBuffer.ReadPos());
-					if (_recvBuffer.DataSize() < header->size)
-						break;
-
-					OnRecv(_recvBuffer.ReadPos(), header->size);
-					_recvBuffer.OnRead(header->size);
-				}
-
-				DoRecv(); // 계속 등록
+				PacketHeader* header = reinterpret_cast<PacketHeader*>(_recvBuffer.ReadPos());
+				DoRecvBody(header->size - sizeof(PacketHeader));
+			}
+			else
+			{
+				std::cout << "Recv header error: " << ec.message() << "\n";
+				Disconnect(ec.message());
 			}
 		});
+}
+
+void Session::DoRecvBody(int32 bodySize)
+{
+	if (!IsConnected() || !_socket.is_open())
+		return;
+
+	// 본문 크기만큼 정확히 읽기
+	boost::asio::async_read(_socket,
+		boost::asio::buffer(_recvBuffer.WritePos(), bodySize),
+		boost::asio::transfer_exactly(bodySize),
+		[this, bodySize](boost::system::error_code ec, size_t bytes_transferred)
+		{
+			if (!ec)
+			{
+				_recvBuffer.OnWrite(bytes_transferred);
+
+				ProcessRecv(sizeof(PacketHeader) + bodySize);
+			}
+			else
+			{
+				std::cout << "Recv body error: " << ec.message() << "\n";
+				Disconnect(ec.message());
+			}
+		});
+}
+
+void Session::ProcessRecv(size_t bytes_transferred)
+{
+	if (bytes_transferred == 0)
+	{
+		Disconnect("Recv 0");
+		return;
+	}
+
+	//if (_recvBuffer.OnWrite(bytes_transferred) == false)
+	//{
+	//	Disconnect("OnWrite Overflow");
+	//	return;
+	//}
+
+	int32 dataSize = _recvBuffer.DataSize();
+	int32 processLen = OnRecv(_recvBuffer.ReadPos(), dataSize);
+
+	if (processLen < 0 || dataSize < processLen || _recvBuffer.OnRead(processLen) == false)
+	{
+		Disconnect("OnRead Overflow");
+		return;
+	}
+
+	//_recvBuffer.Clean();
+
+	DoRecvHeader();
 }
 
 void Session::Connect()
@@ -141,8 +219,10 @@ void Session::Connect()
 				std::cout << "Connected to: " << endpoint << std::endl;
 				_connected.store(true);
 
+				DoRecvHeader();
+
 				OnConnected();
-				DoRecv();
+				//DoRecv();
 			}
 			else 
 			{
