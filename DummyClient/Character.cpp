@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Character.h"
 #include "InputManager.h"
+#include "TimeManager.h"
 #include "Scene.h"
 #include "Game.h"
 #include "SendBuffer.h"
@@ -58,7 +59,9 @@ void Character::UpdateCharacterMovement()
 		_direction.Normalize();
 	}
 
-	Vec2 nextPos = _position + _direction * _speed;
+	float deltaTime = TimeManager::GetInstance()->GetAdjustDeltaTime();
+
+	Vec2 nextPos = _position + _direction * _speed * deltaTime;
 
 	if ((_targetPos - _position).Length() < 1.5f)
 	{
