@@ -47,7 +47,7 @@ bool Handle_S_TIMESYNC(PacketSessionRef& session, Protocol::S_TIMESYNC& pkt)
 {
 	float timestamp = pkt.timestamp();
 
-	TimeManager::GetInstance()->SetTimestamp(timestamp);
+	TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
 
 	return true;
 }

@@ -83,4 +83,9 @@ void Service::ReleaseSession(SessionRef session)
 	_sessionCount--;
 }
 
+void Service::RegisterToContextAsync(JobRef job)
+{
+	boost::asio::post(_io_context, [job]() { job->Execute(); });
+}
+
 

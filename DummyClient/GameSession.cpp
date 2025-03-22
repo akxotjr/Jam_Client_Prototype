@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameSession.h"
 #include "ServerPacketHandler.h"
+#include "TimeManager.h"
 
 
 GameSession::GameSession(ServiceRef service, boost::asio::any_io_executor executor)
@@ -11,9 +12,11 @@ GameSession::GameSession(ServiceRef service, boost::asio::any_io_executor execut
 void GameSession::OnConnected()
 {
 	Protocol::C_TIMESYNC timesyncPkt;
-
 	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(timesyncPkt);
 	Send(sendBuffer);
+	
+	TimeManager::GetInstance()->SetSession(GetSessionRef());
+	TimeManager::GetInstance()->SetPrevClientTime();
 }
 
 void GameSession::OnDisconnected()

@@ -3,6 +3,8 @@
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/any_io_executor.hpp>
 #include <type_traits>
+#include "Job.h"
+
 
 using SessionFactory = function<SessionRef(ServiceRef, boost::asio::any_io_executor)>;
 
@@ -78,6 +80,9 @@ public:
 	ServiceRef		GetService() { return static_pointer_cast<Service>(shared_from_this()); }
 
 	boost::asio::any_io_executor GetExecutor() { return _io_context.get_executor(); }
+
+
+	void			RegisterToContextAsync(JobRef job);
 
 private:
 	USE_LOCK
