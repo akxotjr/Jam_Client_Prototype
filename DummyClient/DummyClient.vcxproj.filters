@@ -69,6 +69,13 @@
     <ClInclude Include="Scene.h">
       <Filter>04.Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Bot.h">
+      <Filter>03.Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>03.Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementInterpolator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -113,6 +120,13 @@
     <ClCompile Include="Scene.cpp">
       <Filter>04.Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Bot.cpp">
+      <Filter>03.Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>03.Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementInterpolator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Enum.proto">

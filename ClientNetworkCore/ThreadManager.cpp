@@ -73,5 +73,5 @@ void ThreadManager::DistributeReservedJob()
 {
 	const uint64 now = ::GetTickCount64();
 
-	GJobTimer->Distribute(now);
+	GJobTimer->Distribute(now); 
 }

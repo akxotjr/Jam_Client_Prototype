@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Character.h"
 #include "InputManager.h"
+#include "TimeManager.h"
 #include "Scene.h"
 #include "Game.h"
 #include "SendBuffer.h"
@@ -18,28 +19,16 @@ Character::~Character()
 void Character::Init(shared_ptr<Scene> owner)
 {
 	Super::Init(owner);
-	SetPosition(Vec2{ 400, 300 });
+	//SetPosition(Vec2{ 400, 300 });
+
+
 }
 
 void Character::Update()
 {
 	Super::Update();
 
-	//if (auto owner = _owner.lock())
-	//{
-	//	if (auto session = owner->GetSessionByType(SessionType::GAME_SESSION))
-	//	{
-	//		Protocol::C_CHAT chatPkt;
-	//		chatPkt.set_msg("Hello");
-	//		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
-
-	//		session->Send(sendBuffer);
-	//	}
-	//}
-
-	//auto session = owner->GetSessionByType(SessionType::GAME_SESSION);
-
-	UpdateCharacterMovement();
+	UpdateMovement();
 }
 
 void Character::Render(HDC hdc)
@@ -49,21 +38,26 @@ void Character::Render(HDC hdc)
 	Utils::DrawCircle(hdc, _position, 10);
 }
 
-void Character::UpdateCharacterMovement()
+void Character::UpdateMovement()
 {
-	if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
-	{
-		_targetPos = InputManager::GetInstance()->GetMousePos();
-		_direction = _targetPos - _position;
-		_direction.Normalize();
-	}
+	//if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
+	//{
+	//	_targetPos = InputManager::GetInstance()->GetMousePos();
+	//	_direction = _targetPos - _position;
+	//	_direction.Normalize();
+	//}
 
-	Vec2 nextPos = _position + _direction * _speed;
+	//float deltaTime = TimeManager::GetInstance()->GetAdjustDeltaTime();
 
-	if ((_targetPos - _position).Length() < 1.5f)
-	{
-		return;
-	}
+	//Vec2 nextPos = _position + _direction * _speed * deltaTime;
 
-	_position = nextPos;
+	//if ((_targetPos - _position).Length() < 1.5f)
+	//{
+	//	return;
+	//}
+
+	//_position = nextPos;
+
+	interpolator.Update();
+	_position = interpolator.GetLastRenderedPosition();
 }

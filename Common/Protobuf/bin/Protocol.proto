@@ -12,17 +12,18 @@ message C_LOGIN
 message S_LOGIN
 {
 	bool success = 1;
-	repeated Player players = 2;
+	//repeated Player players = 2;
 }
 
 message C_ENTER_GAME
 {
-	uint64 playerIndex = 1;
+	//uint64 playerIndex = 1;
 }
 
 message S_ENTER_GAME
 {
 	bool success = 1;
+
 }
 
 message C_CHAT

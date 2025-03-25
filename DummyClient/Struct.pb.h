@@ -53,9 +53,9 @@ struct TableStruct_Struct_2eproto {
 extern const ::google::protobuf::internal::DescriptorTable
     descriptor_table_Struct_2eproto;
 namespace Protocol {
-class Player;
-struct PlayerDefaultTypeInternal;
-extern PlayerDefaultTypeInternal _Player_default_instance_;
+class PlayerInfo;
+struct PlayerInfoDefaultTypeInternal;
+extern PlayerInfoDefaultTypeInternal _PlayerInfo_default_instance_;
 }  // namespace Protocol
 namespace google {
 namespace protobuf {
@@ -69,31 +69,31 @@ namespace Protocol {
 
 // -------------------------------------------------------------------
 
-class Player final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:Protocol.Player) */ {
+class PlayerInfo final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:Protocol.PlayerInfo) */ {
  public:
-  inline Player() : Player(nullptr) {}
-  ~Player() PROTOBUF_FINAL;
+  inline PlayerInfo() : PlayerInfo(nullptr) {}
+  ~PlayerInfo() PROTOBUF_FINAL;
 
 #if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(Player* msg, std::destroying_delete_t) {
+  void operator delete(PlayerInfo* msg, std::destroying_delete_t) {
     SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(Player));
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(PlayerInfo));
   }
 #endif
 
   template <typename = void>
-  explicit PROTOBUF_CONSTEXPR Player(
+  explicit PROTOBUF_CONSTEXPR PlayerInfo(
       ::google::protobuf::internal::ConstantInitialized);
 
-  inline Player(const Player& from) : Player(nullptr, from) {}
-  inline Player(Player&& from) noexcept
-      : Player(nullptr, std::move(from)) {}
-  inline Player& operator=(const Player& from) {
+  inline PlayerInfo(const PlayerInfo& from) : PlayerInfo(nullptr, from) {}
+  inline PlayerInfo(PlayerInfo&& from) noexcept
+      : PlayerInfo(nullptr, std::move(from)) {}
+  inline PlayerInfo& operator=(const PlayerInfo& from) {
     CopyFrom(from);
     return *this;
   }
-  inline Player& operator=(Player&& from) noexcept {
+  inline PlayerInfo& operator=(PlayerInfo&& from) noexcept {
     if (this == &from) return *this;
     if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
       InternalSwap(&from);
@@ -121,16 +121,16 @@ class Player final : public ::google::protobuf::Message
   static const ::google::protobuf::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const Player& default_instance() {
+  static const PlayerInfo& default_instance() {
     return *internal_default_instance();
   }
-  static inline const Player* internal_default_instance() {
-    return reinterpret_cast<const Player*>(
-        &_Player_default_instance_);
+  static inline const PlayerInfo* internal_default_instance() {
+    return reinterpret_cast<const PlayerInfo*>(
+        &_PlayerInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages = 0;
-  friend void swap(Player& a, Player& b) { a.Swap(&b); }
-  inline void Swap(Player* other) {
+  friend void swap(PlayerInfo& a, PlayerInfo& b) { a.Swap(&b); }
+  inline void Swap(PlayerInfo* other) {
     if (other == this) return;
     if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
       InternalSwap(other);
@@ -138,7 +138,7 @@ class Player final : public ::google::protobuf::Message
       ::google::protobuf::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(Player* other) {
+  void UnsafeArenaSwap(PlayerInfo* other) {
     if (other == this) return;
     ABSL_DCHECK(GetArena() == other->GetArena());
     InternalSwap(other);
@@ -146,13 +146,13 @@ class Player final : public ::google::protobuf::Message
 
   // implements Message ----------------------------------------------
 
-  Player* New(::google::protobuf::Arena* arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<Player>(arena);
+  PlayerInfo* New(::google::protobuf::Arena* arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<PlayerInfo>(arena);
   }
   using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const Player& from);
+  void CopyFrom(const PlayerInfo& from);
   using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const Player& from) { Player::MergeImpl(*this, from); }
+  void MergeFrom(const PlayerInfo& from) { PlayerInfo::MergeImpl(*this, from); }
 
   private:
   static void MergeImpl(
@@ -189,18 +189,18 @@ class Player final : public ::google::protobuf::Message
   private:
   void SharedCtor(::google::protobuf::Arena* arena);
   static void SharedDtor(MessageLite& self);
-  void InternalSwap(Player* other);
+  void InternalSwap(PlayerInfo* other);
  private:
   template <typename T>
   friend ::absl::string_view(
       ::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "Protocol.Player"; }
+  static ::absl::string_view FullMessageName() { return "Protocol.PlayerInfo"; }
 
  protected:
-  explicit Player(::google::protobuf::Arena* arena);
-  Player(::google::protobuf::Arena* arena, const Player& from);
-  Player(::google::protobuf::Arena* arena, Player&& from) noexcept
-      : Player(arena) {
+  explicit PlayerInfo(::google::protobuf::Arena* arena);
+  PlayerInfo(::google::protobuf::Arena* arena, const PlayerInfo& from);
+  PlayerInfo(::google::protobuf::Arena* arena, PlayerInfo&& from) noexcept
+      : PlayerInfo(arena) {
     *this = ::std::move(from);
   }
   const ::google::protobuf::internal::ClassData* GetClassData() const PROTOBUF_FINAL;
@@ -255,13 +255,13 @@ class Player final : public ::google::protobuf::Message
   void _internal_set_playertype(::Protocol::PlayerType value);
 
   public:
-  // @@protoc_insertion_point(class_scope:Protocol.Player)
+  // @@protoc_insertion_point(class_scope:Protocol.PlayerInfo)
  private:
   class _Internal;
   friend class ::google::protobuf::internal::TcParser;
   static const ::google::protobuf::internal::TcParseTable<
       2, 3, 0,
-      28, 2>
+      32, 2>
       _table_;
 
   friend class ::google::protobuf::MessageLite;
@@ -277,7 +277,7 @@ class Player final : public ::google::protobuf::Message
                           ::google::protobuf::Arena* arena);
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
-                          const Player& from_msg);
+                          const PlayerInfo& from_msg);
     ::google::protobuf::internal::ArenaStringPtr name_;
     ::uint64_t id_;
     int playertype_;
@@ -302,96 +302,96 @@ class Player final : public ::google::protobuf::Message
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
-// Player
+// PlayerInfo
 
 // uint64 id = 1;
-inline void Player::clear_id() {
+inline void PlayerInfo::clear_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.id_ = ::uint64_t{0u};
 }
-inline ::uint64_t Player::id() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player.id)
+inline ::uint64_t PlayerInfo::id() const {
+  // @@protoc_insertion_point(field_get:Protocol.PlayerInfo.id)
   return _internal_id();
 }
-inline void Player::set_id(::uint64_t value) {
+inline void PlayerInfo::set_id(::uint64_t value) {
   _internal_set_id(value);
-  // @@protoc_insertion_point(field_set:Protocol.Player.id)
+  // @@protoc_insertion_point(field_set:Protocol.PlayerInfo.id)
 }
-inline ::uint64_t Player::_internal_id() const {
+inline ::uint64_t PlayerInfo::_internal_id() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.id_;
 }
-inline void Player::_internal_set_id(::uint64_t value) {
+inline void PlayerInfo::_internal_set_id(::uint64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.id_ = value;
 }
 
 // string name = 2;
-inline void Player::clear_name() {
+inline void PlayerInfo::clear_name() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.name_.ClearToEmpty();
 }
-inline const std::string& Player::name() const
+inline const std::string& PlayerInfo::name() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  // @@protoc_insertion_point(field_get:Protocol.Player.name)
+  // @@protoc_insertion_point(field_get:Protocol.PlayerInfo.name)
   return _internal_name();
 }
 template <typename Arg_, typename... Args_>
-inline PROTOBUF_ALWAYS_INLINE void Player::set_name(Arg_&& arg,
+inline PROTOBUF_ALWAYS_INLINE void PlayerInfo::set_name(Arg_&& arg,
                                                      Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.name_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
-  // @@protoc_insertion_point(field_set:Protocol.Player.name)
+  // @@protoc_insertion_point(field_set:Protocol.PlayerInfo.name)
 }
-inline std::string* Player::mutable_name() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+inline std::string* PlayerInfo::mutable_name() ABSL_ATTRIBUTE_LIFETIME_BOUND {
   std::string* _s = _internal_mutable_name();
-  // @@protoc_insertion_point(field_mutable:Protocol.Player.name)
+  // @@protoc_insertion_point(field_mutable:Protocol.PlayerInfo.name)
   return _s;
 }
-inline const std::string& Player::_internal_name() const {
+inline const std::string& PlayerInfo::_internal_name() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.name_.Get();
 }
-inline void Player::_internal_set_name(const std::string& value) {
+inline void PlayerInfo::_internal_set_name(const std::string& value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.name_.Set(value, GetArena());
 }
-inline std::string* Player::_internal_mutable_name() {
+inline std::string* PlayerInfo::_internal_mutable_name() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   return _impl_.name_.Mutable( GetArena());
 }
-inline std::string* Player::release_name() {
+inline std::string* PlayerInfo::release_name() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  // @@protoc_insertion_point(field_release:Protocol.Player.name)
+  // @@protoc_insertion_point(field_release:Protocol.PlayerInfo.name)
   return _impl_.name_.Release();
 }
-inline void Player::set_allocated_name(std::string* value) {
+inline void PlayerInfo::set_allocated_name(std::string* value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.name_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.name_.IsDefault()) {
     _impl_.name_.Set("", GetArena());
   }
-  // @@protoc_insertion_point(field_set_allocated:Protocol.Player.name)
+  // @@protoc_insertion_point(field_set_allocated:Protocol.PlayerInfo.name)
 }
 
 // .Protocol.PlayerType playerType = 3;
-inline void Player::clear_playertype() {
+inline void PlayerInfo::clear_playertype() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.playertype_ = 0;
 }
-inline ::Protocol::PlayerType Player::playertype() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player.playerType)
+inline ::Protocol::PlayerType PlayerInfo::playertype() const {
+  // @@protoc_insertion_point(field_get:Protocol.PlayerInfo.playerType)
   return _internal_playertype();
 }
-inline void Player::set_playertype(::Protocol::PlayerType value) {
+inline void PlayerInfo::set_playertype(::Protocol::PlayerType value) {
   _internal_set_playertype(value);
-  // @@protoc_insertion_point(field_set:Protocol.Player.playerType)
+  // @@protoc_insertion_point(field_set:Protocol.PlayerInfo.playerType)
 }
-inline ::Protocol::PlayerType Player::_internal_playertype() const {
+inline ::Protocol::PlayerType PlayerInfo::_internal_playertype() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return static_cast<::Protocol::PlayerType>(_impl_.playertype_);
 }
-inline void Player::_internal_set_playertype(::Protocol::PlayerType value) {
+inline void PlayerInfo::_internal_set_playertype(::Protocol::PlayerType value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.playertype_ = value;
 }
