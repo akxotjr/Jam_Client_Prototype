@@ -1,5 +1,6 @@
 #pragma once
 #include "Actor.h"
+#include "MovementInterpolator.h"
 
 class Character : public Actor
 {
@@ -22,15 +23,20 @@ public:
 		_velocity = _direction * _speed;
 	}
 
-private:
-	/*Character Movement*/
-	void UpdateCharacterMovement();
+	void AddSnapsnot(Snapshot& snap) { interpolator.AddSnapshot(snap); }
 
 private:
+	/*Character Movement*/
+	virtual void UpdateMovement();
+
+protected:
+	MovementInterpolator interpolator;	// not pointer?
+
+
 	Vec2 _velocity = {};
 	Vec2 _direction = {};
 	float _speed = 0.1f;
 
-	Vec2 _targetPos = {};
+	Vec2 _targetPos = {};	//temp
 };
 

@@ -176,13 +176,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
+    <ClInclude Include="Bot.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="DummyClient.h" />
     <ClInclude Include="Enum.pb.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameSession.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="MovementInterpolator.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Protocol.pb.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ServerPacketHandler.h" />
@@ -193,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="Bot.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="DummyClient.cpp" />
     <ClCompile Include="Enum.pb.cc">
@@ -204,12 +208,14 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameSession.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="MovementInterpolator.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Protocol.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
