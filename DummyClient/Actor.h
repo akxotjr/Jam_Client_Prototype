@@ -8,20 +8,17 @@ public:
 	Actor();
 	virtual ~Actor();
 
-	virtual void Init(shared_ptr<Scene> owner);
+	virtual void Init();
 	virtual void Update();
 	virtual void Render(HDC hdc);
 
 	Vec2& GetPosition() { return _position; }
 	void SetPosition(Vec2 position) { _position = position; }
 
-	//float& GetTimestamp() { return _timestamp; }
-
+	void SetScene(shared_ptr<Scene> owner) { _owner = owner; }
 
 protected:
 	Vec2 _position = {};
-	//float _timestamp = 0.f;
-
 	weak_ptr<Scene> _owner;
 };
 

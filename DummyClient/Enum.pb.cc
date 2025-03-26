@@ -26,7 +26,7 @@ namespace _pbi = ::google::protobuf::internal;
 namespace _fl = ::google::protobuf::internal::field_layout;
 namespace Protocol {
 }  // namespace Protocol
-static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[1];
+static const ::_pb::EnumDescriptor* file_level_enum_descriptors_Enum_2eproto[2];
 static constexpr const ::_pb::ServiceDescriptor**
     file_level_service_descriptors_Enum_2eproto = nullptr;
 const ::uint32_t TableStruct_Enum_2eproto::offsets[1] = {};
@@ -34,17 +34,18 @@ static constexpr ::_pbi::MigrationSchema* schemas = nullptr;
 static constexpr ::_pb::Message* const* file_default_instances = nullptr;
 const char descriptor_table_protodef_Enum_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\nEnum.proto\022\010Protocol*\200\001\n\nPlayerType\022\024\n"
-    "\020PLAYER_TYPE_NONE\020\000\022\026\n\022PLAYER_TYPE_KNIGH"
-    "T\020\001\022\024\n\020PLAYER_TYPE_MAGE\020\002\022\026\n\022PLAYER_TYPE"
-    "_ARCHER\020\003\022\026\n\022PLAYER_TYPE_HEALER\020\004b\006proto"
-    "3"
+    "\n\nEnum.proto\022\010Protocol*N\n\tActorType\022\025\n\021A"
+    "CTOR_TYPE_PLAYER\020\000\022\022\n\016ACTOR_TYPE_BOT\020\001\022\026"
+    "\n\022ACTOR_TYPE_MONSTER\020\002*h\n\nPlayerType\022\024\n\020"
+    "PLAYER_TYPE_NONE\020\000\022\026\n\022PLAYER_TYPE_KNIGHT"
+    "\020\001\022\024\n\020PLAYER_TYPE_MAGE\020\002\022\026\n\022PLAYER_TYPE_"
+    "ARCHER\020\003b\006proto3"
 };
 static ::absl::once_flag descriptor_table_Enum_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto = {
     false,
     false,
-    161,
+    216,
     descriptor_table_protodef_Enum_2eproto,
     "Enum.proto",
     &descriptor_table_Enum_2eproto_once,
@@ -58,14 +59,23 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_Enum_2eproto =
     file_level_service_descriptors_Enum_2eproto,
 };
 namespace Protocol {
-const ::google::protobuf::EnumDescriptor* PlayerType_descriptor() {
+const ::google::protobuf::EnumDescriptor* ActorType_descriptor() {
   ::google::protobuf::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
   return file_level_enum_descriptors_Enum_2eproto[0];
 }
+PROTOBUF_CONSTINIT const uint32_t ActorType_internal_data_[] = {
+    196608u, 0u, };
+bool ActorType_IsValid(int value) {
+  return 0 <= value && value <= 2;
+}
+const ::google::protobuf::EnumDescriptor* PlayerType_descriptor() {
+  ::google::protobuf::internal::AssignDescriptors(&descriptor_table_Enum_2eproto);
+  return file_level_enum_descriptors_Enum_2eproto[1];
+}
 PROTOBUF_CONSTINIT const uint32_t PlayerType_internal_data_[] = {
-    327680u, 0u, };
+    262144u, 0u, };
 bool PlayerType_IsValid(int value) {
-  return 0 <= value && value <= 4;
+  return 0 <= value && value <= 3;
 }
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace Protocol

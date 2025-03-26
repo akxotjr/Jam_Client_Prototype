@@ -40,20 +40,11 @@ enum
 	KEY_STATE_COUNT = static_cast<int32>(KeyState::End)
 };
 
-class InputManager
+class InputManager : public enable_shared_from_this<InputManager>
 {
+	DECLARE_SINGLETON(InputManager)
+
 public:
-	~InputManager() = default;
-
-	static InputManager* GetInstance()
-	{
-		if (instance == nullptr)
-		{
-			instance = make_unique<InputManager>();
-		}
-		return instance.get();
-	}
-
 	void Init(HWND hwnd);
 	void Update();
 
@@ -64,19 +55,9 @@ public:
 	POINT GetMousePos() { return _mousePos; }
 
 private:
-	InputManager() = default;
-
-	InputManager(const InputManager&) = delete;
-	InputManager& operator=(const InputManager&) = delete;
-
-	friend std::unique_ptr<InputManager> std::make_unique<InputManager>();
-
-
 	KeyState GetState(KeyType key) { return _states[static_cast<uint8>(key)]; }
 
 private:
-	static unique_ptr<InputManager> instance;
-
 	HWND				_hwnd = 0;
 	vector<KeyState>	_states;
 	POINT				_mousePos;

@@ -23,7 +23,8 @@ message C_ENTER_GAME
 message S_ENTER_GAME
 {
 	bool success = 1;
-
+	ActorType actorType = 2;
+	CharacterInfo characterInfo = 3;
 }
 
 message C_CHAT
@@ -45,4 +46,38 @@ message C_TIMESYNC
 message S_TIMESYNC
 {
 	float timestamp = 1;
+}
+
+message C_SPAWN_ACTOR
+{
+	ActorType actorType = 1;
+}
+
+message S_SPAWN_ACTOR
+{
+	ActorType actorType = 1;
+	CharacterInfo characterInfo = 2;
+}
+
+message C_CHARACTER_SYNC
+{
+	float timestamp = 1;
+	CharacterInfo characterInfo = 2;
+	// todo command
+}
+
+message S_CHARACTER_SYNC
+{
+	float timestamp = 1;
+	repeated CharacterInfo characterInfo = 2;
+}
+
+message C_PLAYER_INPUT
+{
+
+}
+
+message S_PLAYER_INPUT
+{
+
 }

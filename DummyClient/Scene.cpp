@@ -3,42 +3,31 @@
 #include "Scene.h"
 #include "Actor.h"
 #include "Character.h"
+#include "SceneManager.h"
 
 Scene::Scene()
 {
-	_player = make_shared<Character>();
 }
 
 Scene::~Scene()
 {
 }
 
-void Scene::Init(shared_ptr<Game> game)
+void Scene::Init()
 {
-	_game = game;
-
-	if (_player)
-	{
-		_player->Init(shared_from_this());
-	}
-
-	for (auto actor : _otherActors)
+	for (auto actor : _actors)
 	{
 		if (actor)
 		{
-			actor->Init(shared_from_this());
+			actor->Init();
+			actor->SetScene(shared_from_this());
 		}
 	}
 }
 
 void Scene::Update()
 {
-	if (_player)
-	{
-		_player->Update();
-	}
-
-	for (auto actor : _otherActors)
+	for (auto actor : _actors)
 	{
 		if (actor)
 		{
@@ -49,12 +38,7 @@ void Scene::Update()
 
 void Scene::Render(HDC hdc)
 {
-	if (_player)
-	{
-		_player->Render(hdc);
-	}
-
-	for (auto actor : _otherActors)
+	for (auto actor : _actors)
 	{
 		if (actor)
 		{
@@ -63,9 +47,19 @@ void Scene::Render(HDC hdc)
 	}
 }
 
+void Scene::AddActor(shared_ptr<Actor> actor)
+{
+	_actors.push_back(actor);
+}
+
+void Scene::RemoveActor(shared_ptr<Actor> actor)
+{
+	_actors.erase(std::remove(_actors.begin(), _actors.end(), actor), _actors.end());
+}
+
 SessionRef Scene::GetSessionByType(SessionType type)  
 {  
-	if (auto game = _game.lock())  
+	if (auto game = SceneManager::GetInstance()->GetGame())  
 	{  
 		return game->GetService()->GetSessionByType(type);  
 	}  

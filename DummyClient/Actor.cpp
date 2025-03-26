@@ -10,10 +10,10 @@ Actor::~Actor()
 {
 }
 
-void Actor::Init(shared_ptr<Scene> owner)
+void Actor::Init()
 {
 	// todo : null check
-	_owner = owner;
+	//_owner = owner;
 }
 
 void Actor::Update()

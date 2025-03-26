@@ -14,6 +14,12 @@ enum : uint16
 	PKT_S_CHAT = 1005,
 	PKT_C_TIMESYNC = 1006,
 	PKT_S_TIMESYNC = 1007,
+	PKT_C_SPAWN_ACTOR = 1008,
+	PKT_S_SPAWN_ACTOR = 1009,
+	PKT_C_CHARACTER_SYNC = 1010,
+	PKT_S_CHARACTER_SYNC = 1011,
+	PKT_C_PLAYER_INPUT = 1012,
+	PKT_S_PLAYER_INPUT = 1013,
 };
 
 // Custom Handlers
@@ -22,6 +28,9 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN&pkt);
 bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME&pkt);
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT&pkt);
 bool Handle_S_TIMESYNC(PacketSessionRef& session, Protocol::S_TIMESYNC&pkt);
+bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR&pkt);
+bool Handle_S_CHARACTER_SYNC(PacketSessionRef& session, Protocol::S_CHARACTER_SYNC&pkt);
+bool Handle_S_PLAYER_INPUT(PacketSessionRef& session, Protocol::S_PLAYER_INPUT&pkt);
 
 class ServerPacketHandler
 {
@@ -34,6 +43,9 @@ public:
 		GPacketHandler[PKT_S_ENTER_GAME] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket <Protocol::S_ENTER_GAME> (Handle_S_ENTER_GAME, session, buffer, len); };
 		GPacketHandler[PKT_S_CHAT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket <Protocol::S_CHAT> (Handle_S_CHAT, session, buffer, len); };
 		GPacketHandler[PKT_S_TIMESYNC] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket <Protocol::S_TIMESYNC> (Handle_S_TIMESYNC, session, buffer, len); };
+		GPacketHandler[PKT_S_SPAWN_ACTOR] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket <Protocol::S_SPAWN_ACTOR> (Handle_S_SPAWN_ACTOR, session, buffer, len); };
+		GPacketHandler[PKT_S_CHARACTER_SYNC] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket <Protocol::S_CHARACTER_SYNC> (Handle_S_CHARACTER_SYNC, session, buffer, len); };
+		GPacketHandler[PKT_S_PLAYER_INPUT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket <Protocol::S_PLAYER_INPUT> (Handle_S_PLAYER_INPUT, session, buffer, len); };
 	}
 
 	static bool HandlePacket(PacketSessionRef& session, BYTE* buffer, int32 len)
@@ -45,6 +57,9 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::C_ENTER_GAME&pkt) { return MakeSendBuffer(pkt, PKT_C_ENTER_GAME); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_CHAT&pkt) { return MakeSendBuffer(pkt, PKT_C_CHAT); }
 	static SendBufferRef MakeSendBuffer(Protocol::C_TIMESYNC&pkt) { return MakeSendBuffer(pkt, PKT_C_TIMESYNC); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_SPAWN_ACTOR&pkt) { return MakeSendBuffer(pkt, PKT_C_SPAWN_ACTOR); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_CHARACTER_SYNC&pkt) { return MakeSendBuffer(pkt, PKT_C_CHARACTER_SYNC); }
+	static SendBufferRef MakeSendBuffer(Protocol::C_PLAYER_INPUT&pkt) { return MakeSendBuffer(pkt, PKT_C_PLAYER_INPUT); }
 
 private:
 	template<typename PacketType, typename ProcessFunc>

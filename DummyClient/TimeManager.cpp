@@ -4,7 +4,7 @@
 #include "ServerPacketHandler.h"
 #include <boost/asio.hpp>
 
-unique_ptr<TimeManager> TimeManager::instance = nullptr;
+shared_ptr<TimeManager> TimeManager::instance = nullptr;
 
 void TimeManager::Init()
 {

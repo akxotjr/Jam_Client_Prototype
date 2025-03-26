@@ -16,19 +16,19 @@ Character::~Character()
 {
 }
 
-void Character::Init(shared_ptr<Scene> owner)
+void Character::Init()
 {
-	Super::Init(owner);
+	Super::Init();
 	//SetPosition(Vec2{ 400, 300 });
-
-
 }
 
 void Character::Update()
 {
 	Super::Update();
+	interpolator.Update();
+	_position = interpolator.GetLastRenderedPosition();
 
-	UpdateMovement();
+	//UpdateMovement();
 }
 
 void Character::Render(HDC hdc)
@@ -38,26 +38,26 @@ void Character::Render(HDC hdc)
 	Utils::DrawCircle(hdc, _position, 10);
 }
 
-void Character::UpdateMovement()
-{
-	//if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
-	//{
-	//	_targetPos = InputManager::GetInstance()->GetMousePos();
-	//	_direction = _targetPos - _position;
-	//	_direction.Normalize();
-	//}
-
-	//float deltaTime = TimeManager::GetInstance()->GetAdjustDeltaTime();
-
-	//Vec2 nextPos = _position + _direction * _speed * deltaTime;
-
-	//if ((_targetPos - _position).Length() < 1.5f)
-	//{
-	//	return;
-	//}
-
-	//_position = nextPos;
-
-	interpolator.Update();
-	_position = interpolator.GetLastRenderedPosition();
-}
+//void Character::UpdateMovement()
+//{
+//	//if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
+//	//{
+//	//	_targetPos = InputManager::GetInstance()->GetMousePos();
+//	//	_direction = _targetPos - _position;
+//	//	_direction.Normalize();
+//	//}
+//
+//	//float deltaTime = TimeManager::GetInstance()->GetAdjustDeltaTime();
+//
+//	//Vec2 nextPos = _position + _direction * _speed * deltaTime;
+//
+//	//if ((_targetPos - _position).Length() < 1.5f)
+//	//{
+//	//	return;
+//	//}
+//
+//	//_position = nextPos;
+//
+//	interpolator.Update();
+//	_position = interpolator.GetLastRenderedPosition();
+//}

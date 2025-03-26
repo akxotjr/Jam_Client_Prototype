@@ -1,5 +1,11 @@
 #pragma once
 
+enum class SceneType
+{
+	None,
+	GameScene
+};
+
 struct Vec2
 {
 	Vec2() {}

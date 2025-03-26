@@ -8,6 +8,7 @@
 #include "ServerPacketHandler.h"
 #include "InputManager.h"
 #include "TimeManager.h"
+#include "SceneManager.h"
 #include "Scene.h"
 
 #include "boost/asio.hpp"
@@ -15,7 +16,6 @@
 
 Game::Game()
 {
-	_scene = make_shared<Scene>();
 }
 
 Game::~Game()
@@ -38,6 +38,8 @@ void Game::Init(HWND hwnd)
 
 	InputManager::GetInstance()->Init(hwnd);
 	TimeManager::GetInstance()->Init();
+	SceneManager::GetInstance()->Init(shared_from_this());
+	SceneManager::GetInstance()->ChangeScene(SceneType::GameScene);
 
 	_service = make_shared<Service>(NetAddress{ "127.0.0.1", "7777" });
 	SessionIdBuilder<SessionType> idBuilder;
@@ -47,21 +49,18 @@ void Game::Init(HWND hwnd)
 	//_service->AddSession(_factory);
 	/*ASSERT_CRASH(_service->Start());*/
 	_service->Start();
-
-    _scene->Init(shared_from_this());
 }
 
 void Game::Update()
 {
 	InputManager::GetInstance()->Update();
 	TimeManager::GetInstance()->Update();
-
-	_scene->Update();
+	SceneManager::GetInstance()->Update();
 }
 
 void Game::Render()
 {
-	_scene->Render(_hdcBack);
+	SceneManager::GetInstance()->Render(_hdcBack);
 
 	::BitBlt(_hdc, 0, 0, _rect.right, _rect.bottom, _hdcBack, 0, 0, SRCCOPY);
 	::PatBlt(_hdcBack, 0, 0, _rect.right, _rect.bottom, WHITENESS);

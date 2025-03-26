@@ -41,9 +41,5 @@ private:
 	/* Network */
 	ServiceRef			_service;
 	SessionFactory		_factory;
-
-		
-	/* Contents */
-	shared_ptr<Scene>	_scene = nullptr;
 };
 

@@ -3,20 +3,11 @@
 
 using UpdateFunc = std::function<void()>;
 
-class TimeManager
+class TimeManager : public enable_shared_from_this<TimeManager>
 {
+	DECLARE_SINGLETON(TimeManager)
+
 public:
-	~TimeManager() = default;
-
-	static TimeManager* GetInstance()
-	{
-		if (instance == nullptr)
-		{
-			instance = make_unique<TimeManager>();
-		}
-		return instance.get();
-	}
-
 	void Init();
 	void Update();
 
@@ -29,14 +20,14 @@ public:
 	float GetClientTime() { return _clientTime; }
 	void SetClientTime(float clientTime) { _clientTime = clientTime; }
 
+	float GetRoundTripTime() { return _rtt; }
+	float GetJitter() { return _jitter; }
+
 	void SetPrevClientTime() { _prevClientTime = _clientTime; }
 
 	void SetSession(SessionRef session) { _session = session; }
 
 	void OnServerTimeReceived(float serverTime);
-
-	//void SetOffset(float offset) { _offset = offset; }
-
 
 
 private:
@@ -45,18 +36,9 @@ private:
 
 	void Synchronize(float serverTime, float RTT);
 
-private:
-	TimeManager() = default;
-
-	TimeManager(const TimeManager&) = delete;
-	TimeManager& operator=(const TimeManager&) = delete;
-
-	friend std::unique_ptr<TimeManager> std::make_unique<TimeManager>();
 
 private:
 	USE_LOCK
-
-	static unique_ptr<TimeManager> instance;
 
 	UpdateFunc	_update = nullptr;
 
@@ -70,6 +52,7 @@ private:
 	float		_prevClientTime = 0.f;
 	float		_sumTime = 0.f;
 	float		_rtt = 0.f;
+	float		_jitter = 0.f;
 
 	Atomic<bool> _isSynchronized = false;
 

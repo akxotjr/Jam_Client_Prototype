@@ -75,7 +75,18 @@
     <ClInclude Include="Player.h">
       <Filter>03.Actor</Filter>
     </ClInclude>
-    <ClInclude Include="MovementInterpolator.h" />
+    <ClInclude Include="MovementInterpolator.h">
+      <Filter>03.Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>99.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>02.Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>04.Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -126,7 +137,15 @@
     <ClCompile Include="Player.cpp">
       <Filter>03.Actor</Filter>
     </ClCompile>
-    <ClCompile Include="MovementInterpolator.cpp" />
+    <ClCompile Include="MovementInterpolator.cpp">
+      <Filter>03.Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>02.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>04.Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Enum.proto">

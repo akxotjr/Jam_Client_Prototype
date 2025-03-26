@@ -26,6 +26,8 @@ private:
 	Vec2 Extrapolate(float currentTime);
 	bool CanInterpolate(float renderTime);
 
+	void SetBasedOnServerRate();
+
 	Vec2 Lerp(Vec2& a, Vec2& b, float& t);
 	Vec2 CatmullRom(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& d, const float& t);
 

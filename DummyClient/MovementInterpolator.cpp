@@ -19,13 +19,6 @@ void MovementInterpolator::AddSnapshot(const Snapshot& snap)
 
 void MovementInterpolator::Update()
 {
-	// todo : adaptive interpolation delay
-	// float avgRTT
-	// float jitter
-	// float safetyMargin
-	// interpolationDelay = avgRTT * 0.5f + jitter +  safetyMargin;
-	// interpolationDelay = std::clamp(interpolationDelay, 50ms, 200ms);
-
 	float currentTime = TimeManager::GetInstance()->GetClientTime();
 	float renderTime = currentTime - _interpolationDelay;
 
@@ -99,6 +92,18 @@ bool MovementInterpolator::CanInterpolate(float renderTime)
 	}
 	
 	return false;
+}
+
+void MovementInterpolator::SetBasedOnServerRate()
+{
+	float avgRTT = TimeManager::GetInstance()->GetRoundTripTime();
+	float jitter = TimeManager::GetInstance()->GetJitter();
+
+	float safetyMargin = 0.03f;
+
+	_interpolationDelay = avgRTT * 0.5f + jitter + safetyMargin;
+
+	_interpolationDelay = std::clamp(_interpolationDelay, 0.05f, 0.2f);
 }
 
 Vec2 MovementInterpolator::Lerp(Vec2& a, Vec2& b, float& t)

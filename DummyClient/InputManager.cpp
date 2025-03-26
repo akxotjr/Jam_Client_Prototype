@@ -2,7 +2,7 @@
 #include "InputManager.h"
 
 
-unique_ptr<InputManager> InputManager::instance = nullptr;
+shared_ptr<InputManager> InputManager::instance = nullptr;
 
 void InputManager::Init(HWND hwnd)
 {

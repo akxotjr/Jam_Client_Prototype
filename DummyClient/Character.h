@@ -10,7 +10,7 @@ public:
 	Character();
 	virtual ~Character();
 
-	virtual void Init(shared_ptr<Scene> owner) override;
+	virtual void Init() override;
 	virtual void Update() override;
 	virtual void Render(HDC hdc) override;
 
@@ -25,9 +25,8 @@ public:
 
 	void AddSnapsnot(Snapshot& snap) { interpolator.AddSnapshot(snap); }
 
-private:
 	/*Character Movement*/
-	virtual void UpdateMovement();
+	//virtual void UpdateMovement() abstract;
 
 protected:
 	MovementInterpolator interpolator;	// not pointer?

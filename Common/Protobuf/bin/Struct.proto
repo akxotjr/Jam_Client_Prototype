@@ -3,10 +3,17 @@ package Protocol;
 
 import "Enum.proto";
 
-message PlayerInfo
+message CharacterMovementInfo
+{
+	float positionX = 1;
+	float positionY = 2;
+	float velocityX = 3;
+	float velocityY = 4;
+}
+
+message CharacterInfo
 {
 	uint64 id = 1;
 	string name = 2;
-	PlayerType playerType = 3;
+	CharacterMovementInfo movementInfo = 3;
 }
-
