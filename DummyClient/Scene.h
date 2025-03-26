@@ -15,12 +15,14 @@ public:
 	virtual void Update();
 	virtual void Render(HDC hdc);
 
-	void AddActor(shared_ptr<Actor> actor);
-	void RemoveActor(shared_ptr<Actor> actor);
+	void AddActor(uint32 id, shared_ptr<Actor> actor);
+	void RemoveActor(uint32 id);
+
+	shared_ptr<Actor> GetActorById(uint32 id) { return _actors[id]; }
 
 	SessionRef GetSessionByType(SessionType type);
 
 private:
-	vector<shared_ptr<Actor>> _actors;
+	unordered_map<uint32, shared_ptr<Actor>> _actors;
 };
 

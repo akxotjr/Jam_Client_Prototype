@@ -2,6 +2,10 @@
 #include "Player.h"
 #include "InputManager.h"
 #include "TimeManager.h"
+#include "SendBuffer.h"
+#include "Session.h"
+#include "ServerPacketHandler.h"
+#include "Scene.h"
 
 Player::Player()
 {
@@ -20,7 +24,7 @@ void Player::Update()
 {
 	//1. 입력처리
 	//2. 서버로 입력 전송
-	//3. 서버에서 위치 도착했으면 되새김 처리 (비동기 처리)
+	//3. 서버에서 위치 도착했으면 되새김 처리 (비동기 처리) (by SendInputToServer(input))
 	Input input = CaptureInput();
 	if (input.keyType != KeyType::None)
 	{
@@ -38,7 +42,20 @@ void Player::Render(HDC hdc)
 
 void Player::SendInputToServer(const Input& input)
 {
-	// todo
+	Protocol::C_PLAYER_INPUT pkt;
+	pkt.set_timestamp(input.timestamp);
+	pkt.set_sequencenumber(input.sequenceNumber);
+	pkt.set_keytype(InputManager::GetInstance()->ConvertToProtoKey(input.keyType)); // todo convert to protokey
+	pkt.set_mouseposx(input.mousePosition.x);
+	pkt.set_mouseposy(input.mousePosition.y);
+
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+
+	auto session = _owner.lock()->GetSessionByType(SessionType::GAME_SESSION);
+	if (session == nullptr)
+		return;
+
+	session->Send(sendBuffer);
 }
 
 
@@ -52,7 +69,7 @@ Input Player::CaptureInput()
 		POINT mousePos = InputManager::GetInstance()->GetMousePos();
 		float dt = TimeManager::GetInstance()->GetDeltaTime();
 
-		return Input(timestamp, type, mousePos, _lastCommandSequenceNumber++, dt);
+		return Input(timestamp, type, mousePos, _lastSequenceNumber++, dt);
 	}
 	return Input();
 }
@@ -82,7 +99,7 @@ void Player::ApplyInput(Input& input)
 
 }
 
-void Player::Reconcile(Vec2 serverPosition, int32 ackCommandSequenceNumber)
+void Player::Reconcile(Vec2 serverPosition, uint32 ackSequenceNumber)
 {
 	_position = serverPosition;
 
@@ -90,7 +107,7 @@ void Player::Reconcile(Vec2 serverPosition, int32 ackCommandSequenceNumber)
 	Vector<Input> newPending;
 	for (auto& input : _pendingInputs)
 	{
-		if (input.commandSequenceNumber > ackCommandSequenceNumber)
+		if (input.sequenceNumber > ackSequenceNumber)
 		{
 			ApplyInput(input);
 			newPending.push_back(input);

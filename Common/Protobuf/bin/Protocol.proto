@@ -74,7 +74,11 @@ message S_CHARACTER_SYNC
 
 message C_PLAYER_INPUT
 {
-
+	float timestamp = 1;
+	uint32 sequenceNumber = 2;
+	KeyType keyType = 3;
+	optional float mousePosX = 4;
+	optional float mousePosY = 5;
 }
 
 message S_PLAYER_INPUT

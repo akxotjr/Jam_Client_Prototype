@@ -23,7 +23,7 @@ public:
 		_velocity = _direction * _speed;
 	}
 
-	void AddSnapsnot(Snapshot& snap) { interpolator.AddSnapshot(snap); }
+	void AddSnapshot(Snapshot& snap) { interpolator.AddSnapshot(snap); }
 
 	/*Character Movement*/
 	//virtual void UpdateMovement() abstract;

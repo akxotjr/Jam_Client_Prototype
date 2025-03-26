@@ -39,7 +39,11 @@ bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	if (pkt.actortype() == Protocol::ACTOR_TYPE_PLAYER)
 	{
 		auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-		Protocol::CharacterMovementInfo movementInfo = pkt.characterinfo().movementinfo();
+		Protocol::CharacterInfo characterInfo = pkt.characterinfo();
+		Protocol::CharacterMovementInfo movementInfo = characterInfo.movementinfo();
+
+		string name = characterInfo.name();
+		uint32 id = characterInfo.id();
 
 		float px = movementInfo.positionx();
 		float py = movementInfo.positiony();
@@ -48,9 +52,15 @@ bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
 		// todo : id, name
 
 		shared_ptr<Player> player = MakeShared<Player>();
+		player->SetName(name);
+		player->SetId(id);
 		player->SetPosition(Vec2(px, py));
 		player->SetVelocity(Vec2(vx, vy));
-		scene->AddActor(player);
+
+		player->Init();
+
+		scene->AddActor(id, player);
+		scene->SetPlayer(player);
 	}
 
 	return true;
@@ -66,16 +76,14 @@ bool Handle_S_TIMESYNC(PacketSessionRef& session, Protocol::S_TIMESYNC& pkt)
 {
 	float timestamp = pkt.timestamp();
 
-	auto service = session->GetService();
+	//auto service = session->GetService();
 	//auto job = MakeShared<Job>(static_pointer_cast<TimeManager>(TimeManager::GetInstance()->shared_from_this()), &TimeManager::OnServerTimeReceived, timestamp);
 	//service->RegisterToContextAsync(MakeShared<Job>(TimeManager::GetInstance()->shared_from_this(), &TimeManager::OnServerTimeReceived, timestamp));
-	service->RegisterToContextAsync(MakeShared<Job>([timestamp]() {
-			TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
-		}));
-	//TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
+	//service->RegisterToContextAsync(MakeShared<Job>([timestamp]() {
+	//		TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
+	//	}));
 
-
-
+	TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
 	return true;
 }
 
@@ -85,7 +93,11 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 	{
 		auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
 
-		Protocol::CharacterMovementInfo movementInfo = pkt.characterinfo().movementinfo();
+		Protocol::CharacterInfo characterInfo = pkt.characterinfo();
+		Protocol::CharacterMovementInfo movementInfo = characterInfo.movementinfo();
+
+		string name = characterInfo.name();
+		uint32 id = characterInfo.id();
 
 		float px = movementInfo.positionx();
 		float py = movementInfo.positiony();
@@ -93,10 +105,14 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 		float vy = movementInfo.velocityy();
 
 		shared_ptr<Bot> bot = MakeShared<Bot>();
+		bot->SetName(name);
+		bot->SetId(id);
 		bot->SetPosition(Vec2(px, py));
 		bot->SetVelocity(Vec2(vx, vy));
 
-		scene->AddActor(bot);
+		bot->Init();
+
+		scene->AddActor(id, bot);
 	}
 
 	return true;
@@ -108,24 +124,44 @@ bool Handle_S_CHARACTER_SYNC(PacketSessionRef& session, Protocol::S_CHARACTER_SY
 
 	const auto& characters = pkt.characterinfo(); // or pkt.characterinfo(i) per index
 
+	auto scene = SceneManager::GetInstance()->GetCurrentScene();
+
 	for (int i = 0; i < characters.size(); ++i)
 	{
 		const Protocol::CharacterInfo& info = characters.Get(i);
 
-		int id = info.id();
+		string name = info.name();
+		uint32 id = info.id();
+		
 		float px = info.movementinfo().positionx();
 		float py = info.movementinfo().positiony();
 		float vx = info.movementinfo().velocityx();
 		float vy = info.movementinfo().velocityy();
 
-		//todo
+		auto actor = scene->GetActorById(id);
+
+		if (actor == nullptr)
+			continue;
+
+		auto character = dynamic_pointer_cast<Character>(actor);
+		if (character == nullptr)
+			continue;
+
+		Snapshot snap;
+		snap.timestamp = timestamp;
+		snap.position = Vec2(px, py);
+		snap.velocity = Vec2(vx, vy);
+
+		character->AddSnapshot(snap);
 	}
+
 	return true;
 }
 
 bool Handle_S_PLAYER_INPUT(PacketSessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
 	// todo
+
 
 	return true;
 }

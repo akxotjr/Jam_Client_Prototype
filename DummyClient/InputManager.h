@@ -54,6 +54,9 @@ public:
 
 	POINT GetMousePos() { return _mousePos; }
 
+	Protocol::KeyType ConvertToProtoKey(KeyType key);
+	KeyType ConvertFromProtoKey(Protocol::KeyType key);
+
 private:
 	KeyState GetState(KeyType key) { return _states[static_cast<uint8>(key)]; }
 

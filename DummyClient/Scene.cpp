@@ -15,7 +15,7 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-	for (auto actor : _actors)
+	for (auto& [id, actor] : _actors)
 	{
 		if (actor)
 		{
@@ -27,7 +27,7 @@ void Scene::Init()
 
 void Scene::Update()
 {
-	for (auto actor : _actors)
+	for (auto& [id, actor] : _actors)
 	{
 		if (actor)
 		{
@@ -38,7 +38,7 @@ void Scene::Update()
 
 void Scene::Render(HDC hdc)
 {
-	for (auto actor : _actors)
+	for (auto& [id, actor] : _actors)
 	{
 		if (actor)
 		{
@@ -47,14 +47,14 @@ void Scene::Render(HDC hdc)
 	}
 }
 
-void Scene::AddActor(shared_ptr<Actor> actor)
+void Scene::AddActor(uint32 id, shared_ptr<Actor> actor)
 {
-	_actors.push_back(actor);
+	_actors[id] = actor;
 }
 
-void Scene::RemoveActor(shared_ptr<Actor> actor)
+void Scene::RemoveActor(uint32 id)
 {
-	_actors.erase(std::remove(_actors.begin(), _actors.end(), actor), _actors.end());
+	_actors.erase(id);
 }
 
 SessionRef Scene::GetSessionByType(SessionType type)  
