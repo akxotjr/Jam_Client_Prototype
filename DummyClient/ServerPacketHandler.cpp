@@ -36,32 +36,39 @@ bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	if (pkt.success() == false)
 		return false;
 
-	if (pkt.actortype() == Protocol::ACTOR_TYPE_PLAYER)
-	{
-		auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-		Protocol::CharacterInfo characterInfo = pkt.characterinfo();
-		Protocol::CharacterMovementInfo movementInfo = characterInfo.movementinfo();
+	//if (pkt.actortype() == Protocol::ACTOR_TYPE_PLAYER)
+	//{
+	//	auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
+	//	Protocol::CharacterInfo characterInfo = pkt.characterinfo();
+	//	Protocol::CharacterMovementInfo movementInfo = characterInfo.movementinfo();
 
-		string name = characterInfo.name();
-		uint32 id = characterInfo.id();
+	//	string name = characterInfo.name();
+	//	uint32 id = characterInfo.id();
 
-		float px = movementInfo.positionx();
-		float py = movementInfo.positiony();
-		float vx = movementInfo.velocityx();
-		float vy = movementInfo.velocityy();
-		// todo : id, name
+	//	float px = movementInfo.positionx();
+	//	float py = movementInfo.positiony();
+	//	float vx = movementInfo.velocityx();
+	//	float vy = movementInfo.velocityy();
 
-		shared_ptr<Player> player = MakeShared<Player>();
-		player->SetName(name);
-		player->SetId(id);
-		player->SetPosition(Vec2(px, py));
-		player->SetVelocity(Vec2(vx, vy));
+	//	float speed = movementInfo.speed();
 
-		player->Init();
+	//	shared_ptr<Player> player = MakeShared<Player>();
+	//	player->SetName(name);
+	//	player->SetId(id);
+	//	player->SetPosition(Vec2(px, py));
+	//	player->SetVelocity(Vec2(vx, vy));
+	//	player->SetSpeed(speed);
 
-		scene->AddActor(id, player);
-		scene->SetPlayer(player);
-	}
+	//	player->Init();
+
+	//	scene->AddActor(id, player);
+	//	scene->SetPlayer(player);
+	//}
+
+	Protocol::C_SPAWN_ACTOR spawnActorPkt;
+
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnActorPkt);
+	session->Send(sendBuffer);
 
 	return true;
 }
@@ -89,30 +96,54 @@ bool Handle_S_TIMESYNC(PacketSessionRef& session, Protocol::S_TIMESYNC& pkt)
 
 bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 {
-	if (pkt.actortype() == Protocol::ACTOR_TYPE_BOT)
+
+	auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
+
+	const auto& characters = pkt.characterinfo();
+
+	for (int i = 0; i < characters.size(); ++i)
 	{
-		auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
+		const Protocol::CharacterInfo& info = characters.Get(i);
+		Protocol::CharacterMovementInfo movementInfo = info.movementinfo();
 
-		Protocol::CharacterInfo characterInfo = pkt.characterinfo();
-		Protocol::CharacterMovementInfo movementInfo = characterInfo.movementinfo();
-
-		string name = characterInfo.name();
-		uint32 id = characterInfo.id();
+		Protocol::ActorType type = info.type();
+		string name = info.name();
+		uint32 id = info.id();
 
 		float px = movementInfo.positionx();
 		float py = movementInfo.positiony();
 		float vx = movementInfo.velocityx();
 		float vy = movementInfo.velocityy();
+		float speed = movementInfo.speed();
 
-		shared_ptr<Bot> bot = MakeShared<Bot>();
-		bot->SetName(name);
-		bot->SetId(id);
-		bot->SetPosition(Vec2(px, py));
-		bot->SetVelocity(Vec2(vx, vy));
+		if (type == Protocol::ActorType::ACTOR_TYPE_BOT)
+		{
+			shared_ptr<Bot> bot = MakeShared<Bot>();
+			bot->SetName(name);
+			bot->SetId(id);
+			bot->SetPosition(Vec2(px, py));
+			bot->SetVelocity(Vec2(vx, vy));
+			bot->SetSpeed(speed);
 
-		bot->Init();
+			bot->Init();
 
-		scene->AddActor(id, bot);
+			scene->AddActor(id, bot);
+		}
+		else if (type == Protocol::ActorType::ACTOR_TYPE_PLAYER)
+		{
+			shared_ptr<Player> player = MakeShared<Player>();
+
+			player->SetName(name);
+			player->SetId(id);
+			player->SetPosition(Vec2(px, py));
+			player->SetVelocity(Vec2(vx, vy));
+			player->SetSpeed(speed);
+
+			player->Init();
+
+			scene->AddActor(id, player);
+			scene->SetPlayer(player);
+		}
 	}
 
 	return true;

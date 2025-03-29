@@ -11,12 +11,23 @@ GameSession::GameSession(ServiceRef service, boost::asio::any_io_executor execut
 
 void GameSession::OnConnected()
 {
-	Protocol::C_TIMESYNC timesyncPkt;
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(timesyncPkt);
-	Send(sendBuffer);
+
+
+	{
+		Protocol::C_TIMESYNC timesyncPkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(timesyncPkt);
+		Send(sendBuffer);
+	}
+
 	
 	TimeManager::GetInstance()->SetSession(GetSessionRef());
 	TimeManager::GetInstance()->SetPrevClientTime();
+
+	{
+		Protocol::C_LOGIN loginPkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(loginPkt);
+		Send(sendBuffer);
+	}
 }
 
 void GameSession::OnDisconnected()
