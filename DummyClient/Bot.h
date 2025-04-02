@@ -9,8 +9,5 @@ public:
 	virtual void Init();
 	virtual void Update();
 	virtual void Render(HDC hdc);
-
-private:
-
 };
 

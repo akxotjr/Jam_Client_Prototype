@@ -32,5 +32,13 @@ void Character::Render(HDC hdc)
 {
 	Super::Render(hdc);
 
-	Utils::DrawCircle(hdc, _position, 10);
+	wstring name;
+	name.assign(_name.begin(), _name.end());
+	Vec2 pos = _position;
+	pos.x -= 20.f;
+	pos.y += 15.f;
+	Utils::PrintText(hdc, pos, name);
+
+
+	Utils::DrawRect(hdc, _position, 20, 20);
 }

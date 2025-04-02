@@ -32,11 +32,15 @@ public:
 
 	void SendInputToServer(const Input& input);
 
+	void Reconcile(Vec2 serverPosition, Vec2 serverVelocity, uint32 ackSequenceNumber);
+
 private:
 	Input CaptureInput();
 	void ApplyInput(Input& input);
 
-	void Reconcile(Vec2 serverPosition, uint32 ackSequenceNumber);
+private:
+	//temp
+	KeyState	_prevState = KeyState::None;
 
 
 private:

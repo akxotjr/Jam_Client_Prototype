@@ -28,13 +28,13 @@ public:
 	/*Character Movement*/
 	//virtual void UpdateMovement() abstract;
 
-protected:
+public:
 	MovementInterpolator interpolator;	// not pointer?
 
-
+protected:
 	Vec2 _velocity = {};
 	Vec2 _direction = {};
-	float _speed = 0.1f;
+	float _speed = 0.f;
 
 	Vec2 _targetPos = {};	//temp
 };

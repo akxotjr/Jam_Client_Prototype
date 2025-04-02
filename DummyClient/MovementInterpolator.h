@@ -21,17 +21,22 @@ public:
 
 	Vec2& GetLastRenderedPosition() { return _lastRenderedPosition; }
 
+	// temp
+	void SetBasedOnServerRate();
+
 private:
 	Vec2 Interpolate(float renderTime);
 	Vec2 Extrapolate(float currentTime);
 	bool CanInterpolate(float renderTime);
 
-	void SetBasedOnServerRate();
+//	void SetBasedOnServerRate();
 
 	Vec2 Lerp(Vec2& a, Vec2& b, float& t);
 	Vec2 CatmullRom(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& d, const float& t);
 
 private:
+	USE_LOCK
+
 	Deque<Snapshot> _buffer;
 	float _interpolationDelay = 0.f;
 	float _extrapolationLimit = 0.f;

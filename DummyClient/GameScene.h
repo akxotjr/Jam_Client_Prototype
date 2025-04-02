@@ -16,6 +16,7 @@ public:
 	virtual void Render(HDC hdc);
 
 	void SetPlayer(shared_ptr<Player> player) { _player = player; }
+	shared_ptr<Player> GetPlayer() { return _player; }
 
 private:
 	shared_ptr<Player> _player = nullptr;

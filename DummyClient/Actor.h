@@ -13,7 +13,9 @@ public:
 	virtual void Render(HDC hdc);
 
 	void SetName(string name) { _name = name; }
+	string GetName() { return _name; }
 	void SetId(uint32 id) { _id = id; }
+	uint32 GetId() { return _id; }
 
 	Vec2& GetPosition() { return _position; }
 	void SetPosition(Vec2 position) { _position = position; }

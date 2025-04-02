@@ -21,7 +21,7 @@ void GameSession::OnConnected()
 
 	
 	TimeManager::GetInstance()->SetSession(GetSessionRef());
-	TimeManager::GetInstance()->SetPrevClientTime();
+	//TimeManager::GetInstance()->SetPrevClientTime();
 
 	{
 		Protocol::C_LOGIN loginPkt;

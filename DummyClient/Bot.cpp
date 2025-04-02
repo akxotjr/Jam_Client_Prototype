@@ -13,5 +13,7 @@ void Bot::Update()
 
 void Bot::Render(HDC hdc)
 {
-	Super::Render(hdc);
+	//Super::Render(hdc);
+
+	Utils::DrawCircle(hdc, _position, 10);
 }

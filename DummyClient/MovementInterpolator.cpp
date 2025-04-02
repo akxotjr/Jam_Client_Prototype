@@ -9,9 +9,10 @@ MovementInterpolator::MovementInterpolator()
 
 void MovementInterpolator::AddSnapshot(const Snapshot& snap)
 {
+	WRITE_LOCK
 	_buffer.push_back(snap);
 
-	while (_buffer.size() > 2 && _buffer.front().timestamp < snap.timestamp - 1.0f)
+	while (_buffer.size() > 2 && _buffer.front().timestamp < snap.timestamp - 0.5f)
 	{
 		_buffer.pop_front();
 	}
@@ -43,6 +44,7 @@ void MovementInterpolator::Render()
 
 Vec2 MovementInterpolator::Interpolate(float renderTime)
 {
+	READ_LOCK
 	for (int i = 0; i < _buffer.size(); i++)
 	{
 		Snapshot& prev = _buffer[i];	//todo const
@@ -60,6 +62,7 @@ Vec2 MovementInterpolator::Interpolate(float renderTime)
 
 Vec2 MovementInterpolator::Extrapolate(float currentTime)
 {
+	READ_LOCK
 	if (_buffer.empty())
 	{
 		return _lastRenderedPosition;
@@ -78,12 +81,13 @@ Vec2 MovementInterpolator::Extrapolate(float currentTime)
 
 bool MovementInterpolator::CanInterpolate(float renderTime)
 {
+	WRITE_LOCK
 	if (_buffer.size() < 2)
 	{
 		return false;
 	}
 
-	for (int32 i = 0; i < _buffer.size(); i++)
+	for (int32 i = 0; i  + 1 < _buffer.size(); i++)
 	{
 		if (_buffer[i].timestamp <= renderTime && _buffer[i + 1].timestamp >= renderTime)
 		{
@@ -101,9 +105,9 @@ void MovementInterpolator::SetBasedOnServerRate()
 
 	float safetyMargin = 0.03f;
 
-	_interpolationDelay = avgRTT * 0.5f + jitter + safetyMargin;
+	//_interpolationDelay = 0.05f + avgRTT * 0.5f + jitter + safetyMargin;
 
-	_interpolationDelay = std::clamp(_interpolationDelay, 0.05f, 0.2f);
+	//_interpolationDelay = std::clamp(_interpolationDelay, 0.05f, 0.3f);
 }
 
 Vec2 MovementInterpolator::Lerp(Vec2& a, Vec2& b, float& t)

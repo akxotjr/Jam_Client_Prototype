@@ -24,7 +24,7 @@ void Player::Update()
 {
 	//1. 입력처리
 	//2. 서버로 입력 전송
-	//3. 서버에서 위치 도착했으면 되새김 처리 (비동기 처리) (by SendInputToServer(input))
+	//3. 서버에서 위치 도착했으면 되새김 처리 (비동기 처리)
 	Input input = CaptureInput();
 	if (input.keyType != KeyType::None)
 	{
@@ -72,6 +72,7 @@ Input Player::CaptureInput()
 
 		return Input(timestamp, type, mousePos, _lastSequenceNumber++, dt);
 	}
+
 	return Input();
 }
 
@@ -90,20 +91,22 @@ void Player::ApplyInput(Input& input)
 		_targetPos = input.mousePosition;
 		_direction = _targetPos - _position;
 		_direction.Normalize();
+
+		_velocity = _direction * _speed;
 	}
 	else
 	{
 		deltaTime = TimeManager::GetInstance()->GetDeltaTime();
 	}
 
-	_position = _position + _direction * _speed * input.deltaTime;
+	_position = _position + _velocity * input.deltaTime;
 
 }
 
-void Player::Reconcile(Vec2 serverPosition, uint32 ackSequenceNumber)
+void Player::Reconcile(Vec2 serverPosition, Vec2 serverVelocity, uint32 ackSequenceNumber)
 {
 	_position = serverPosition;
-
+	_velocity = serverVelocity;
 	// ackCommandSequenceNumber 이후의 입력들만 다시 적용
 	Vector<Input> newPending;
 	for (auto& input : _pendingInputs)

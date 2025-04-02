@@ -2,6 +2,9 @@
 #include "TimeManager.h"
 #include "SendBuffer.h"
 #include "ServerPacketHandler.h"
+#include "SceneManager.h"
+#include "GameScene.h"
+#include "Character.h"
 #include <boost/asio.hpp>
 
 shared_ptr<TimeManager> TimeManager::instance = nullptr;
@@ -21,23 +24,50 @@ void TimeManager::Update()
 
 void TimeManager::OnServerTimeReceived(float serverTime)
 {
-	{
-		WRITE_LOCK
-		_rtt = _clientTime - _prevClientTime;
-	}
+	float now = GetRawLocalTime();
+	_rtt = now - _lastTimeSyncSent;
+
+	_baseServerTime = serverTime + _rtt * 0.5f;
+	_baseLocalTime = now;
 
 	if (!_isSynchronized)
 	{
 		_update = std::bind(&TimeManager::RealUpdate, this);
 		_isSynchronized = true;
 	}
-	Synchronize(serverTime, _rtt);
+
+	{
+		auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
+		if (gameScene)
+		{
+			auto& actors = gameScene->GetActors();
+			for (auto& [id, actor] : actors)
+			{
+				auto character = dynamic_pointer_cast<Character>(actor);
+				if (character)
+				{
+					character->interpolator.SetBasedOnServerRate();
+				}
+			}
+		}
+	}
+
+}
+
+float TimeManager::GetClientTime()
+{
+	return _baseServerTime + (GetRawLocalTime() - _baseLocalTime);
+}
+
+float TimeManager::GetRawLocalTime()
+{
+	uint64 currentCount;
+	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
+	return currentCount / static_cast<float>(_frequency);
 }
 
 void TimeManager::EmptyUpdate()
 {
-	WRITE_LOCK
-
 	uint64 currentCount;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
 
@@ -59,8 +89,6 @@ void TimeManager::EmptyUpdate()
 
 void TimeManager::RealUpdate()
 {
-	WRITE_LOCK
-
 	uint64 currentCount;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
 
@@ -69,9 +97,9 @@ void TimeManager::RealUpdate()
 	_prevCount = currentCount;
 
 	_frameCount++;
-	_frameTime += _deltaTime * _timeScale;
+	_frameTime += _adjustDeltaTime;
 
-	_clientTime += _deltaTime;
+	//_clientTime += _deltaTime;
 	_sumTime += _deltaTime;
 
 	if (_sumTime >= 5.f) // TODO : change hardcoding
@@ -80,8 +108,9 @@ void TimeManager::RealUpdate()
 		{
 			Protocol::C_TIMESYNC timesyncPkt;
 			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(timesyncPkt);
-
 			_session->Send(sendBuffer);
+
+			_lastTimeSyncSent = GetRawLocalTime();
 		}
 
 		_sumTime = 0.f;
@@ -95,10 +124,4 @@ void TimeManager::RealUpdate()
 		_frameTime = 0.f;
 		_frameCount = 0;
 	}
-}
-
-void TimeManager::Synchronize(float serverTime, float RTT)
-{
-	WRITE_LOCK
-	SetClientTime(serverTime + RTT / 2.0f);
 }

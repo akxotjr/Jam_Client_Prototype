@@ -36,35 +36,6 @@ bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	if (pkt.success() == false)
 		return false;
 
-	//if (pkt.actortype() == Protocol::ACTOR_TYPE_PLAYER)
-	//{
-	//	auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-	//	Protocol::CharacterInfo characterInfo = pkt.characterinfo();
-	//	Protocol::CharacterMovementInfo movementInfo = characterInfo.movementinfo();
-
-	//	string name = characterInfo.name();
-	//	uint32 id = characterInfo.id();
-
-	//	float px = movementInfo.positionx();
-	//	float py = movementInfo.positiony();
-	//	float vx = movementInfo.velocityx();
-	//	float vy = movementInfo.velocityy();
-
-	//	float speed = movementInfo.speed();
-
-	//	shared_ptr<Player> player = MakeShared<Player>();
-	//	player->SetName(name);
-	//	player->SetId(id);
-	//	player->SetPosition(Vec2(px, py));
-	//	player->SetVelocity(Vec2(vx, vy));
-	//	player->SetSpeed(speed);
-
-	//	player->Init();
-
-	//	scene->AddActor(id, player);
-	//	scene->SetPlayer(player);
-	//}
-
 	Protocol::C_SPAWN_ACTOR spawnActorPkt;
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnActorPkt);
@@ -82,22 +53,15 @@ bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
 bool Handle_S_TIMESYNC(PacketSessionRef& session, Protocol::S_TIMESYNC& pkt)
 {
 	float timestamp = pkt.timestamp();
-
-	//auto service = session->GetService();
-	//auto job = MakeShared<Job>(static_pointer_cast<TimeManager>(TimeManager::GetInstance()->shared_from_this()), &TimeManager::OnServerTimeReceived, timestamp);
-	//service->RegisterToContextAsync(MakeShared<Job>(TimeManager::GetInstance()->shared_from_this(), &TimeManager::OnServerTimeReceived, timestamp));
-	//service->RegisterToContextAsync(MakeShared<Job>([timestamp]() {
-	//		TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
-	//	}));
-
 	TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
 	return true;
 }
 
 bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 {
+	uint32 playerId = pkt.playerid();
 
-	auto scene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
+	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
 
 	const auto& characters = pkt.characterinfo();
 
@@ -109,6 +73,13 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 		Protocol::ActorType type = info.type();
 		string name = info.name();
 		uint32 id = info.id();
+
+		auto actor = gameScene->GetActorById(id);	// 이미 생성되었으면 패스
+		if (actor && actor->GetId() == id)
+		{
+			continue;
+		}
+
 
 		float px = movementInfo.positionx();
 		float py = movementInfo.positiony();
@@ -127,22 +98,37 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 
 			bot->Init();
 
-			scene->AddActor(id, bot);
+			gameScene->AddActor(id, bot);
 		}
 		else if (type == Protocol::ActorType::ACTOR_TYPE_PLAYER)
 		{
-			shared_ptr<Player> player = MakeShared<Player>();
+			if (!gameScene->GetPlayer() && id == playerId)
+			{
+				shared_ptr<Player> player = MakeShared<Player>();
 
-			player->SetName(name);
-			player->SetId(id);
-			player->SetPosition(Vec2(px, py));
-			player->SetVelocity(Vec2(vx, vy));
-			player->SetSpeed(speed);
+				player->SetName(name);
+				player->SetId(id);
+				player->SetPosition(Vec2(px, py));
+				player->SetVelocity(Vec2(vx, vy));
+				player->SetSpeed(speed);
+				player->Init();
 
-			player->Init();
+				gameScene->AddActor(id, player);
+				gameScene->SetPlayer(player);
+			}
+			else
+			{
+				shared_ptr<Character> otherPlayer = MakeShared<Character>();
 
-			scene->AddActor(id, player);
-			scene->SetPlayer(player);
+				otherPlayer->SetName(name);
+				otherPlayer->SetId(id);
+				otherPlayer->SetPosition(Vec2(px, py));
+				otherPlayer->SetVelocity(Vec2(vx, vy));
+				otherPlayer->SetSpeed(speed);
+				otherPlayer->Init();
+
+				gameScene->AddActor(id, otherPlayer);
+			}
 		}
 	}
 
@@ -155,21 +141,29 @@ bool Handle_S_CHARACTER_SYNC(PacketSessionRef& session, Protocol::S_CHARACTER_SY
 
 	const auto& characters = pkt.characterinfo(); // or pkt.characterinfo(i) per index
 
-	auto scene = SceneManager::GetInstance()->GetCurrentScene();
+	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
 
 	for (int i = 0; i < characters.size(); ++i)
 	{
 		const Protocol::CharacterInfo& info = characters.Get(i);
-
+		
 		string name = info.name();
 		uint32 id = info.id();
-		
+
 		float px = info.movementinfo().positionx();
 		float py = info.movementinfo().positiony();
 		float vx = info.movementinfo().velocityx();
 		float vy = info.movementinfo().velocityy();
 
-		auto actor = scene->GetActorById(id);
+		auto player = gameScene->GetPlayer();
+		if (player && id == player->GetId())
+		{
+			//player->Reconcile(Vec2(px, py);
+
+			continue;
+		}
+
+		auto actor = gameScene->GetActorById(id);
 
 		if (actor == nullptr)
 			continue;
@@ -192,7 +186,28 @@ bool Handle_S_CHARACTER_SYNC(PacketSessionRef& session, Protocol::S_CHARACTER_SY
 bool Handle_S_PLAYER_INPUT(PacketSessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
 	// todo
+	uint32 sequenceNumber = pkt.sequencenumber();
 
+	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
+	if (!gameScene)
+		return false;
+
+	auto player = gameScene->GetPlayer();
+	if (!player)
+		return false;
+
+	auto& info = pkt.characterinfo();
+	uint32 id = info.id();
+
+	if (player->GetId() != id)
+		return false;
+
+	float px = info.movementinfo().positionx();
+	float py = info.movementinfo().positiony();
+	float vx = info.movementinfo().velocityx();
+	float vy = info.movementinfo().velocityy();
+
+	player->Reconcile(Vec2(px, py), Vec2(vx, vy), sequenceNumber);
 
 	return true;
 }

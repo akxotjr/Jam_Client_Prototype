@@ -22,6 +22,8 @@ public:
 
 	SessionRef GetSessionByType(SessionType type);
 
+	unordered_map<uint32, shared_ptr<Actor>>& GetActors() { return _actors; }
+
 private:
 	unordered_map<uint32, shared_ptr<Actor>> _actors;
 };

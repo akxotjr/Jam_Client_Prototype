@@ -62,6 +62,16 @@ void Game::Render()
 {
 	SceneManager::GetInstance()->Render(_hdcBack);
 
+	{
+		// temp
+		float rtt = TimeManager::GetInstance()->GetRoundTripTime();
+		float clientTime = TimeManager::GetInstance()->GetClientTime();
+		wstring str = std::format(L"ClientTime({0})", clientTime);
+
+		Utils::PrintText(_hdcBack, Vec2(10, 10), str);
+	}
+
+
 	::BitBlt(_hdc, 0, 0, _rect.right, _rect.bottom, _hdcBack, 0, 0, SRCCOPY);
 	::PatBlt(_hdcBack, 0, 0, _rect.right, _rect.bottom, WHITENESS);
 }

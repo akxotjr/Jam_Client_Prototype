@@ -48,6 +48,7 @@ public:
 	void Init(HWND hwnd);
 	void Update();
 
+	KeyState GetButtonState(KeyType key) { return GetState(key); }
 	bool GetButton(KeyType key) { return GetState(key) == KeyState::Press; }
 	bool GetButtonDown(KeyType key) { return GetState(key) == KeyState::Down; }
 	bool GetButtonUp(KeyType key) { return GetState(key) == KeyState::Up; }
