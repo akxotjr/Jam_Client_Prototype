@@ -26,8 +26,8 @@ public:
 	shared_ptr<Service>				GetService() { return _service.lock(); }
 	void							SetService(shared_ptr<Service> service) { _service = service; }
 
-	NetAddress						GetNetAddress() { return _netAddress; }
-	void							SetNetAddress(NetAddress address) { _netAddress = address; }
+	NetAddress						GetLocalNetAddress() { return _localAddr; }
+	void							SetLocalNetAddress(NetAddress address) { _localAddr = address; }
 	bool							IsConnected() { return _connected; }
 	SessionRef						GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
 	void							SetId(int32 id) { _id = id; }
@@ -55,7 +55,7 @@ protected:
 	weak_ptr<Service>					_service;
 	//tcp::socket							_socket;
 	boost::asio::any_io_executor		_executor;
-	NetAddress							_netAddress;
+	NetAddress							_localAddr;
 
 	Atomic<bool>						_connected = false;
 
@@ -139,7 +139,7 @@ class ReliableUdpSession : public Session
 	enum { BUFFER_SIZE = 0x10000 }; // 64KB
 
 public:
-	ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor);
+	ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor, NetAddress remoteAddr);
 	virtual ~ReliableUdpSession();
 
 	virtual void Send(SendBufferRef sendBuffer) override;
@@ -159,7 +159,13 @@ private:
 
 private:
 	udp::socket _socket;
-    boost::asio::ip::basic_resolver_results<udp> _remoteEndpoint;
+	boost::asio::ip::basic_resolver_results<udp> _localEndpoints;
+
+	//boost::asio::ip::basic_endpoint<udp> _remoteEndpoint;
+    //boost::asio::ip::basic_resolver_results<udp> _remoteEndpoints;
+	udp::endpoint _remoteEndpoint;
+
+	NetAddress _remoteAddr;
 
 	Atomic<bool> _sendRegistered = false;
 	queue<SendBufferRef> _sendQueue;
@@ -167,3 +173,4 @@ private:
 
 	RecvBuffer _recvBuffer;
 };
+

@@ -345,7 +345,7 @@ void TcpSession::RegisterConnect()
 {
 	tcp::resolver resolver(_executor);
 
-	auto endpoints = resolver.resolve(_netAddress.ip, _netAddress.port);
+	auto endpoints = resolver.resolve(_localAddr.ip, _localAddr.port);
 
 	bool result = true;
 
@@ -391,7 +391,7 @@ void TcpSession::RegisterDisconnect()
 	{
 		WRITE_LOCK
 
-			_sendQueue = {};
+		_sendQueue = {};
 		_currentSendBuffers.clear();
 		_sendRegistered.store(false);
 
@@ -569,8 +569,8 @@ int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
 
 
 
-ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor)
-	: Session(service, executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
+ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor, NetAddress remoteAddr)
+	: Session(service, executor), _socket(executor), _remoteAddr(remoteAddr), _recvBuffer(BUFFER_SIZE)
 {
 }
 
@@ -628,7 +628,7 @@ void ReliableUdpSession::RegisterSend()
 		}
 	}
 
-	_socket.async_send_to(sendBuffers, *_remoteEndpoint.begin(),
+	_socket.async_send_to(sendBuffers, *_remoteEndpoints.begin(),
 		[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
 		{
 			_sendRegistered.store(false);
@@ -659,8 +659,7 @@ void ReliableUdpSession::RegisterRecv()
 
 
 	_socket.async_receive_from(
-		boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()),
-		_recvBuffer.EndPoint(),
+		boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()), _remoteEndpoint,
 		[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
 		{
 			if (!ec && bytes_transferred > 0)
@@ -686,7 +685,8 @@ void ReliableUdpSession::RegisterConnect()
 	_socket.open(udp::v4());
 
 	udp::resolver resolver(_executor);
-	_endpoint = resolver.resolve(_netAddress.ip, _netAddress.port);
+	auto remoteEndpoints = resolver.resolve(_remoteAddr.ip, _remoteAddr.port);
+	_remoteEndpoint = *remoteEndpoints.begin();
 
 	RegisterRecv();
 }
