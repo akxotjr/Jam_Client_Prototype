@@ -341,19 +341,16 @@ void TcpSession::Disconnect(const string cause)
 	RegisterDisconnect();
 }
 
+
 void TcpSession::RegisterConnect()
 {
 	tcp::resolver resolver(_executor);
 
-	auto endpoints = resolver.resolve(_localAddr.ip, _localAddr.port);
-
-	bool result = true;
-
-	auto service = _service.lock();
-
+	auto endpoints = resolver.resolve(_netAddress.ip, _netAddress.port);
+	_endpoint = *endpoints.begin();
 
 	boost::asio::async_connect(_socket, endpoints,
-		[&result, this](const boost::system::error_code& ec, const tcp::endpoint& endpoint) {
+		[this, self = shared_from_this()](const boost::system::error_code& ec, const tcp::endpoint& endpoint) {
 			if (!ec)
 			{
 				std::cout << "Connected to: " << endpoint << std::endl;
@@ -366,7 +363,6 @@ void TcpSession::RegisterConnect()
 			else
 			{
 				std::cout << "Connection failed: " << ec.message() << std::endl;
-				OnConnected();
 			}
 		});
 }
@@ -394,8 +390,6 @@ void TcpSession::RegisterDisconnect()
 		_sendQueue = {};
 		_currentSendBuffers.clear();
 		_sendRegistered.store(false);
-
-		// TODO
 	}
 }
 
@@ -406,11 +400,13 @@ void TcpSession::RegisterSend()
 
 	vector<boost::asio::const_buffer> sendBuffers;
 
+	_currentSendBuffers.clear();
+
 	{
 		WRITE_LOCK
 
-			if (_sendQueue.empty())
-				return;
+		if (_sendQueue.empty())
+			return;
 
 		int32 writeSize = 0;
 		while (_sendQueue.empty() == false)
@@ -433,27 +429,17 @@ void TcpSession::RegisterSend()
 		[this](const boost::system::error_code& ec, std::size_t bytes_transferred) {
 			if (!ec)
 			{
-				std::cout << "Bytes sent: " << bytes_transferred << std::endl;
-				_sendRegistered.store(false);
-
-				{
-					WRITE_LOCK
-						_currentSendBuffers.clear();
-				}
-
-				OnSend(static_cast<int32>(bytes_transferred));
+				ProcessSend(static_cast<int32>(bytes_transferred));
 			}
 			else
 			{
-				std::cout << "Error: " << ec.message() << std::endl;
-
 				// retry send
 				{
 					WRITE_LOCK
-						for (auto& buffer : _currentSendBuffers)
-						{
-							_sendQueue.push(buffer);
-						}
+					for (auto& buffer : _currentSendBuffers)
+					{
+						_sendQueue.push(buffer);
+					}
 					_currentSendBuffers.clear();
 				}
 			}
@@ -514,7 +500,19 @@ void TcpSession::RegisterRecvBody(int32 bodySize)
 
 void TcpSession::ProcessSend(int32 numOfBytes)
 {
+	if (numOfBytes == 0)
+	{
+		Disconnect("Send 0 byte");
+		return;
+	}
 
+	OnSend(numOfBytes);
+
+	WRITE_LOCK
+	if (_sendQueue.empty())
+		_sendRegistered.store(false);
+	else
+		RegisterSend();
 }
 
 void TcpSession::ProcessRecv(int32 numOfBytes)
@@ -529,7 +527,7 @@ void TcpSession::ProcessRecv(int32 numOfBytes)
 	//{
 	//	Disconnect("OnWrite Overflow");
 	//	return;
-	//}
+	//} ? 
 
 	int32 dataSize = _recvBuffer.DataSize();
 	int32 processLen = IsParsingPacket(_recvBuffer.ReadPos(), dataSize);
@@ -569,19 +567,14 @@ int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
 
 
 
-ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor, NetAddress remoteAddr)
-	: Session(service, executor), _socket(executor), _remoteAddr(remoteAddr), _recvBuffer(BUFFER_SIZE)
+ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor)
+	: Session(service, executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
 {
 }
 
 ReliableUdpSession::~ReliableUdpSession()
 {
 	_socket.close();
-}
-
-void ReliableUdpSession::Send(SendBufferRef sendBuffer)
-{
-
 }
 
 void ReliableUdpSession::Connect()
@@ -591,6 +584,89 @@ void ReliableUdpSession::Connect()
 
 void ReliableUdpSession::Disconnect(const string cause)
 {
+	if (_connected.exchange(false) == false)
+		return;
+
+	RegisterDisconnect();
+}
+
+void ReliableUdpSession::Send(SendBufferRef sendBuffer)
+{
+	if (IsConnected() == false)
+		return;
+
+	bool registerSend = false;
+
+	{
+		WRITE_LOCK
+		_sendQueue.push(sendBuffer);
+
+		if (_sendRegistered.exchange(true) == false)
+			registerSend = true;
+	}
+
+	if (registerSend)
+		RegisterSend();
+}
+
+void ReliableUdpSession::SendReliable(SendBufferRef sendBuffer, float timestamp)
+{
+	uint16 seq = _sendSeq++;
+
+	UdpPacketHeader* header = reinterpret_cast<UdpPacketHeader*>(sendBuffer->Buffer());
+	header->sequence = seq;
+
+	PendingPacket pkt = { .buffer = sendBuffer, .sequence = seq, .timestamp = timestamp, .retryCount = 0 };
+
+	{
+		WRITE_LOCK;
+		_pendingAckMap[seq] = pkt;
+	}
+
+	Send(sendBuffer);
+}
+
+void ReliableUdpSession::HandleAck(uint16 ackSeq)
+{
+	WRITE_LOCK;
+	_pendingAckMap.erase(ackSeq);
+}
+
+void ReliableUdpSession::RegisterConnect()
+{
+	_socket.open(udp::v4());
+
+	udp::resolver resolver(_executor);
+	auto endpoints = resolver.resolve(_netAddress.ip, _netAddress.port);
+	_endpoint = *endpoints.begin();
+
+	RegisterRecv();
+}
+
+void ReliableUdpSession::RegisterDisconnect()
+{
+	if (_socket.is_open())
+	{
+		boost::system::error_code ec;
+		_socket.cancel(ec);
+		_socket.close(ec);
+		if (ec)
+		{
+			std::cout << "Socket Close Error : " << ec.message() << std::endl;
+		}
+		else
+		{
+			OnDisconnected();
+		}
+	}
+
+	{
+		WRITE_LOCK
+
+		_sendQueue = {};
+		_currentSendBuffers.clear();
+		_sendRegistered.store(false);
+	}
 }
 
 void ReliableUdpSession::RegisterSend()
@@ -628,13 +704,13 @@ void ReliableUdpSession::RegisterSend()
 		}
 	}
 
-	_socket.async_send_to(sendBuffers, *_remoteEndpoints.begin(),
+	_socket.async_send_to(sendBuffers, _endpoint,
 		[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
 		{
 			_sendRegistered.store(false);
 			if (!ec)
 			{
-				ProcessSend();
+				ProcessSend(static_cast<int32>(bytes_transferred));
 			}
 			else
 			{
@@ -659,13 +735,13 @@ void ReliableUdpSession::RegisterRecv()
 
 
 	_socket.async_receive_from(
-		boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()), _remoteEndpoint,
+		boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()), _endpoint,
 		[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
 		{
 			if (!ec && bytes_transferred > 0)
 			{
 				_recvBuffer.OnWrite(bytes_transferred);
-				ProcessRecv(); // 荐脚等 单捞磐 贸府
+				ProcessRecv(static_cast<int32>(bytes_transferred)); // 荐脚等 单捞磐 贸府
 			}
 			else
 			{
@@ -678,31 +754,6 @@ void ReliableUdpSession::RegisterRecv()
 	);
 }
 
-
-
-void ReliableUdpSession::RegisterConnect()
-{
-	_socket.open(udp::v4());
-
-	udp::resolver resolver(_executor);
-	auto remoteEndpoints = resolver.resolve(_remoteAddr.ip, _remoteAddr.port);
-	_remoteEndpoint = *remoteEndpoints.begin();
-
-	RegisterRecv();
-}
-
-void ReliableUdpSession::RegisterDisconnect()
-{
-}
-
-void ReliableUdpSession::ProcessSend()
-{
-}
-
-void ReliableUdpSession::ProcessRecv()
-{
-}
-
 void ReliableUdpSession::ProcessConnect()
 {
 }
@@ -710,3 +761,110 @@ void ReliableUdpSession::ProcessConnect()
 void ReliableUdpSession::ProcessDisconnect()
 {
 }
+
+void ReliableUdpSession::ProcessSend(int32 numOfBytes)
+{
+	if (numOfBytes == 0)
+	{
+		Disconnect("Send 0 byte");
+		return;
+	}
+
+	OnSend(numOfBytes);
+
+	WRITE_LOCK
+	if (_sendQueue.empty())
+		_sendRegistered.store(false);
+	else
+		RegisterSend();
+}
+
+void ReliableUdpSession::ProcessRecv(int32 numOfBytes)
+{
+	if (numOfBytes == 0)
+	{
+		Disconnect("Recv 0");
+		return;
+	}
+
+	//if (_recvBuffer.OnWrite(bytes_transferred) == false)
+	//{
+	//	Disconnect("OnWrite Overflow");
+	//	return;
+	//} ? 
+
+	int32 dataSize = _recvBuffer.DataSize();
+	int32 processLen = IsParsingPacket(_recvBuffer.ReadPos(), dataSize);
+
+	if (processLen < 0 || dataSize < processLen || _recvBuffer.OnRead(processLen) == false)
+	{
+		Disconnect("OnRead Overflow");
+		return;
+	}
+
+	_recvBuffer.Clean();
+
+	RegisterRecv();
+}
+
+int32 ReliableUdpSession::IsParsingPacket(BYTE* buffer, int32 len)
+{
+	int32 processLen = 0;
+
+	while (true)
+	{
+		int32 dataSize = len - processLen;
+
+		if (dataSize < sizeof(PacketHeader))
+			break;
+
+		PacketHeader header = *reinterpret_cast<PacketHeader*>(&buffer[processLen]);
+
+		if (dataSize < header.size)
+			break;
+
+		OnRecv(&buffer[0], header.size);
+		processLen += header.size;
+	}
+	return processLen;
+}
+
+void ReliableUdpSession::Update(float serverTime)
+{
+	Vector<uint16> resendList;
+
+	{
+		WRITE_LOCK
+
+		for (auto& [seq, pkt] : _pendingAckMap)
+		{
+			float elapsed = serverTime - pkt.timestamp;
+
+			if (elapsed >= _resendIntervalMs)
+			{
+				pkt.timestamp = serverTime;
+				pkt.retryCount++;
+
+				resendList.push_back(seq);
+			}
+
+			if (pkt.retryCount > 5)
+			{
+				std::cout << "[ReliableUDP] Max retry reached. Disconnecting.\n";
+				Disconnect("Too many retries");
+				continue;
+			}
+		}
+	}
+
+	for (uint16 seq : resendList)
+	{
+		auto it = _pendingAckMap.find(seq);
+		if (it != _pendingAckMap.end())
+		{
+			std::cout << "[ReliableUDP] Re-sending seq: " << seq << "\n";
+			Send(it->second.buffer);
+		}
+	}
+}
+

@@ -42,12 +42,7 @@ void Game::Init(HWND hwnd)
 	SceneManager::GetInstance()->ChangeScene(SceneType::GameScene);
 
 	_service = make_shared<Service>(NetAddress{ "127.0.0.1", "7777" });
-	SessionIdBuilder<SessionType> idBuilder;
-	int32 id = idBuilder.GenerateId(SessionType::GAME_SESSION);
-	_service->CreateSession<GameSession>(id);
-	//_factory = [this](ServiceRef serviceRef, boost::asio::any_io_executor executor) -> SessionRef {return MakeShared<Session>(serviceRef, executor); };
-	//_service->AddSession(_factory);
-	/*ASSERT_CRASH(_service->Start());*/
+	_service->CreateSession<GameSession>();
 	_service->Start();
 }
 

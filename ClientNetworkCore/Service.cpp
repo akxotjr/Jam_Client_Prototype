@@ -37,8 +37,14 @@ void Service::Start()
 
 	for (auto& session : _sessions)
 	{
-		session.second->Connect();
+		session->Connect();
 	}
+}
+
+SessionRef Service::CreateSession()
+{
+	SessionRef session = _sessionFactory();
+	return session;
 }
 
 void Service::Broadcast(SendBufferRef sendBuffer)
@@ -47,7 +53,7 @@ void Service::Broadcast(SendBufferRef sendBuffer)
 
 	for (auto& session : _sessions)
 	{
-		session.second->Send(sendBuffer);
+		session->Send(sendBuffer);
 	}
 }
 
@@ -60,18 +66,11 @@ void Service::Broadcast(SendBufferRef sendBuffer)
 //	return session;
 //}
 
-bool Service::AddSession(SessionFactory factory)
+bool Service::AddSession(SessionRef session)
 {
-	//if (_sessionCount + 1 > _maxSessionCount)
-	//	return false;
-
-	//SessionRef session = factory(shared_from_this(), _pool.get_executor());
-
-	//if (session == nullptr) return false;
-
-	//WRITE_LOCK
-	//_sessions.insert({ _sessionCount, session });
-	//_sessionCount++;
+	WRITE_LOCK
+	_sessions.insert(session);
+	_sessionCount++;
 
 	return true;
 }
@@ -79,7 +78,7 @@ bool Service::AddSession(SessionFactory factory)
 void Service::ReleaseSession(SessionRef session)
 {
 	WRITE_LOCK;
-	//ASSERT_CRASH(_sessions.erase(session) != 0);
+	ASSERT_CRASH(_sessions.erase(session) != 0);
 	_sessionCount--;
 }
 

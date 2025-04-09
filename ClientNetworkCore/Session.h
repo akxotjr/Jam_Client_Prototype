@@ -26,12 +26,8 @@ public:
 	shared_ptr<Service>				GetService() { return _service.lock(); }
 	void							SetService(shared_ptr<Service> service) { _service = service; }
 
-	NetAddress						GetLocalNetAddress() { return _localAddr; }
-	void							SetLocalNetAddress(NetAddress address) { _localAddr = address; }
 	bool							IsConnected() { return _connected; }
 	SessionRef						GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
-	void							SetId(int32 id) { _id = id; }
-	int32							GetId() { return _id; }
 
 	//void DoRecv();
 
@@ -55,11 +51,9 @@ protected:
 	weak_ptr<Service>					_service;
 	//tcp::socket							_socket;
 	boost::asio::any_io_executor		_executor;
-	NetAddress							_localAddr;
+	NetAddress							_netAddress;
 
 	Atomic<bool>						_connected = false;
-
-	uint32 _id = 0;
 
 //private:
 //	Atomic<bool>						_sendRegistered = false;
@@ -103,6 +97,7 @@ public:
 	virtual void Connect() override;
 	virtual void Disconnect(const string cause) override;
 
+
 private:
 	void RegisterConnect();
 	void RegisterDisconnect();
@@ -118,6 +113,7 @@ private:
 
 private:
 	tcp::socket							_socket;
+	tcp::endpoint						_endpoint;
 
 	Atomic<bool>						_sendRegistered = false;
 	queue<SendBufferRef>				_sendQueue;
@@ -132,6 +128,14 @@ struct UdpPacketHeader : public PacketHeader
 	uint16 sequence;
 };
 
+struct PendingPacket
+{
+	SendBufferRef buffer;
+	uint16 sequence;
+	float timestamp;
+	uint32 retryCount = 0;
+};
+
 class ReliableUdpSession : public Session
 {
 	USE_LOCK
@@ -139,38 +143,47 @@ class ReliableUdpSession : public Session
 	enum { BUFFER_SIZE = 0x10000 }; // 64KB
 
 public:
-	ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor, NetAddress remoteAddr);
+	ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor);
 	virtual ~ReliableUdpSession();
 
-	virtual void Send(SendBufferRef sendBuffer) override;
-	virtual void Connect() override;
-	virtual void Disconnect(const string cause) override;
+
+	virtual void			Connect() override;
+	virtual void			Disconnect(const string cause) override;
+	virtual void			Send(SendBufferRef sendBuffer) override;
+	virtual void			SendReliable(SendBufferRef sendBuffer, float timestamp);
+
+	void					HandleAck(uint16 ackSeq);
+
+private:	
+	void					RegisterConnect();
+	void					RegisterDisconnect();
+	void					RegisterSend();
+	void					RegisterRecv();
+
+
+	void					ProcessConnect();
+	void					ProcessDisconnect();
+	void					ProcessSend(int32 numOfBytes);
+	void					ProcessRecv(int32 numOfBytes);
+
+	int32					IsParsingPacket(BYTE* buffer, int32 len);
+	void					Update(float serverTime);	// resend 
+
 
 private:
-	void RegisterSend();
-	void RegisterRecv();
-	void RegisterConnect();
-	void RegisterDisconnect();
+	udp::socket				_socket;
+	udp::endpoint			_endpoint;
 
-	void ProcessSend();
-	void ProcessRecv();
-	void ProcessConnect();
-	void ProcessDisconnect();
+	Atomic<bool>			_sendRegistered = false;
+	queue<SendBufferRef>	_sendQueue;
+	Vector<SendBufferRef>	_currentSendBuffers;
 
-private:
-	udp::socket _socket;
-	boost::asio::ip::basic_resolver_results<udp> _localEndpoints;
+	RecvBuffer				_recvBuffer;
 
-	//boost::asio::ip::basic_endpoint<udp> _remoteEndpoint;
-    //boost::asio::ip::basic_resolver_results<udp> _remoteEndpoints;
-	udp::endpoint _remoteEndpoint;
+protected:
+	unordered_map<uint16, PendingPacket> _pendingAckMap;
 
-	NetAddress _remoteAddr;
-
-	Atomic<bool> _sendRegistered = false;
-	queue<SendBufferRef> _sendQueue;
-	Vector<SendBufferRef> _currentSendBuffers;
-
-	RecvBuffer _recvBuffer;
+	uint16					_sendSeq = 0;			// 다음 보낼 sequence
+	float					_resendIntervalMs = 0.1f; // 재전송 대기 시간
 };
 
