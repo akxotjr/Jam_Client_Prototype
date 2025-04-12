@@ -99,7 +99,6 @@ void TimeManager::RealUpdate()
 	_frameCount++;
 	_frameTime += _adjustDeltaTime;
 
-	//_clientTime += _deltaTime;
 	_sumTime += _deltaTime;
 
 	if (_sumTime >= 5.f) // TODO : change hardcoding
@@ -107,7 +106,7 @@ void TimeManager::RealUpdate()
 		if (_session)
 		{
 			Protocol::C_TIMESYNC timesyncPkt;
-			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(timesyncPkt);
+			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timesyncPkt);
 			_session->Send(sendBuffer);
 
 			_lastTimeSyncSent = GetRawLocalTime();

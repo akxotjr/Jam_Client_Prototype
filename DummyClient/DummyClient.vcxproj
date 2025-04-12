@@ -84,6 +84,7 @@
     <IncludePath>$(VcpkgRoot)\installed\x64-windows\include;$(SolutionDir)ClientNetworkCore\;$(IncludePath)</IncludePath>
     <LibraryPath>$(VcpkgRoot)\installed\x64-windows\lib;$(SolutionDir)Libraries\Libs\;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Binaries\$(Configuration)\</OutDir>
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)ClientNetworkCore\;$(SolutionDir)Libraries\Include\;$(SolutionDir)Libraries\Include\asio\include\;$(IncludePath)</IncludePath>
@@ -178,12 +179,14 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Bot.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="ClientService.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DummyClient.h" />
     <ClInclude Include="Enum.pb.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="GameSession.h" />
+    <ClInclude Include="GameTcpSession.h" />
+    <ClInclude Include="GameUdpSession.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MovementInterpolator.h" />
     <ClInclude Include="pch.h" />
@@ -201,6 +204,7 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Bot.cpp" />
     <ClCompile Include="Character.cpp" />
+    <ClCompile Include="ClientService.cpp" />
     <ClCompile Include="DummyClient.cpp" />
     <ClCompile Include="Enum.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -210,7 +214,8 @@
     </ClCompile>
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="GameSession.cpp" />
+    <ClCompile Include="GameTcpSession.cpp" />
+    <ClCompile Include="GameUdpSession.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MovementInterpolator.cpp" />
     <ClCompile Include="pch.cpp">

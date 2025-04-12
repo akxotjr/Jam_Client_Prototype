@@ -8,37 +8,29 @@ class TimeManager : public enable_shared_from_this<TimeManager>
 	DECLARE_SINGLETON(TimeManager)
 
 public:
-	void	Init();
-	void	Update();
-	void	OnServerTimeReceived(float serverTime);
+	void			Init();
+	void			Update();
+	void			OnServerTimeReceived(float serverTime);
 
 
-	uint32	GetFps() { return _fps; }
-	float	GetDeltaTime() { return _deltaTime; }
-	float	GetAdjustDeltaTime() { return _adjustDeltaTime; }
+	uint32			GetFps() { return _fps; }
+	float			GetDeltaTime() { return _deltaTime; }
+	float			GetAdjustDeltaTime() { return _adjustDeltaTime; }
 
-	void	SetTimeScale(float timeScale) { _timeScale = timeScale; }
+	void			SetTimeScale(float timeScale) { _timeScale = timeScale; }
 
-	//float	GetClientTime() { return _clientTime; }
-	float	GetClientTime();
-	//void	SetClientTime(float clientTime) { _clientTime = clientTime; }
+	float			GetClientTime();
 
-	float	GetRawLocalTime();
+	float			GetRawLocalTime();
 
-	float	GetRoundTripTime() { return _rtt; }
-	float	GetJitter() { return _jitter; }
+	float			GetRoundTripTime() { return _rtt; }
+	float			GetJitter() { return _jitter; }
 
-	//void	SetPrevClientTime() { _prevClientTime = _clientTime; }
-
-	void	SetSession(SessionRef session) { _session = session; }
-
+	void			SetSession(SessionRef session) { _session = session; }
 
 private:
-	void EmptyUpdate();
-	void RealUpdate();
-
-	//void Synchronize(float serverTime, float RTT);
-
+	void			EmptyUpdate();
+	void			RealUpdate();
 
 private:
 	USE_LOCK

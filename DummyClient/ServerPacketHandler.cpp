@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ServerPacketHandler.h"
 #include "Job.h"
 #include "TimeManager.h"
@@ -9,55 +9,77 @@
 #include "Player.h"
 #include "Bot.h"
 
-PacketHandlerFunc GPacketHandler[UINT16_MAX];
+PacketHandlerFunc GPacketHandler_Tcp[UINT16_MAX];
+PacketHandlerFunc GPacketHandler_Udp[UINT16_MAX];
 
-bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len)
+bool Handle_INVALID(SessionRef& session, BYTE* buffer, int32 len)
 {
-	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
+	TcpPacketHeader* header = reinterpret_cast<TcpPacketHeader*>(buffer);
 	// TODO : Log
 	return false;
 }
 
-bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
+bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt)
 {
 	if (pkt.success() == false)
 		return false;
 
 	Protocol::C_ENTER_GAME enterGamePkt;
 
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(enterGamePkt);
+	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterGamePkt);
 	session->Send(sendBuffer);
 
 	return true;
 }
 
-bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
+bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 {
 	if (pkt.success() == false)
 		return false;
 
-	Protocol::C_SPAWN_ACTOR spawnActorPkt;
+	string ip = pkt.ip();
+	int32 port = pkt.port();
 
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnActorPkt);
-	session->Send(sendBuffer);
+	auto service = session->GetService();
+	service->SetSessionFactory<ReliableUdpSession>();
+	auto udpSession = service->CreateSession();
 
+	{
+		Protocol::C_HANDSHAKE handshakePkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(handshakePkt);
+		udpSession->Send(sendBuffer);
+	}
+
+	// TODO SessionManager -> 일시적으로 들고있게 하고 Connect 시도(handshake) 이후 성공한다면 그때 Service 와 Session Manager에 추가
+
+	{
+		Protocol::C_SPAWN_ACTOR spawnActorPkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(spawnActorPkt);
+		session->Send(sendBuffer);
+	}
 	return true;
 }
 
-bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
+bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
+{
+	// TODO
+	return false;
+}
+
+bool Handle_S_CHAT(SessionRef& session, Protocol::S_CHAT& pkt)
 {
 	std::cout << pkt.msg() << std::endl;
 	return true;
 }
 
-bool Handle_S_TIMESYNC(PacketSessionRef& session, Protocol::S_TIMESYNC& pkt)
+bool Handle_S_TIMESYNC(SessionRef& session, Protocol::S_TIMESYNC& pkt)
 {
 	float timestamp = pkt.timestamp();
 	TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
 	return true;
 }
 
-bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
+bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 {
 	uint32 playerId = pkt.playerid();
 
@@ -74,7 +96,7 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 		string name = info.name();
 		uint32 id = info.id();
 
-		auto actor = gameScene->GetActorById(id);	// �̹� �����Ǿ����� �н�
+		auto actor = gameScene->GetActorById(id);	// ÀÌ¹Ì »ý¼ºµÇ¾úÀ¸¸é ÆÐ½º
 		if (actor && actor->GetId() == id)
 		{
 			continue;
@@ -135,7 +157,7 @@ bool Handle_S_SPAWN_ACTOR(PacketSessionRef& session, Protocol::S_SPAWN_ACTOR& pk
 	return true;
 }
 
-bool Handle_S_CHARACTER_SYNC(PacketSessionRef& session, Protocol::S_CHARACTER_SYNC& pkt)
+bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pkt)
 {
 	float timestamp = pkt.timestamp();
 
@@ -146,7 +168,7 @@ bool Handle_S_CHARACTER_SYNC(PacketSessionRef& session, Protocol::S_CHARACTER_SY
 	for (int i = 0; i < characters.size(); ++i)
 	{
 		const Protocol::CharacterInfo& info = characters.Get(i);
-		
+
 		string name = info.name();
 		uint32 id = info.id();
 
@@ -183,7 +205,7 @@ bool Handle_S_CHARACTER_SYNC(PacketSessionRef& session, Protocol::S_CHARACTER_SY
 	return true;
 }
 
-bool Handle_S_PLAYER_INPUT(PacketSessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
+bool Handle_S_PLAYER_INPUT(SessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
 	// todo
 	uint32 sequenceNumber = pkt.sequencenumber();

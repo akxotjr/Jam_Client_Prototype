@@ -18,70 +18,38 @@ public:
 	virtual ~Session();
 
 public:
-	virtual void					Send(SendBufferRef sendBuffer) = 0;
-	virtual void					Connect() = 0;
-	virtual void					Disconnect(const string cause) = 0;
+	virtual void						Send(SendBufferRef sendBuffer) = 0;
+	virtual void						Connect() = 0;
+	virtual void						Disconnect(const string cause) = 0;
 
 
-	shared_ptr<Service>				GetService() { return _service.lock(); }
-	void							SetService(shared_ptr<Service> service) { _service = service; }
+	shared_ptr<Service>					GetService() { return _service.lock(); }
+	void								SetService(shared_ptr<Service> service) { _service = service; }
 
-	bool							IsConnected() { return _connected; }
-	SessionRef						GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
+	bool								IsConnected() { return _connected; }
+	SessionRef							GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
 
-	//void DoRecv();
-
-	//temp
-	//void DoRecvHeader();
-	//void DoRecvBody(int32 bodySize);
-
-	//void ProcessRecv(size_t bytes_transferred);
-
-//private:
-//	void DoSend();
-	
 
 protected:
-	virtual void	OnConnected() {}
-	virtual int32	OnRecv(BYTE* buffer, int32 len) { return len; }
-	virtual void	OnSend(int32 len) {}
-	virtual void	OnDisconnected() {}
+	virtual void						OnConnected() {}
+	virtual void						OnRecv(BYTE* buffer, int32 len) {}
+	virtual void						OnSend(int32 len) {}
+	virtual void						OnDisconnected() {}
 
 protected:
 	weak_ptr<Service>					_service;
-	//tcp::socket							_socket;
 	boost::asio::any_io_executor		_executor;
 	NetAddress							_netAddress;
 
 	Atomic<bool>						_connected = false;
-
-//private:
-//	Atomic<bool>						_sendRegistered = false;
-//	queue<SendBufferRef>				_sendQueue;
-//	Vector<SendBufferRef>				_currentSendBuffers;
-//
-//	RecvBuffer							_recvBuffer;
 };
 
 
-struct PacketHeader
+struct TcpPacketHeader
 {
 	uint16 size;
-	uint16 id;	// Protocol ID
+	uint16 id;
 };
-
-//class PacketSession : public Session
-//{
-//public:
-//	PacketSession(ServiceRef service, boost::asio::any_io_executor executor);
-//	virtual ~PacketSession();
-//
-//	PacketSessionRef	GetPacketSessionRef() { return static_pointer_cast<PacketSession>(shared_from_this()); }
-//
-//protected:
-//	virtual int32		OnRecv(BYTE* buffer, int32 len) sealed;
-//	virtual void		OnRecvPacket(BYTE* buffer, int32 len) abstract;
-//};
 
 class TcpSession : public Session
 {
@@ -93,23 +61,25 @@ public:
 	TcpSession(ServiceRef service, boost::asio::any_io_executor executor);
 	virtual ~TcpSession();
 
-	virtual void Send(SendBufferRef sendBuffer) override;
-	virtual void Connect() override;
-	virtual void Disconnect(const string cause) override;
+	virtual void						Send(SendBufferRef sendBuffer) override;
+	virtual void						Connect() override;
+	virtual void						Disconnect(const string cause) override;
 
 
 private:
-	void RegisterConnect();
-	void RegisterDisconnect();
-	void RegisterSend();
-	void RegisterRecvHeader();
-	void RegisterRecvBody(int32 bodySize);
+	void								RegisterConnect();
+	void								RegisterDisconnect();
+	void								RegisterSend();
+	void								RegisterRecvHeader();
+	void								RegisterRecvBody(int32 bodySize);
 
-	void ProcessSend(int32 numOfBytes);
-	void ProcessRecv(int32 numOfBytes);
+	void								ProcessConnect();
+	void								ProcesssDisconnect();
+	void								ProcessSend(int32 numOfBytes);
+	void								ProcessRecv(int32 numOfBytes);
 
 
-	int32 IsParsingPacket(BYTE* buffer, int32 len);
+	int32								IsParsingPacket(BYTE* buffer, int32 len);
 
 private:
 	tcp::socket							_socket;
@@ -123,8 +93,10 @@ private:
 };
 
 
-struct UdpPacketHeader : public PacketHeader
+struct UdpPacketHeader
 {
+	uint16 size;
+	uint16 id;
 	uint16 sequence;
 };
 
@@ -147,43 +119,43 @@ public:
 	virtual ~ReliableUdpSession();
 
 
-	virtual void			Connect() override;
-	virtual void			Disconnect(const string cause) override;
-	virtual void			Send(SendBufferRef sendBuffer) override;
-	virtual void			SendReliable(SendBufferRef sendBuffer, float timestamp);
+	virtual void							Connect() override;
+	virtual void							Disconnect(const string cause) override;
+	virtual void							Send(SendBufferRef sendBuffer) override;
+	virtual void							SendReliable(SendBufferRef sendBuffer, float timestamp);
 
-	void					HandleAck(uint16 ackSeq);
+	void									HandleAck(uint16 ackSeq);
 
 private:	
-	void					RegisterConnect();
-	void					RegisterDisconnect();
-	void					RegisterSend();
-	void					RegisterRecv();
+	void									RegisterConnect();
+	void									RegisterDisconnect();
+	void									RegisterSend();
+	void									RegisterRecv();
 
 
-	void					ProcessConnect();
-	void					ProcessDisconnect();
-	void					ProcessSend(int32 numOfBytes);
-	void					ProcessRecv(int32 numOfBytes);
+	void									ProcessConnect();
+	void									ProcessDisconnect();
+	void									ProcessSend(int32 numOfBytes);
+	void									ProcessRecv(int32 numOfBytes);
 
-	int32					IsParsingPacket(BYTE* buffer, int32 len);
-	void					Update(float serverTime);	// resend 
+	int32									IsParsingPacket(BYTE* buffer, int32 len);
+	void									Update(float serverTime);	// resend 
 
 
 private:
-	udp::socket				_socket;
-	udp::endpoint			_endpoint;
+	udp::socket								_socket;
+	udp::endpoint							_endpoint;
 
-	Atomic<bool>			_sendRegistered = false;
-	queue<SendBufferRef>	_sendQueue;
-	Vector<SendBufferRef>	_currentSendBuffers;
+	Atomic<bool>							_sendRegistered = false;
+	queue<SendBufferRef>					_sendQueue;
+	Vector<SendBufferRef>					_currentSendBuffers;
 
-	RecvBuffer				_recvBuffer;
+	RecvBuffer								_recvBuffer;
 
 protected:
-	unordered_map<uint16, PendingPacket> _pendingAckMap;
+	unordered_map<uint16, PendingPacket>	_pendingAckMap;
 
-	uint16					_sendSeq = 0;			// 다음 보낼 sequence
-	float					_resendIntervalMs = 0.1f; // 재전송 대기 시간
+	uint16									_sendSeq = 0;			// 다음 보낼 sequence
+	float									_resendIntervalMs = 0.1f; // 재전송 대기 시간
 };
 

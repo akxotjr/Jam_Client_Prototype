@@ -42,21 +42,21 @@ void Player::Render(HDC hdc)
 
 void Player::SendInputToServer(const Input& input)
 {
-	Protocol::C_PLAYER_INPUT pkt;
-	pkt.set_timestamp(input.timestamp);
-	pkt.set_sequencenumber(input.sequenceNumber);
-	pkt.set_keytype(InputManager::GetInstance()->ConvertToProtoKey(input.keyType)); // todo convert to protokey
-	pkt.set_deltatime(input.deltaTime);
-	pkt.set_mouseposx(input.mousePosition.x);
-	pkt.set_mouseposy(input.mousePosition.y);
+	//Protocol::C_PLAYER_INPUT pkt;
+	//pkt.set_timestamp(input.timestamp);
+	//pkt.set_sequencenumber(input.sequenceNumber);
+	//pkt.set_keytype(InputManager::GetInstance()->ConvertToProtoKey(input.keyType)); // todo convert to protokey
+	//pkt.set_deltatime(input.deltaTime);
+	//pkt.set_mouseposx(input.mousePosition.x);
+	//pkt.set_mouseposy(input.mousePosition.y);
 
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+	//auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
 
-	auto session = _owner.lock()->GetSessionByType(SessionType::GAME_SESSION);
-	if (session == nullptr)
-		return;
+	//auto session = _owner.lock()->GetSessionByType(SessionType::GAME_SESSION);
+	//if (session == nullptr)
+	//	return;
 
-	session->Send(sendBuffer);
+	//session->Send(sendBuffer);
 }
 
 

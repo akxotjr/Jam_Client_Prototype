@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "Game.h"
 #include "SendBuffer.h"
-#include "ServerPacketHandler.h"
+//#include "ServerPacketHandler.h"
 
 
 Character::Character()

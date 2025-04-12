@@ -1,18 +1,14 @@
 #include "pch.h"
 #include "Game.h"
-#include "ThreadManager.h"
 #include "Service.h"
-#include "Session.h"
-#include "SendBuffer.h"
-#include "BufferWriter.h"
 #include "ServerPacketHandler.h"
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
-#include "Scene.h"
+#include  "ClientService.h"
 
 #include "boost/asio.hpp"
-#include "GameSession.h"
+#include "GameTcpSession.h"
 
 Game::Game()
 {
@@ -41,8 +37,9 @@ void Game::Init(HWND hwnd)
 	SceneManager::GetInstance()->Init(shared_from_this());
 	SceneManager::GetInstance()->ChangeScene(SceneType::GameScene);
 
-	_service = make_shared<Service>(NetAddress{ "127.0.0.1", "7777" });
-	_service->CreateSession<GameSession>();
+	_service = make_shared<ClientService>(NetAddress{ "127.0.0.1", "7777" });
+	_service->SetSessionFactory<GameTcpSession>();
+	_service->CreateSession();
 	_service->Start();
 }
 

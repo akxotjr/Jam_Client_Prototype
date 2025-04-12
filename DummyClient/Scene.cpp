@@ -2,7 +2,6 @@
 #include "Game.h"
 #include "Scene.h"
 #include "Actor.h"
-#include "Character.h"
 #include "SceneManager.h"
 
 Scene::Scene()
@@ -59,9 +58,9 @@ void Scene::RemoveActor(uint32 id)
 
 SessionRef Scene::GetSessionByType(SessionType type)  
 {  
-	if (auto game = SceneManager::GetInstance()->GetGame())  
-	{  
-		return game->GetService()->GetSessionByType(type);  
-	}  
+	//if (auto game = SceneManager::GetInstance()->GetGame())  
+	//{  
+	//	return game->GetService()->GetSessionByType(type);  
+	//}  
 	return nullptr;  
 }

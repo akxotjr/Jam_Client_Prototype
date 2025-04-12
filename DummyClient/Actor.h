@@ -8,19 +8,19 @@ public:
 	Actor();
 	virtual ~Actor();
 
-	virtual void Init();
-	virtual void Update();
-	virtual void Render(HDC hdc);
+	virtual void		Init();
+	virtual void		Update();
+	virtual void		Render(HDC hdc);
 
-	void SetName(string name) { _name = name; }
-	string GetName() { return _name; }
-	void SetId(uint32 id) { _id = id; }
-	uint32 GetId() { return _id; }
+	void				SetName(string name) { _name = name; }
+	string				GetName() { return _name; }
+	void				SetId(uint32 id) { _id = id; }
+	uint32				GetId() { return _id; }
 
-	Vec2& GetPosition() { return _position; }
-	void SetPosition(Vec2 position) { _position = position; }
+	Vec2&				GetPosition() { return _position; }
+	void				SetPosition(Vec2 position) { _position = position; }
 
-	void SetScene(shared_ptr<Scene> owner) { _owner = owner; }
+	void				SetScene(shared_ptr<Scene> owner) { _owner = owner; }
 
 protected:
 	string				_name = "";

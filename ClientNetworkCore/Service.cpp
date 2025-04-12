@@ -57,14 +57,6 @@ void Service::Broadcast(SendBufferRef sendBuffer)
 	}
 }
 
-//SessionRef Service::CreateSession()
-//{
-//	SessionRef session = _sessionFactory();
-//
-//	session->Init(shared_from_this());
-//
-//	return session;
-//}
 
 bool Service::AddSession(SessionRef session)
 {

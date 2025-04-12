@@ -163,3 +163,7 @@ struct Vec2Int
 	int32 x = 0;
 	int32 y = 0;
 };
+
+USING_SHARED_PTR(GameTcpSession);
+USING_SHARED_PTR(GameUdpSession);
+USING_SHARED_PTR(ClientService);

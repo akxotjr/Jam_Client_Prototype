@@ -45,21 +45,21 @@ class InputManager : public enable_shared_from_this<InputManager>
 	DECLARE_SINGLETON(InputManager)
 
 public:
-	void Init(HWND hwnd);
-	void Update();
+	void				Init(HWND hwnd);
+	void				Update();
 
-	KeyState GetButtonState(KeyType key) { return GetState(key); }
-	bool GetButton(KeyType key) { return GetState(key) == KeyState::Press; }
-	bool GetButtonDown(KeyType key) { return GetState(key) == KeyState::Down; }
-	bool GetButtonUp(KeyType key) { return GetState(key) == KeyState::Up; }
+	KeyState			GetButtonState(KeyType key) { return GetState(key); }
+	bool				GetButton(KeyType key) { return GetState(key) == KeyState::Press; }
+	bool				GetButtonDown(KeyType key) { return GetState(key) == KeyState::Down; }
+	bool				GetButtonUp(KeyType key) { return GetState(key) == KeyState::Up; }
 
-	POINT GetMousePos() { return _mousePos; }
+	POINT				GetMousePos() { return _mousePos; }
 
-	Protocol::KeyType ConvertToProtoKey(KeyType key);
-	KeyType ConvertFromProtoKey(Protocol::KeyType key);
+	Protocol::KeyType	ConvertToProtoKey(KeyType key);
+	KeyType				ConvertFromProtoKey(Protocol::KeyType key);
 
 private:
-	KeyState GetState(KeyType key) { return _states[static_cast<uint8>(key)]; }
+	KeyState			GetState(KeyType key) { return _states[static_cast<uint8>(key)]; }
 
 private:
 	HWND				_hwnd = 0;

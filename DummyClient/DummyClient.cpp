@@ -43,8 +43,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     shared_ptr<Game> game = make_shared<Game>();
     game->Init(GhWnd);
 
-    //Game game;
-    //game.Init(GhWnd);
 
     MSG msg = {};
 
@@ -59,9 +57,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             if (msg.message == WM_QUIT)
                 break;
-
-            //game.Update();
-            //game.Render();
 
             game->Update();
             game->Render();

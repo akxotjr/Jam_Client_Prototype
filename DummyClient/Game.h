@@ -21,11 +21,11 @@ public:
 	Game();
 	~Game();
 
-	void				Init(HWND hwnd);
-	void				Update();
-	void				Render();
+	void					Init(HWND hwnd);
+	void					Update();
+	void					Render();
 
-	ServiceRef			GetService() { return _service; }
+	ClientServiceRef		GetService() { return _service; }
 
 private:
 
@@ -39,7 +39,6 @@ private:
 
 
 	/* Network */
-	ServiceRef			_service;
-	SessionFactory		_factory;
+	ClientServiceRef	_service;
 };
 
