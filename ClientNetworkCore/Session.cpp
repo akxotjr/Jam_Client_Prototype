@@ -6,10 +6,6 @@
 Session::Session(ServiceRef service, boost::asio::any_io_executor executor)
 	: _service(service), _executor(executor) /*_socket(executor),*//* _recvBuffer(BUFFER_SIZE)*/
 {
-	auto owner = _service.lock();
-	if (!owner) return;
-
-	_netAddress = owner->GetNetAddress();
 }
 
 Session::~Session()
@@ -301,7 +297,10 @@ Session::~Session()
 TcpSession::TcpSession(ServiceRef service, boost::asio::any_io_executor executor)
 	: Session(service, executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
 {
+	auto owner = _service.lock();
+	if (!owner) return;
 
+	_netAddress = owner->GetTcpNetAddress();
 }
 
 TcpSession::~TcpSession()
@@ -561,14 +560,16 @@ int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
 		if (dataSize < sizeof(TcpPacketHeader))
 			break;
 
-		TcpPacketHeader header = *reinterpret_cast<TcpPacketHeader*>(&buffer[processLen]);
+		TcpPacketHeader* header = reinterpret_cast<TcpPacketHeader*>(&buffer[processLen]);
 
-		if (dataSize < header.size)
+		if (dataSize < header->size || header->size < sizeof(TcpPacketHeader))
 			break;
 
-		OnRecv(&buffer[0], header.size);
-		processLen += header.size;
+		OnRecv(&buffer[processLen], header->size);
+
+		processLen += header->size;
 	}
+
 	return processLen;
 }
 
@@ -577,6 +578,10 @@ int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
 ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor)
 	: Session(service, executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
 {
+	auto owner = _service.lock();
+	if (!owner) return;
+
+	_netAddress = owner->GetUdpNetAddress();
 }
 
 ReliableUdpSession::~ReliableUdpSession()
