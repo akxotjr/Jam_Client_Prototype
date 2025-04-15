@@ -449,6 +449,15 @@ void TcpSession::RegisterRecvHeader()
 			{
 				_recvBuffer.OnWrite(bytes_transferred);
 				TcpPacketHeader* header = reinterpret_cast<TcpPacketHeader*>(_recvBuffer.ReadPos());
+
+				if (header->size < sizeof(TcpPacketHeader))
+				{
+					std::cout << "Invalid packet size: " << header->size << std::endl;
+					Disconnect("Invalid header size");
+					return;
+				}
+
+				std::cout << "Recv header success: id=" << header->id << ", size=" << header->size << std::endl;
 				RegisterRecvBody(header->size - sizeof(TcpPacketHeader));
 			}
 			else
@@ -463,6 +472,15 @@ void TcpSession::RegisterRecvBody(int32 bodySize)
 {
 	if (!IsConnected() || !_socket.is_open())
 		return;
+
+	if (bodySize <= 0 || bodySize > 0x10000) // 너무 크면 방어
+	{
+		std::cout << "Invalid body size: " << bodySize << std::endl;
+		Disconnect("Invalid body size");
+		return;
+	}
+
+	std::cout << "RegisterRecvBody: " << bodySize << " bytes\n";
 
 	// 본문 크기만큼 정확히 읽기
 	boost::asio::async_read(_socket,
@@ -482,13 +500,39 @@ void TcpSession::RegisterRecvBody(int32 bodySize)
 		});
 }
 
+void TcpSession::RegisterRecv()
+{
+	if (!IsConnected() || !_socket.is_open())
+		return;
+
+	_socket.async_receive(
+		boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()),
+		[this](boost::system::error_code ec, size_t bytes_transferred)
+		{
+			if (ec)
+			{
+				std::cout << "recv error: " << ec.message() << "\n";
+				Disconnect(ec.message());
+				return;
+			}
+
+			//temp
+			TcpPacketHeader* header = reinterpret_cast<TcpPacketHeader*>(_recvBuffer.ReadPos());
+			std::cout << "Recv header success: id=" << header->id << ", size=" << header->size << std::endl;
+			//~temp
+
+			ProcessRecv(bytes_transferred);
+		});
+}
+
 void TcpSession::ProcessConnect()
 {
 	_connected.store(true);
-	GetService()->AddSession(GetSessionRef());
+	//GetService()->AddSession(GetSessionRef());
 	OnConnected();
 
-	RegisterRecvHeader();
+	//RegisterRecvHeader();
+	RegisterRecv();
 }
 
 void TcpSession::ProcesssDisconnect()
@@ -829,14 +873,16 @@ int32 ReliableUdpSession::IsParsingPacket(BYTE* buffer, int32 len)
 		if (dataSize < sizeof(UdpPacketHeader))
 			break;
 
-		UdpPacketHeader header = *reinterpret_cast<UdpPacketHeader*>(&buffer[processLen]);
+		UdpPacketHeader* header = reinterpret_cast<UdpPacketHeader*>(&buffer[processLen]);
 
-		if (dataSize < header.size)
+		if (dataSize < header->size || header->size < sizeof(UdpPacketHeader))
 			break;
 
-		OnRecv(&buffer[0], header.size);
-		processLen += header.size;
+		OnRecv(&buffer[processLen], header->size);
+
+		processLen += header->size;
 	}
+
 	return processLen;
 }
 

@@ -5,7 +5,7 @@
 class ClientService : public Service
 {
 public:
-	ClientService(TransportConfig config, int32 maxSessionCount = 1);
+	ClientService(TransportConfig config, int32 maxSessionCount = 2);
 	virtual ~ClientService();
 
 	GameTcpSessionRef		GetGameTcpSession() { return _gameTcpSession; }

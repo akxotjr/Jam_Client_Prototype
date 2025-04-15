@@ -14,6 +14,10 @@
 #include "DummyClient.h"
 #include <tchar.h>
 
+
+#pragma warning(disable:4996)
+
+
 using namespace std;
 
 
@@ -34,6 +38,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
     ULONG_PTR gpToken;
+
+    AllocConsole(); // 수동으로 콘솔 생성
+    freopen("CONOUT$", "w", stdout);
 
     MyRegisterClass(hInstance);
 

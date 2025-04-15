@@ -17,7 +17,7 @@ void GameTcpSession::OnConnected()
 		return;
 
 	service->SetGameTcpSession(static_pointer_cast<GameTcpSession>(shared_from_this()));
-
+	//service->AddSession(static_pointer_cast<GameTcpSession>(shared_from_this()));
 
 	//{
 	//	Protocol::C_TIMESYNC timesyncPkt;
@@ -26,7 +26,7 @@ void GameTcpSession::OnConnected()
 	//}
 
 
-	//TimeManager::GetInstance()->SetSession(GetSessionRef());
+	TimeManager::GetInstance()->SetSession(GetSessionRef());
 
 	{
 		Protocol::C_LOGIN loginPkt;
@@ -42,6 +42,7 @@ void GameTcpSession::OnDisconnected()
 		return;
 
 	service->SetGameTcpSession(nullptr);
+	service->ReleaseSession(static_pointer_cast<Session>(shared_from_this()));
 }
 
 void GameTcpSession::OnSend(int32 len)
@@ -50,7 +51,7 @@ void GameTcpSession::OnSend(int32 len)
 
 void GameTcpSession::OnRecv(BYTE* buffer, int32 len)
 {
-	SessionRef session = GetSessionRef();
+	SessionRef session = static_pointer_cast<Session>(shared_from_this());
 
 	ServerPacketHandler::HandlePacket<TcpPacketHeader>(session, buffer, len);
 }

@@ -73,6 +73,8 @@ bool Service::AddSession(SessionRef session)
 	_sessions.insert(session);
 	_sessionCount++;
 
+	cout << "Current Session Count : " << _sessionCount << '\n';
+
 	return true;
 }
 
@@ -81,6 +83,8 @@ void Service::ReleaseSession(SessionRef session)
 	WRITE_LOCK;
 	ASSERT_CRASH(_sessions.erase(session) != 0);
 	_sessionCount--;
+
+	cout << "Current Session Count : " << _sessionCount << '\n';
 }
 
 void Service::RegisterToContextAsync(JobRef job)

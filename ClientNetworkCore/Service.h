@@ -24,7 +24,7 @@ struct TransportConfig
 class Service : public enable_shared_from_this<Service>
 {   
 public:
-	Service(TransportConfig config, int32 maxSessionCount = 1);
+	Service(TransportConfig config, int32 maxSessionCount = 2);
 	virtual ~Service();
 
 	void							Start();
@@ -66,6 +66,7 @@ private:
 
 	int32								_sessionCount = 0;
 	int32								_maxSessionCount = 1;
+
 	SessionFactory						_sessionFactory;
 };
 

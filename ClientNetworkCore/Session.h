@@ -73,6 +73,8 @@ private:
 	void								RegisterRecvHeader();
 	void								RegisterRecvBody(int32 bodySize);
 
+	void								RegisterRecv();
+
 	void								ProcessConnect();
 	void								ProcesssDisconnect();
 	void								ProcessSend(int32 numOfBytes);

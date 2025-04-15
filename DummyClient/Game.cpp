@@ -59,7 +59,8 @@ void Game::Render()
 		// temp
 		float rtt = TimeManager::GetInstance()->GetRoundTripTime();
 		float clientTime = TimeManager::GetInstance()->GetClientTime();
-		wstring str = std::format(L"ClientTime({0})", clientTime);
+		float deltaTime = TimeManager::GetInstance()->GetDeltaTime();
+		wstring str = std::format(L"ClientTime({0}), DeltaTime({1})", clientTime, deltaTime);
 
 		Utils::PrintText(_hdcBack, Vec2(10, 10), str);
 	}
