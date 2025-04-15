@@ -3,6 +3,7 @@
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/any_io_executor.hpp>
 #include <type_traits>
+#include <utility>
 #include "Job.h"
 
 
@@ -14,10 +15,16 @@ struct NetAddress
 	string port;
 };
 
+struct TransportConfig
+{
+	optional<NetAddress> tcpAddress;
+	optional<NetAddress> udpAddress;
+};
+
 class Service : public enable_shared_from_this<Service>
 {   
 public:
-	Service(NetAddress address, int32 maxSessionCount = 1);
+	Service(TransportConfig config, int32 maxSessionCount = 1);
 	virtual ~Service();
 
 	void							Start();
@@ -32,9 +39,13 @@ public:
 
 	int32							GetCurrentSessionCount() { return _sessionCount; }
 	int32							GetMaxSessionCount() { return _maxSessionCount; }
-	NetAddress						GetNetAddress() { return _address; }
-	string							GetIpAddress() { return _address.ip; }
-	string							GetPort() { return _address.port; }
+	NetAddress						GetTcpNetAddress() { return _config.tcpAddress.value_or(NetAddress("0.0.0.0", "0")); }
+	void							SetTcpNetAddress(const NetAddress& address) { _config.tcpAddress = address; }
+	NetAddress						GetUdpNetAddress() { return _config.udpAddress.value_or(NetAddress("0.0.0.0", "0")); }
+	void							SetUdpNetAddress(const NetAddress& address) { _config.udpAddress = address; }
+
+	//string							GetIpAddress() { return _address.ip; }
+	//string							GetPort() { return _address.port; }
 	ServiceRef						GetServiceRef() { return static_pointer_cast<Service>(shared_from_this()); }
 	boost::asio::any_io_executor	GetExecutor() { return _io_context.get_executor(); }
 
@@ -46,7 +57,7 @@ public:
 private:
 	USE_LOCK
 
-	NetAddress							_address = {};
+	TransportConfig						_config;
 
 	boost::asio::io_context				_io_context;
 	//boost::asio::thread_pool			_pool;

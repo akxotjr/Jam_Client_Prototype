@@ -453,15 +453,6 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_GAME, _impl_.ip_),
         PROTOBUF_FIELD_OFFSET(::Protocol::S_ENTER_GAME, _impl_.port_),
         ~0u,  // no _has_bits_
-        PROTOBUF_FIELD_OFFSET(::Protocol::C_CHAT, _internal_metadata_),
-        ~0u,  // no _extensions_
-        ~0u,  // no _oneof_case_
-        ~0u,  // no _weak_field_map_
-        ~0u,  // no _inlined_string_donated_
-        ~0u,  // no _split_
-        ~0u,  // no sizeof(Split)
-        PROTOBUF_FIELD_OFFSET(::Protocol::C_CHAT, _impl_.msg_),
-        ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::C_HANDSHAKE, _internal_metadata_),
         ~0u,  // no _extensions_
         ~0u,  // no _oneof_case_
@@ -478,6 +469,15 @@ const ::uint32_t
         ~0u,  // no _split_
         ~0u,  // no sizeof(Split)
         PROTOBUF_FIELD_OFFSET(::Protocol::S_HANDSHAKE, _impl_.success_),
+        ~0u,  // no _has_bits_
+        PROTOBUF_FIELD_OFFSET(::Protocol::C_CHAT, _internal_metadata_),
+        ~0u,  // no _extensions_
+        ~0u,  // no _oneof_case_
+        ~0u,  // no _weak_field_map_
+        ~0u,  // no _inlined_string_donated_
+        ~0u,  // no _split_
+        ~0u,  // no sizeof(Split)
+        PROTOBUF_FIELD_OFFSET(::Protocol::C_CHAT, _impl_.msg_),
         ~0u,  // no _has_bits_
         PROTOBUF_FIELD_OFFSET(::Protocol::S_CHAT, _internal_metadata_),
         ~0u,  // no _extensions_
@@ -585,9 +585,9 @@ static const ::_pbi::MigrationSchema
         {8, -1, -1, sizeof(::Protocol::S_LOGIN)},
         {17, -1, -1, sizeof(::Protocol::C_ENTER_GAME)},
         {25, -1, -1, sizeof(::Protocol::S_ENTER_GAME)},
-        {36, -1, -1, sizeof(::Protocol::C_CHAT)},
-        {45, -1, -1, sizeof(::Protocol::C_HANDSHAKE)},
-        {53, -1, -1, sizeof(::Protocol::S_HANDSHAKE)},
+        {36, -1, -1, sizeof(::Protocol::C_HANDSHAKE)},
+        {44, -1, -1, sizeof(::Protocol::S_HANDSHAKE)},
+        {53, -1, -1, sizeof(::Protocol::C_CHAT)},
         {62, -1, -1, sizeof(::Protocol::S_CHAT)},
         {72, -1, -1, sizeof(::Protocol::C_TIMESYNC)},
         {80, -1, -1, sizeof(::Protocol::S_TIMESYNC)},
@@ -603,9 +603,9 @@ static const ::_pb::Message* const file_default_instances[] = {
     &::Protocol::_S_LOGIN_default_instance_._instance,
     &::Protocol::_C_ENTER_GAME_default_instance_._instance,
     &::Protocol::_S_ENTER_GAME_default_instance_._instance,
-    &::Protocol::_C_CHAT_default_instance_._instance,
     &::Protocol::_C_HANDSHAKE_default_instance_._instance,
     &::Protocol::_S_HANDSHAKE_default_instance_._instance,
+    &::Protocol::_C_CHAT_default_instance_._instance,
     &::Protocol::_S_CHAT_default_instance_._instance,
     &::Protocol::_C_TIMESYNC_default_instance_._instance,
     &::Protocol::_S_TIMESYNC_default_instance_._instance,
@@ -622,8 +622,8 @@ const char descriptor_table_protodef_Protocol_2eproto[] ABSL_ATTRIBUTE_SECTION_V
     "Struct.proto\"\t\n\007C_LOGIN\"\032\n\007S_LOGIN\022\017\n\007su"
     "ccess\030\001 \001(\010\"\016\n\014C_ENTER_GAME\"9\n\014S_ENTER_G"
     "AME\022\017\n\007success\030\001 \001(\010\022\n\n\002ip\030\002 \001(\t\022\014\n\004port"
-    "\030\003 \001(\r\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\r\n\013C_HANDS"
-    "HAKE\"\036\n\013S_HANDSHAKE\022\017\n\007success\030\001 \001(\010\"\'\n\006"
+    "\030\003 \001(\r\"\r\n\013C_HANDSHAKE\"\036\n\013S_HANDSHAKE\022\017\n\007"
+    "success\030\001 \001(\010\"\025\n\006C_CHAT\022\013\n\003msg\030\001 \001(\t\"\'\n\006"
     "S_CHAT\022\020\n\010playerId\030\001 \001(\004\022\013\n\003msg\030\002 \001(\t\"\014\n"
     "\nC_TIMESYNC\"\037\n\nS_TIMESYNC\022\021\n\ttimestamp\030\001"
     " \001(\002\"\017\n\rC_SPAWN_ACTOR\"Q\n\rS_SPAWN_ACTOR\022\020"
@@ -1375,237 +1375,6 @@ void S_ENTER_GAME::InternalSwap(S_ENTER_GAME* PROTOBUF_RESTRICT other) {
 }
 // ===================================================================
 
-class C_CHAT::_Internal {
- public:
-};
-
-C_CHAT::C_CHAT(::google::protobuf::Arena* arena)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, _class_data_.base()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  SharedCtor(arena);
-  // @@protoc_insertion_point(arena_constructor:Protocol.C_CHAT)
-}
-inline PROTOBUF_NDEBUG_INLINE C_CHAT::Impl_::Impl_(
-    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
-    const Impl_& from, const ::Protocol::C_CHAT& from_msg)
-      : msg_(arena, from.msg_),
-        _cached_size_{0} {}
-
-C_CHAT::C_CHAT(
-    ::google::protobuf::Arena* arena,
-    const C_CHAT& from)
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-    : ::google::protobuf::Message(arena, _class_data_.base()) {
-#else   // PROTOBUF_CUSTOM_VTABLE
-    : ::google::protobuf::Message(arena) {
-#endif  // PROTOBUF_CUSTOM_VTABLE
-  C_CHAT* const _this = this;
-  (void)_this;
-  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
-      from._internal_metadata_);
-  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-
-  // @@protoc_insertion_point(copy_constructor:Protocol.C_CHAT)
-}
-inline PROTOBUF_NDEBUG_INLINE C_CHAT::Impl_::Impl_(
-    ::google::protobuf::internal::InternalVisibility visibility,
-    ::google::protobuf::Arena* arena)
-      : msg_(arena),
-        _cached_size_{0} {}
-
-inline void C_CHAT::SharedCtor(::_pb::Arena* arena) {
-  new (&_impl_) Impl_(internal_visibility(), arena);
-}
-C_CHAT::~C_CHAT() {
-  // @@protoc_insertion_point(destructor:Protocol.C_CHAT)
-  SharedDtor(*this);
-}
-inline void C_CHAT::SharedDtor(MessageLite& self) {
-  C_CHAT& this_ = static_cast<C_CHAT&>(self);
-  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
-  ABSL_DCHECK(this_.GetArena() == nullptr);
-  this_._impl_.msg_.Destroy();
-  this_._impl_.~Impl_();
-}
-
-inline void* C_CHAT::PlacementNew_(const void*, void* mem,
-                                        ::google::protobuf::Arena* arena) {
-  return ::new (mem) C_CHAT(arena);
-}
-constexpr auto C_CHAT::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(C_CHAT),
-                                            alignof(C_CHAT));
-}
-PROTOBUF_CONSTINIT
-PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::google::protobuf::internal::ClassDataFull C_CHAT::_class_data_ = {
-    ::google::protobuf::internal::ClassData{
-        &_C_CHAT_default_instance_._instance,
-        &_table_.header,
-        nullptr,  // OnDemandRegisterArenaDtor
-        nullptr,  // IsInitialized
-        &C_CHAT::MergeImpl,
-        ::google::protobuf::Message::GetNewImpl<C_CHAT>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-        &C_CHAT::SharedDtor,
-        ::google::protobuf::Message::GetClearImpl<C_CHAT>(), &C_CHAT::ByteSizeLong,
-            &C_CHAT::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-        PROTOBUF_FIELD_OFFSET(C_CHAT, _impl_._cached_size_),
-        false,
-    },
-    &C_CHAT::kDescriptorMethods,
-    &descriptor_table_Protocol_2eproto,
-    nullptr,  // tracker
-};
-const ::google::protobuf::internal::ClassData* C_CHAT::GetClassData() const {
-  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
-  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
-  return _class_data_.base();
-}
-PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
-const ::_pbi::TcParseTable<0, 1, 0, 27, 2> C_CHAT::_table_ = {
-  {
-    0,  // no _has_bits_
-    0, // no _extensions_
-    1, 0,  // max_field_number, fast_idx_mask
-    offsetof(decltype(_table_), field_lookup_table),
-    4294967294,  // skipmap
-    offsetof(decltype(_table_), field_entries),
-    1,  // num_field_entries
-    0,  // num_aux_entries
-    offsetof(decltype(_table_), field_names),  // no aux_entries
-    _class_data_.base(),
-    nullptr,  // post_loop_handler
-    ::_pbi::TcParser::GenericFallback,  // fallback
-    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-    ::_pbi::TcParser::GetTable<::Protocol::C_CHAT>(),  // to_prefetch
-    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-  }, {{
-    // string msg = 1;
-    {::_pbi::TcParser::FastUS1,
-     {10, 63, 0, PROTOBUF_FIELD_OFFSET(C_CHAT, _impl_.msg_)}},
-  }}, {{
-    65535, 65535
-  }}, {{
-    // string msg = 1;
-    {PROTOBUF_FIELD_OFFSET(C_CHAT, _impl_.msg_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
-  }},
-  // no aux_entries
-  {{
-    "\17\3\0\0\0\0\0\0"
-    "Protocol.C_CHAT"
-    "msg"
-  }},
-};
-
-PROTOBUF_NOINLINE void C_CHAT::Clear() {
-// @@protoc_insertion_point(message_clear_start:Protocol.C_CHAT)
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  ::uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  _impl_.msg_.ClearToEmpty();
-  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
-}
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-        ::uint8_t* C_CHAT::_InternalSerialize(
-            const MessageLite& base, ::uint8_t* target,
-            ::google::protobuf::io::EpsCopyOutputStream* stream) {
-          const C_CHAT& this_ = static_cast<const C_CHAT&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-        ::uint8_t* C_CHAT::_InternalSerialize(
-            ::uint8_t* target,
-            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
-          const C_CHAT& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(serialize_to_array_start:Protocol.C_CHAT)
-          ::uint32_t cached_has_bits = 0;
-          (void)cached_has_bits;
-
-          // string msg = 1;
-          if (!this_._internal_msg().empty()) {
-            const std::string& _s = this_._internal_msg();
-            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "Protocol.C_CHAT.msg");
-            target = stream->WriteStringMaybeAliased(1, _s, target);
-          }
-
-          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
-            target =
-                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
-          }
-          // @@protoc_insertion_point(serialize_to_array_end:Protocol.C_CHAT)
-          return target;
-        }
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-        ::size_t C_CHAT::ByteSizeLong(const MessageLite& base) {
-          const C_CHAT& this_ = static_cast<const C_CHAT&>(base);
-#else   // PROTOBUF_CUSTOM_VTABLE
-        ::size_t C_CHAT::ByteSizeLong() const {
-          const C_CHAT& this_ = *this;
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          // @@protoc_insertion_point(message_byte_size_start:Protocol.C_CHAT)
-          ::size_t total_size = 0;
-
-          ::uint32_t cached_has_bits = 0;
-          // Prevent compiler warnings about cached_has_bits being unused
-          (void)cached_has_bits;
-
-           {
-            // string msg = 1;
-            if (!this_._internal_msg().empty()) {
-              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
-                                              this_._internal_msg());
-            }
-          }
-          return this_.MaybeComputeUnknownFieldsSize(total_size,
-                                                     &this_._impl_._cached_size_);
-        }
-
-void C_CHAT::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
-  auto* const _this = static_cast<C_CHAT*>(&to_msg);
-  auto& from = static_cast<const C_CHAT&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.C_CHAT)
-  ABSL_DCHECK_NE(&from, _this);
-  ::uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  if (!from._internal_msg().empty()) {
-    _this->_internal_set_msg(from._internal_msg());
-  }
-  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
-}
-
-void C_CHAT::CopyFrom(const C_CHAT& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.C_CHAT)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-
-void C_CHAT::InternalSwap(C_CHAT* PROTOBUF_RESTRICT other) {
-  using std::swap;
-  auto* arena = GetArena();
-  ABSL_DCHECK_EQ(arena, other->GetArena());
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.msg_, &other->_impl_.msg_, arena);
-}
-
-::google::protobuf::Metadata C_CHAT::GetMetadata() const {
-  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
-}
-// ===================================================================
-
 class C_HANDSHAKE::_Internal {
  public:
 };
@@ -1911,6 +1680,237 @@ void S_HANDSHAKE::InternalSwap(S_HANDSHAKE* PROTOBUF_RESTRICT other) {
 }
 
 ::google::protobuf::Metadata S_HANDSHAKE::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+class C_CHAT::_Internal {
+ public:
+};
+
+C_CHAT::C_CHAT(::google::protobuf::Arena* arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:Protocol.C_CHAT)
+}
+inline PROTOBUF_NDEBUG_INLINE C_CHAT::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility, ::google::protobuf::Arena* arena,
+    const Impl_& from, const ::Protocol::C_CHAT& from_msg)
+      : msg_(arena, from.msg_),
+        _cached_size_{0} {}
+
+C_CHAT::C_CHAT(
+    ::google::protobuf::Arena* arena,
+    const C_CHAT& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, _class_data_.base()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  C_CHAT* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:Protocol.C_CHAT)
+}
+inline PROTOBUF_NDEBUG_INLINE C_CHAT::Impl_::Impl_(
+    ::google::protobuf::internal::InternalVisibility visibility,
+    ::google::protobuf::Arena* arena)
+      : msg_(arena),
+        _cached_size_{0} {}
+
+inline void C_CHAT::SharedCtor(::_pb::Arena* arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+C_CHAT::~C_CHAT() {
+  // @@protoc_insertion_point(destructor:Protocol.C_CHAT)
+  SharedDtor(*this);
+}
+inline void C_CHAT::SharedDtor(MessageLite& self) {
+  C_CHAT& this_ = static_cast<C_CHAT&>(self);
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.msg_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+inline void* C_CHAT::PlacementNew_(const void*, void* mem,
+                                        ::google::protobuf::Arena* arena) {
+  return ::new (mem) C_CHAT(arena);
+}
+constexpr auto C_CHAT::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(C_CHAT),
+                                            alignof(C_CHAT));
+}
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::google::protobuf::internal::ClassDataFull C_CHAT::_class_data_ = {
+    ::google::protobuf::internal::ClassData{
+        &_C_CHAT_default_instance_._instance,
+        &_table_.header,
+        nullptr,  // OnDemandRegisterArenaDtor
+        nullptr,  // IsInitialized
+        &C_CHAT::MergeImpl,
+        ::google::protobuf::Message::GetNewImpl<C_CHAT>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        &C_CHAT::SharedDtor,
+        ::google::protobuf::Message::GetClearImpl<C_CHAT>(), &C_CHAT::ByteSizeLong,
+            &C_CHAT::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+        PROTOBUF_FIELD_OFFSET(C_CHAT, _impl_._cached_size_),
+        false,
+    },
+    &C_CHAT::kDescriptorMethods,
+    &descriptor_table_Protocol_2eproto,
+    nullptr,  // tracker
+};
+const ::google::protobuf::internal::ClassData* C_CHAT::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(_class_data_.tc_table);
+  return _class_data_.base();
+}
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1
+const ::_pbi::TcParseTable<0, 1, 0, 27, 2> C_CHAT::_table_ = {
+  {
+    0,  // no _has_bits_
+    0, // no _extensions_
+    1, 0,  // max_field_number, fast_idx_mask
+    offsetof(decltype(_table_), field_lookup_table),
+    4294967294,  // skipmap
+    offsetof(decltype(_table_), field_entries),
+    1,  // num_field_entries
+    0,  // num_aux_entries
+    offsetof(decltype(_table_), field_names),  // no aux_entries
+    _class_data_.base(),
+    nullptr,  // post_loop_handler
+    ::_pbi::TcParser::GenericFallback,  // fallback
+    #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+    ::_pbi::TcParser::GetTable<::Protocol::C_CHAT>(),  // to_prefetch
+    #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+  }, {{
+    // string msg = 1;
+    {::_pbi::TcParser::FastUS1,
+     {10, 63, 0, PROTOBUF_FIELD_OFFSET(C_CHAT, _impl_.msg_)}},
+  }}, {{
+    65535, 65535
+  }}, {{
+    // string msg = 1;
+    {PROTOBUF_FIELD_OFFSET(C_CHAT, _impl_.msg_), 0, 0,
+    (0 | ::_fl::kFcSingular | ::_fl::kUtf8String | ::_fl::kRepAString)},
+  }},
+  // no aux_entries
+  {{
+    "\17\3\0\0\0\0\0\0"
+    "Protocol.C_CHAT"
+    "msg"
+  }},
+};
+
+PROTOBUF_NOINLINE void C_CHAT::Clear() {
+// @@protoc_insertion_point(message_clear_start:Protocol.C_CHAT)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.msg_.ClearToEmpty();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::uint8_t* C_CHAT::_InternalSerialize(
+            const MessageLite& base, ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) {
+          const C_CHAT& this_ = static_cast<const C_CHAT&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::uint8_t* C_CHAT::_InternalSerialize(
+            ::uint8_t* target,
+            ::google::protobuf::io::EpsCopyOutputStream* stream) const {
+          const C_CHAT& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(serialize_to_array_start:Protocol.C_CHAT)
+          ::uint32_t cached_has_bits = 0;
+          (void)cached_has_bits;
+
+          // string msg = 1;
+          if (!this_._internal_msg().empty()) {
+            const std::string& _s = this_._internal_msg();
+            ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+                _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "Protocol.C_CHAT.msg");
+            target = stream->WriteStringMaybeAliased(1, _s, target);
+          }
+
+          if (PROTOBUF_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+            target =
+                ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+                    this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+          }
+          // @@protoc_insertion_point(serialize_to_array_end:Protocol.C_CHAT)
+          return target;
+        }
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+        ::size_t C_CHAT::ByteSizeLong(const MessageLite& base) {
+          const C_CHAT& this_ = static_cast<const C_CHAT&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+        ::size_t C_CHAT::ByteSizeLong() const {
+          const C_CHAT& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          // @@protoc_insertion_point(message_byte_size_start:Protocol.C_CHAT)
+          ::size_t total_size = 0;
+
+          ::uint32_t cached_has_bits = 0;
+          // Prevent compiler warnings about cached_has_bits being unused
+          (void)cached_has_bits;
+
+           {
+            // string msg = 1;
+            if (!this_._internal_msg().empty()) {
+              total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                              this_._internal_msg());
+            }
+          }
+          return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                                     &this_._impl_._cached_size_);
+        }
+
+void C_CHAT::MergeImpl(::google::protobuf::MessageLite& to_msg, const ::google::protobuf::MessageLite& from_msg) {
+  auto* const _this = static_cast<C_CHAT*>(&to_msg);
+  auto& from = static_cast<const C_CHAT&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:Protocol.C_CHAT)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_msg().empty()) {
+    _this->_internal_set_msg(from._internal_msg());
+  }
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void C_CHAT::CopyFrom(const C_CHAT& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:Protocol.C_CHAT)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void C_CHAT::InternalSwap(C_CHAT* PROTOBUF_RESTRICT other) {
+  using std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.msg_, &other->_impl_.msg_, arena);
+}
+
+::google::protobuf::Metadata C_CHAT::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================

@@ -14,8 +14,8 @@ PacketHandlerFunc GPacketHandler_Udp[UINT16_MAX];
 
 bool Handle_INVALID(SessionRef& session, BYTE* buffer, int32 len)
 {
-	TcpPacketHeader* header = reinterpret_cast<TcpPacketHeader*>(buffer);
-	// TODO : Log
+	//TcpPacketHeader* header = reinterpret_cast<TcpPacketHeader*>(buffer);
+
 	return false;
 }
 
@@ -38,7 +38,7 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 		return false;
 
 	string ip = pkt.ip();
-	int32 port = pkt.port();
+	uint32 port = pkt.port();
 
 	auto service = session->GetService();
 	service->SetSessionFactory<ReliableUdpSession>();
@@ -52,17 +52,19 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 
 	// TODO SessionManager -> 일시적으로 들고있게 하고 Connect 시도(handshake) 이후 성공한다면 그때 Service 와 Session Manager에 추가
 
-	{
-		Protocol::C_SPAWN_ACTOR spawnActorPkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(spawnActorPkt);
-		session->Send(sendBuffer);
-	}
+	//{
+	//	Protocol::C_SPAWN_ACTOR spawnActorPkt;
+	//	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(spawnActorPkt);
+	//	session->Send(sendBuffer);
+	//}
 	return true;
 }
 
 bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 {
-	// TODO
+	if (pkt.success() == false)
+		return false;
+
 	return false;
 }
 

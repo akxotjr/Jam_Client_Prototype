@@ -555,7 +555,7 @@ class S_HANDSHAKE final : public ::google::protobuf::Message
     return reinterpret_cast<const S_HANDSHAKE*>(
         &_S_HANDSHAKE_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(S_HANDSHAKE& a, S_HANDSHAKE& b) { a.Swap(&b); }
   inline void Swap(S_HANDSHAKE* other) {
     if (other == this) return;
@@ -1860,7 +1860,7 @@ class C_HANDSHAKE final : public ::google::protobuf::internal::ZeroFieldsBase
     return reinterpret_cast<const C_HANDSHAKE*>(
         &_C_HANDSHAKE_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(C_HANDSHAKE& a, C_HANDSHAKE& b) { a.Swap(&b); }
   inline void Swap(C_HANDSHAKE* other) {
     if (other == this) return;
@@ -2151,7 +2151,7 @@ class C_CHAT final : public ::google::protobuf::Message
     return reinterpret_cast<const C_CHAT*>(
         &_C_CHAT_default_instance_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(C_CHAT& a, C_CHAT& b) { a.Swap(&b); }
   inline void Swap(C_CHAT* other) {
     if (other == this) return;
@@ -3265,6 +3265,36 @@ inline void S_ENTER_GAME::_internal_set_port(::uint32_t value) {
 
 // -------------------------------------------------------------------
 
+// C_HANDSHAKE
+
+// -------------------------------------------------------------------
+
+// S_HANDSHAKE
+
+// bool success = 1;
+inline void S_HANDSHAKE::clear_success() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = false;
+}
+inline bool S_HANDSHAKE::success() const {
+  // @@protoc_insertion_point(field_get:Protocol.S_HANDSHAKE.success)
+  return _internal_success();
+}
+inline void S_HANDSHAKE::set_success(bool value) {
+  _internal_set_success(value);
+  // @@protoc_insertion_point(field_set:Protocol.S_HANDSHAKE.success)
+}
+inline bool S_HANDSHAKE::_internal_success() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.success_;
+}
+inline void S_HANDSHAKE::_internal_set_success(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.success_ = value;
+}
+
+// -------------------------------------------------------------------
+
 // C_CHAT
 
 // string msg = 1;
@@ -3313,36 +3343,6 @@ inline void C_CHAT::set_allocated_msg(std::string* value) {
     _impl_.msg_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:Protocol.C_CHAT.msg)
-}
-
-// -------------------------------------------------------------------
-
-// C_HANDSHAKE
-
-// -------------------------------------------------------------------
-
-// S_HANDSHAKE
-
-// bool success = 1;
-inline void S_HANDSHAKE::clear_success() {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.success_ = false;
-}
-inline bool S_HANDSHAKE::success() const {
-  // @@protoc_insertion_point(field_get:Protocol.S_HANDSHAKE.success)
-  return _internal_success();
-}
-inline void S_HANDSHAKE::set_success(bool value) {
-  _internal_set_success(value);
-  // @@protoc_insertion_point(field_set:Protocol.S_HANDSHAKE.success)
-}
-inline bool S_HANDSHAKE::_internal_success() const {
-  ::google::protobuf::internal::TSanRead(&_impl_);
-  return _impl_.success_;
-}
-inline void S_HANDSHAKE::_internal_set_success(bool value) {
-  ::google::protobuf::internal::TSanWrite(&_impl_);
-  _impl_.success_ = value;
 }
 
 // -------------------------------------------------------------------

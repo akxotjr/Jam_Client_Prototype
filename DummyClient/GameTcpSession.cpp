@@ -19,14 +19,14 @@ void GameTcpSession::OnConnected()
 	service->SetGameTcpSession(static_pointer_cast<GameTcpSession>(shared_from_this()));
 
 
-	{
-		Protocol::C_TIMESYNC timesyncPkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timesyncPkt);
-		Send(sendBuffer);
-	}
+	//{
+	//	Protocol::C_TIMESYNC timesyncPkt;
+	//	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timesyncPkt);
+	//	Send(sendBuffer);
+	//}
 
 
-	TimeManager::GetInstance()->SetSession(GetSessionRef());
+	//TimeManager::GetInstance()->SetSession(GetSessionRef());
 
 	{
 		Protocol::C_LOGIN loginPkt;

@@ -37,9 +37,10 @@ void Game::Init(HWND hwnd)
 	SceneManager::GetInstance()->Init(shared_from_this());
 	SceneManager::GetInstance()->ChangeScene(SceneType::GameScene);
 
-	_service = make_shared<ClientService>(NetAddress{ "127.0.0.1", "7777" });
+	TransportConfig config = { .tcpAddress =NetAddress("127.0.0.1", "7777") };
+
+	_service = make_shared<ClientService>(config);
 	_service->SetSessionFactory<GameTcpSession>();
-	_service->CreateSession();
 	_service->Start();
 }
 
@@ -47,7 +48,7 @@ void Game::Update()
 {
 	InputManager::GetInstance()->Update();
 	TimeManager::GetInstance()->Update();
-	SceneManager::GetInstance()->Update();
+//	SceneManager::GetInstance()->Update();
 }
 
 void Game::Render()

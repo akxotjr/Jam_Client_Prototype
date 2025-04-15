@@ -3,10 +3,9 @@
 #include "Session.h"
 #include "ThreadManager.h"
 
-Service::Service(NetAddress address, int32 maxSessionCount)
-	: _address(address), _maxSessionCount(maxSessionCount)/*, _pool(4)*/
+Service::Service(TransportConfig config, int32 maxSessionCount)
+	: _config(config), _maxSessionCount(maxSessionCount)/*, _pool(4)*/
 {
-	
 }
 
 Service::~Service()
@@ -35,14 +34,24 @@ void Service::Start()
 
 	//if (!CanStart()) return false;
 
-	for (auto& session : _sessions)
-	{
-		session->Connect();
-	}
+	//for (auto& session : _sessions)
+	//{
+	//	session->Connect();
+	//}
+
+	SessionRef session = CreateSession();
+	if (session == nullptr)
+		return;
+	session->Connect();
 }
 
 SessionRef Service::CreateSession()
 {
+	if (GetCurrentSessionCount() + 1 > GetMaxSessionCount())
+		return nullptr;
+
+	_sessionCount++;
+
 	SessionRef session = _sessionFactory();
 	return session;
 }

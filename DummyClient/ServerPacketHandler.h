@@ -11,9 +11,9 @@ enum : uint16
 	PKT_S_LOGIN = 1001,
 	PKT_C_ENTER_GAME = 1002,
 	PKT_S_ENTER_GAME = 1003,
-	PKT_C_CHAT = 1004,
-	PKT_C_HANDSHAKE = 1005,
-	PKT_S_HANDSHAKE = 1006,
+	PKT_C_HANDSHAKE = 1004,
+	PKT_S_HANDSHAKE = 1005,
+	PKT_C_CHAT = 1006,
 	PKT_S_CHAT = 1007,
 	PKT_C_TIMESYNC = 1008,
 	PKT_S_TIMESYNC = 1009,
@@ -90,10 +90,10 @@ public:
 	static SendBufferRef MakeSendBufferUdp(Protocol::C_LOGIN& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_LOGIN); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_ENTER_GAME& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_ENTER_GAME); }
 	static SendBufferRef MakeSendBufferUdp(Protocol::C_ENTER_GAME& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_ENTER_GAME); }
-	static SendBufferRef MakeSendBufferTcp(Protocol::C_CHAT& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_CHAT); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_CHAT& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_CHAT); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_HANDSHAKE& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_HANDSHAKE); }
 	static SendBufferRef MakeSendBufferUdp(Protocol::C_HANDSHAKE& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_HANDSHAKE); }
+	static SendBufferRef MakeSendBufferTcp(Protocol::C_CHAT& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_CHAT); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_CHAT& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_CHAT); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_TIMESYNC& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_TIMESYNC); }
 	static SendBufferRef MakeSendBufferUdp(Protocol::C_TIMESYNC& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_TIMESYNC); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_SPAWN_ACTOR& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_SPAWN_ACTOR); }
