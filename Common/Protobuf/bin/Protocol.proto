@@ -29,12 +29,14 @@ message S_ENTER_GAME
 
 message C_ACK
 {
-
+	uint32 latestSequence = 1;
+	uint32 bitfield = 2; 
 }
 
 message S_ACK
 {
-
+	uint32 latestSequence = 1;
+	uint32 bitfield = 2;
 }
 
 message C_HANDSHAKE

@@ -69,7 +69,13 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 
 bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 {
-	
+	auto udpSession = static_pointer_cast<GameUdpSession>(session);
+
+	uint32 latestSeq; //todo
+	uint32 bitfield;
+
+	//udpSession->HandleAck(latestSeq);
+
 	return true;
 }
 
