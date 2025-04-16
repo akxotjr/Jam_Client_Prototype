@@ -10,11 +10,15 @@ public:
 
 	GameTcpSessionRef		GetGameTcpSession() { return _gameTcpSession; }
 	void					SetGameTcpSession(GameTcpSessionRef session) { _gameTcpSession = session; }
-	GameUdpSessionRef		GatGameUdpSession() { return _gameUdpSession; }
+	GameUdpSessionRef		GetGameUdpSession() { return _gameUdpSession; }
 	void					SetGameUdpSession(GameUdpSessionRef session) { _gameUdpSession = session; }
+	
+	void					SetPendingGameUdpSession(GameUdpSessionRef session) { _pendingGameUdpSession = session; }
 
 private:
 	GameTcpSessionRef		_gameTcpSession;
 	GameUdpSessionRef		_gameUdpSession;
+
+	GameUdpSessionRef		_pendingGameUdpSession;
 };
 

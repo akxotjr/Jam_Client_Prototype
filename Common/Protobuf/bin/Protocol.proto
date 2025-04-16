@@ -27,6 +27,16 @@ message S_ENTER_GAME
 	uint32 port = 3;
 }
 
+message C_ACK
+{
+
+}
+
+message S_ACK
+{
+
+}
+
 message C_HANDSHAKE
 {
 }

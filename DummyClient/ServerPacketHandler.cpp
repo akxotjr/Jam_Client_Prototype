@@ -45,14 +45,16 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	auto service = static_pointer_cast<ClientService>(session->GetService());
 	service->SetUdpNetAddress(NetAddress(ip, to_string(port)));
 	service->SetSessionFactory<GameUdpSession>();
-	auto udpSession = service->CreateSession();
+	auto udpSession = static_pointer_cast<GameUdpSession>(service->CreateSession());
 	udpSession->Connect();
-
+	service->SetPendingGameUdpSession(udpSession);
 
 	{
+		float timestamp = TimeManager::GetInstance()->GetClientTime();
+
 		Protocol::C_HANDSHAKE handshakePkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(handshakePkt, 1);
-		udpSession->Send(sendBuffer);
+		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(handshakePkt);
+		udpSession->SendReliable(sendBuffer, timestamp);
 	}
 
 	// TODO SessionManager -> 일시적으로 들고있게 하고 Connect 시도(handshake) 이후 성공한다면 그때 Service 와 Session Manager에 추가
@@ -65,12 +67,30 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	return true;
 }
 
+bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
+{
+	
+	return true;
+}
+
 bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 {
 	if (pkt.success() == false)
 		return false;
 
-	return false;
+	auto udpSession = static_pointer_cast<GameUdpSession>(session);
+	if (udpSession == nullptr)
+		return false;
+
+	udpSession->OnConnected();
+
+	{
+		Protocol::C_SPAWN_ACTOR spawnActorPkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(spawnActorPkt);	// todo ack
+		session->Send(sendBuffer);
+	}
+
+	return true;
 }
 
 bool Handle_S_CHAT(SessionRef& session, Protocol::S_CHAT& pkt)
@@ -103,7 +123,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 		string name = info.name();
 		uint32 id = info.id();
 
-		auto actor = gameScene->GetActorById(id);	// ÀÌ¹Ì »ý¼ºµÇ¾úÀ¸¸é ÆÐ½º
+		auto actor = gameScene->GetActorById(id);	
 		if (actor && actor->GetId() == id)
 		{
 			continue;
