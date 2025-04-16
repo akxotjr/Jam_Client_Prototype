@@ -27,6 +27,7 @@ public:
 	void								SetService(shared_ptr<Service> service) { _service = service; }
 
 	bool								IsConnected() { return _connected; }
+	void								SetConnected(bool success) { _connected.store(success); }
 	SessionRef							GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
 
 
@@ -75,6 +76,7 @@ private:
 
 	void								RegisterRecv();
 
+public:
 	void								ProcessConnect();
 	void								ProcesssDisconnect();
 	void								ProcessSend(int32 numOfBytes);
@@ -134,9 +136,11 @@ private:
 	void									RegisterSend();
 	void									RegisterRecv();
 
-
+public:
 	void									ProcessConnect();
 	void									ProcessDisconnect();
+
+private:
 	void									ProcessSend(int32 numOfBytes);
 	void									ProcessRecv(int32 numOfBytes);
 
@@ -156,6 +160,7 @@ private:
 
 protected:
 	unordered_map<uint16, PendingPacket>	_pendingAckMap;
+
 
 	uint16									_sendSeq = 0;			// 다음 보낼 sequence
 	float									_resendIntervalMs = 0.1f; // 재전송 대기 시간

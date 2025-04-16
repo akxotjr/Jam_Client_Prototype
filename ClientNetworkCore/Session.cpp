@@ -528,7 +528,7 @@ void TcpSession::RegisterRecv()
 void TcpSession::ProcessConnect()
 {
 	_connected.store(true);
-	//GetService()->AddSession(GetSessionRef());
+	GetService()->AddSession(GetSessionRef());
 	OnConnected();
 
 	//RegisterRecvHeader();
@@ -538,6 +538,7 @@ void TcpSession::ProcessConnect()
 void TcpSession::ProcesssDisconnect()
 {
 	OnDisconnected();
+	GetService()->ReleaseSession(GetSessionRef());
 
 	{
 		WRITE_LOCK
@@ -676,7 +677,7 @@ void ReliableUdpSession::SendReliable(SendBufferRef sendBuffer, float timestamp)
 	PendingPacket pkt = { .buffer = sendBuffer, .sequence = seq, .timestamp = timestamp, .retryCount = 0 };
 
 	{
-		WRITE_LOCK;
+		WRITE_LOCK
 		_pendingAckMap[seq] = pkt;
 	}
 
@@ -713,17 +714,17 @@ void ReliableUdpSession::RegisterDisconnect()
 		}
 		else
 		{
-			OnDisconnected();
+			ProcessDisconnect();
 		}
 	}
 
-	{
-		WRITE_LOCK
+	//{
+	//	WRITE_LOCK
 
-		_sendQueue = {};
-		_currentSendBuffers.clear();
-		_sendRegistered.store(false);
-	}
+	//	_sendQueue = {};
+	//	_currentSendBuffers.clear();
+	//	_sendRegistered.store(false);
+	//}
 }
 
 void ReliableUdpSession::RegisterSend()
@@ -795,7 +796,6 @@ void ReliableUdpSession::RegisterRecv()
 		{
 			if (!ec && bytes_transferred > 0)
 			{
-				//_recvBuffer.OnWrite(bytes_transferred);
 				ProcessRecv(static_cast<int32>(bytes_transferred)); // 荐脚等 单捞磐 贸府
 			}
 			else
@@ -809,11 +809,23 @@ void ReliableUdpSession::RegisterRecv()
 
 void ReliableUdpSession::ProcessConnect()
 {
-
+	_connected.store(true);
+	GetService()->AddSession(GetSessionRef());
+	OnConnected();
 }
 
 void ReliableUdpSession::ProcessDisconnect()
 {
+	OnDisconnected();
+	GetService()->ReleaseSession(GetSessionRef());
+
+	{
+		WRITE_LOCK
+
+		_sendQueue = {};
+		_currentSendBuffers.clear();
+		_sendRegistered.store(false);
+	}
 }
 
 void ReliableUdpSession::ProcessSend(int32 numOfBytes)

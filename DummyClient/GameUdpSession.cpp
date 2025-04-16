@@ -12,20 +12,27 @@ GameUdpSession::GameUdpSession(ServiceRef service, boost::asio::any_io_executor 
 
 void GameUdpSession::OnConnected()
 {
-	auto service = dynamic_pointer_cast<ClientService>(GetService());
+	std::cout << "OnConnected : UDP\n";
+
+	auto service = static_pointer_cast<ClientService>(GetService());
 	if (service == nullptr)
 		return;
 
+	SetConnected(true);
+	service->AddSession(static_pointer_cast<Session>(shared_from_this()));
 	service->SetGameUdpSession(static_pointer_cast<GameUdpSession>(shared_from_this()));
+	service->SetPendingGameUdpSession(nullptr);
 }
 
 void GameUdpSession::OnDisconnected()
 {
-	auto service = dynamic_pointer_cast<ClientService>(GetService());
+	std::cout << "OnDisconnected : UDP\n";
+
+	auto service = static_pointer_cast<ClientService>(GetService());
 	if (service == nullptr)
 		return;
 
-	service->SetGameTcpSession(nullptr);
+	service->SetGameUdpSession(nullptr);
 }
 
 void GameUdpSession::OnSend(int32 len)
@@ -35,6 +42,8 @@ void GameUdpSession::OnSend(int32 len)
 
 void GameUdpSession::OnRecv(BYTE* buffer, int32 len)
 {
+	std::cout << "OnRecv : " << len << " bytes\n";
+
 	SessionRef session = GetSessionRef();
 
 	ServerPacketHandler::HandlePacket<UdpPacketHeader>(session, buffer, len);
