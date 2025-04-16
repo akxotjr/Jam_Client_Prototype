@@ -590,7 +590,8 @@ void TcpSession::ProcessRecv(int32 numOfBytes)
 
 	_recvBuffer.Clean();
 
-	RegisterRecvHeader();
+	//RegisterRecvHeader();
+	RegisterRecv();
 }
 
 int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
@@ -648,8 +649,8 @@ void ReliableUdpSession::Disconnect(const string cause)
 
 void ReliableUdpSession::Send(SendBufferRef sendBuffer)
 {
-	if (IsConnected() == false)
-		return;
+	//if (IsConnected() == false)
+	//	return;
 
 	bool registerSend = false;
 
@@ -730,9 +731,6 @@ void ReliableUdpSession::RegisterSend()
 	if (_socket.is_open() == false)
 		return;
 
-	if (_sendRegistered.exchange(true))
-		return;
-
 	if (_sendQueue.empty())
 	{
 		_sendRegistered = false;
@@ -770,6 +768,7 @@ void ReliableUdpSession::RegisterSend()
 			}
 			else
 			{
+				std::cout << "fail to send: " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
 				//Disconnect("Failed to send");
 				{
 					WRITE_LOCK

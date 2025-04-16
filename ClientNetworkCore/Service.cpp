@@ -80,7 +80,7 @@ bool Service::AddSession(SessionRef session)
 
 void Service::ReleaseSession(SessionRef session)
 {
-	WRITE_LOCK;
+	WRITE_LOCK
 	ASSERT_CRASH(_sessions.erase(session) != 0);
 	_sessionCount--;
 

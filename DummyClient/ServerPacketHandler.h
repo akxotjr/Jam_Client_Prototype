@@ -87,21 +87,21 @@ public:
 		}
 	}
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_LOGIN& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_LOGIN); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_LOGIN& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_LOGIN); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_LOGIN& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_LOGIN, seq); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_ENTER_GAME& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_ENTER_GAME); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_ENTER_GAME& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_ENTER_GAME); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_ENTER_GAME& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_ENTER_GAME, seq); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_HANDSHAKE& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_HANDSHAKE); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_HANDSHAKE& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_HANDSHAKE); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_HANDSHAKE& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_HANDSHAKE, seq); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_CHAT& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_CHAT); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_CHAT& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_CHAT); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_CHAT& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_CHAT, seq); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_TIMESYNC& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_TIMESYNC); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_TIMESYNC& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_TIMESYNC); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_TIMESYNC& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_TIMESYNC, seq); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_SPAWN_ACTOR& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_SPAWN_ACTOR); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_SPAWN_ACTOR& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_SPAWN_ACTOR); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_SPAWN_ACTOR& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_SPAWN_ACTOR, seq); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_CHARACTER_SYNC& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_CHARACTER_SYNC); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_CHARACTER_SYNC& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_CHARACTER_SYNC); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_CHARACTER_SYNC& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_CHARACTER_SYNC, seq); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_PLAYER_INPUT& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_PLAYER_INPUT); }
-	static SendBufferRef MakeSendBufferUdp(Protocol::C_PLAYER_INPUT& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_PLAYER_INPUT); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_PLAYER_INPUT& pkt, uint16 seq) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_PLAYER_INPUT, seq); }
 
 private:
 	template<typename HeaderType, typename PacketType, typename ProcessFunc>
@@ -131,7 +131,8 @@ private:
 			header->sequence = sequence.value();
 		}
 
-		ASSERT_CRASH(pkt.SerializeToArray(&header[1], dataSize));
+		BYTE* payload = reinterpret_cast<BYTE*>(header) + sizeof(HeaderType);
+		ASSERT_CRASH(pkt.SerializeToArray(payload, dataSize));
 		sendBuffer->Close(packetSize);
 
 		return sendBuffer;
