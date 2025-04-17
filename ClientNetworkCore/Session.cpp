@@ -684,7 +684,7 @@ void ReliableUdpSession::SendReliable(SendBufferRef sendBuffer, float timestamp)
 	Send(sendBuffer);
 }
 
-void ReliableUdpSession::HandleAck(uint16 ackSeq)
+void ReliableUdpSession::HandleAck(uint16 ackSeq, uint32 bitfield)
 {
 	WRITE_LOCK;
 	_pendingAckMap.erase(ackSeq);

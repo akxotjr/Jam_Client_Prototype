@@ -128,7 +128,7 @@ public:
 	virtual void							Send(SendBufferRef sendBuffer) override;
 	virtual void							SendReliable(SendBufferRef sendBuffer, float timestamp);
 
-	void									HandleAck(uint16 ackSeq);
+	void									HandleAck(uint16 ackSeq, uint32 bitfield);
 
 private:	
 	void									RegisterConnect();

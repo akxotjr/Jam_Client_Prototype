@@ -71,10 +71,10 @@ bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 {
 	auto udpSession = static_pointer_cast<GameUdpSession>(session);
 
-	uint32 latestSeq; //todo
-	uint32 bitfield;
+	uint32 latestSeq = pkt.latestsequence(); //todo
+	uint32 bitfield = pkt.bitfield();
 
-	//udpSession->HandleAck(latestSeq);
+	udpSession->HandleAck(latestSeq, bitfield);
 
 	return true;
 }
