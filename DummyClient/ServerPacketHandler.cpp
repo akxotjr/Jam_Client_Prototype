@@ -56,22 +56,16 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(handshakePkt);
 		udpSession->SendReliable(sendBuffer, timestamp);
 	}
-
-	// TODO SessionManager -> 일시적으로 들고있게 하고 Connect 시도(handshake) 이후 성공한다면 그때 Service 와 Session Manager에 추가
-
-	//{
-	//	Protocol::C_SPAWN_ACTOR spawnActorPkt;
-	//	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(spawnActorPkt);
-	//	session->Send(sendBuffer);
-	//}
 	return true;
 }
 
 bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 {
 	auto udpSession = static_pointer_cast<GameUdpSession>(session);
+	if (udpSession == nullptr)
+		return false;
 
-	uint32 latestSeq = pkt.latestsequence(); //todo
+	uint32 latestSeq = pkt.latestsequence();
 	uint32 bitfield = pkt.bitfield();
 
 	udpSession->HandleAck(latestSeq, bitfield);
@@ -91,9 +85,11 @@ bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 	udpSession->OnConnected();
 
 	{
+		float timestamp = TimeManager::GetInstance()->GetClientTime();
+
 		Protocol::C_SPAWN_ACTOR spawnActorPkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(spawnActorPkt);	// todo ack
-		session->Send(sendBuffer);
+		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(spawnActorPkt);
+		udpSession->SendReliable(sendBuffer, timestamp);
 	}
 
 	return true;

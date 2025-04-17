@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bitset>
+
 #include "boost/asio.hpp"
 #include "Service.h"
 #include "RecvBuffer.h"
@@ -101,7 +103,7 @@ struct UdpPacketHeader
 {
 	uint16 size;
 	uint16 id;
-	uint16 sequence;
+	uint16 sequence = 0;
 };
 
 struct PendingPacket
@@ -128,7 +130,9 @@ public:
 	virtual void							Send(SendBufferRef sendBuffer) override;
 	virtual void							SendReliable(SendBufferRef sendBuffer, float timestamp);
 
-	void									HandleAck(uint16 ackSeq, uint32 bitfield);
+	void									HandleAck(uint16 latestSeq, uint32 bitfield);
+	bool									CheckAndRecordReceiveHistory(uint16 seq);
+	uint32									GenerateAckBitfield(uint16 latestSeq);
 
 private:	
 	void									RegisterConnect();
@@ -161,6 +165,7 @@ private:
 protected:
 	unordered_map<uint16, PendingPacket>	_pendingAckMap;
 
+	bitset<1024>							_receiveHistory;
 
 	uint16									_sendSeq = 0;			// 다음 보낼 sequence
 	float									_resendIntervalMs = 0.1f; // 재전송 대기 시간
