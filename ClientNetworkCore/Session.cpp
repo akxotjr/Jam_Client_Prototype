@@ -650,9 +650,6 @@ void ReliableUdpSession::Disconnect(const string cause)
 
 void ReliableUdpSession::Send(SendBufferRef sendBuffer)
 {
-	//if (IsConnected() == false)
-	//	return;
-
 	bool registerSend = false;
 
 	{
@@ -684,10 +681,44 @@ void ReliableUdpSession::SendReliable(SendBufferRef sendBuffer, float timestamp)
 	Send(sendBuffer);
 }
 
-void ReliableUdpSession::HandleAck(uint16 ackSeq)
+void ReliableUdpSession::HandleAck(uint16 latestSeq, uint32 bitfield)
 {
-	WRITE_LOCK;
-	_pendingAckMap.erase(ackSeq);
+	WRITE_LOCK
+
+	for (int i = 0; i <= 32; ++i)
+	{
+		uint16 ackSeq = latestSeq - i;
+
+		if (i == 0 || (bitfield & (1 << (i - 1))))
+		{
+			_pendingAckMap.erase(ackSeq);
+			std::cout << "[ACK] seq=" << ackSeq << '\n';
+		}
+	}
+}
+
+bool ReliableUdpSession::CheckAndRecordReceiveHistory(uint16 seq)
+{
+	if (_receiveHistory.test(seq % 1024))
+		return false;
+
+	_receiveHistory.set(seq % 1024);
+	return true;
+}
+
+uint32 ReliableUdpSession::GenerateAckBitfield(uint16 latestSeq)
+{
+	uint32 bitfield = 0;
+	for (int i = 1; i <= 32; ++i)
+	{
+		uint16 seq = latestSeq - i;
+		if (_receiveHistory.test(seq % 1024))
+		{
+			bitfield |= (1 << (i - 1));
+		}
+	}
+
+	return bitfield;
 }
 
 void ReliableUdpSession::RegisterConnect()

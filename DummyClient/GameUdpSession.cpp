@@ -22,6 +22,8 @@ void GameUdpSession::OnConnected()
 	service->AddSession(static_pointer_cast<Session>(shared_from_this()));
 	service->SetGameUdpSession(static_pointer_cast<GameUdpSession>(shared_from_this()));
 	service->SetPendingGameUdpSession(nullptr);
+
+
 }
 
 void GameUdpSession::OnDisconnected()
