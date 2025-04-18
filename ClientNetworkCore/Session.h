@@ -25,8 +25,8 @@ public:
 	virtual void						Disconnect(const string cause) = 0;
 
 
-	shared_ptr<Service>					GetService() { return _service.lock(); }
-	void								SetService(shared_ptr<Service> service) { _service = service; }
+	ServiceRef							GetService() { return _service.lock(); }
+	void								SetService(ServiceRef service) { _service = service; }
 
 	bool								IsConnected() { return _connected; }
 	void								SetConnected(bool success) { _connected.store(success); }
@@ -42,7 +42,6 @@ protected:
 protected:
 	weak_ptr<Service>					_service;
 	boost::asio::any_io_executor		_executor;
-	NetAddress							_netAddress;
 
 	Atomic<bool>						_connected = false;
 };
@@ -58,6 +57,8 @@ class TcpSession : public Session
 {
 	USE_LOCK
 
+	friend class Service;
+
 	enum { BUFFER_SIZE = 0x10000 }; // 64KB
 
 public:
@@ -68,13 +69,15 @@ public:
 	virtual void						Connect() override;
 	virtual void						Disconnect(const string cause) override;
 
+	void								SetRemoteEndpoint(tcp::endpoint& ep) { _remoteEndpoint = ep; }
+	tcp::endpoint&						GetRemoteEndpoint() { return _remoteEndpoint; }
 
 private:
 	void								RegisterConnect();
 	void								RegisterDisconnect();
 	void								RegisterSend();
-	void								RegisterRecvHeader();
-	void								RegisterRecvBody(int32 bodySize);
+	//void								RegisterRecvHeader();
+	//void								RegisterRecvBody(int32 bodySize);
 
 	void								RegisterRecv();
 
@@ -89,7 +92,7 @@ public:
 
 private:
 	tcp::socket							_socket;
-	tcp::endpoint						_endpoint;
+	tcp::endpoint						_remoteEndpoint;
 
 	Atomic<bool>						_sendRegistered = false;
 	queue<SendBufferRef>				_sendQueue;
@@ -118,6 +121,9 @@ class ReliableUdpSession : public Session
 {
 	USE_LOCK
 
+	friend class Service;
+	friend class UdpReceiver;
+
 	enum { BUFFER_SIZE = 0x10000 }; // 64KB
 
 public:
@@ -130,6 +136,9 @@ public:
 	virtual void							Send(SendBufferRef sendBuffer) override;
 	virtual void							SendReliable(SendBufferRef sendBuffer, float timestamp);
 
+	void									SetRemoteEndpoint(udp::endpoint& ep) { _remoteEndpoint = ep; }
+	udp::endpoint&							GetRemoteEndpoint() { return _remoteEndpoint; }
+
 	void									HandleAck(uint16 latestSeq, uint32 bitfield);
 	bool									CheckAndRecordReceiveHistory(uint16 seq);
 	uint32									GenerateAckBitfield(uint16 latestSeq);
@@ -140,11 +149,8 @@ private:
 	void									RegisterSend();
 	void									RegisterRecv();
 
-public:
 	void									ProcessConnect();
 	void									ProcessDisconnect();
-
-private:
 	void									ProcessSend(int32 numOfBytes);
 	void									ProcessRecv(int32 numOfBytes);
 
@@ -153,8 +159,7 @@ private:
 
 
 private:
-	udp::socket								_socket;
-	udp::endpoint							_endpoint;
+	udp::endpoint							_remoteEndpoint;
 
 	Atomic<bool>							_sendRegistered = false;
 	queue<SendBufferRef>					_sendQueue;

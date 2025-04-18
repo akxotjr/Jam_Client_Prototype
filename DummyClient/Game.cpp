@@ -9,6 +9,7 @@
 
 #include "boost/asio.hpp"
 #include "GameTcpSession.h"
+#include "GameUdpSession.h"
 
 Game::Game()
 {
@@ -40,7 +41,7 @@ void Game::Init(HWND hwnd)
 	TransportConfig config = { .tcpAddress =NetAddress("127.0.0.1", "7777") };
 
 	_service = make_shared<ClientService>(config);
-	_service->SetSessionFactory<GameTcpSession>();
+	_service->SetSessionFactory<GameTcpSession, GameUdpSession>();
 	_service->Start();
 }
 

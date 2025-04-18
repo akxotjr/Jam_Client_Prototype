@@ -12,7 +12,7 @@ GameTcpSession::GameTcpSession(ServiceRef service, boost::asio::any_io_executor 
 
 void GameTcpSession::OnConnected()
 {
-	std::cout << "OnConnected : TCP\n";
+	std::cout << "[TCP] OnConnected\n"; // debug
 
 	auto service = dynamic_pointer_cast<ClientService>(GetService());
 	if (service == nullptr)
@@ -21,6 +21,7 @@ void GameTcpSession::OnConnected()
 	service->SetGameTcpSession(static_pointer_cast<GameTcpSession>(shared_from_this()));
 
 	{
+		std::cout << "[TCP] Send : C_TIMESYNC\n"; // debug
 		Protocol::C_TIMESYNC timesyncPkt;
 		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timesyncPkt);
 		Send(sendBuffer);
@@ -30,6 +31,7 @@ void GameTcpSession::OnConnected()
 	TimeManager::GetInstance()->SetSession(GetSessionRef());
 
 	{
+		std::cout << "[TCP] Send : C_LOGIN\n"; // debug
 		Protocol::C_LOGIN loginPkt;
 		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(loginPkt);
 		Send(sendBuffer);
@@ -38,7 +40,7 @@ void GameTcpSession::OnConnected()
 
 void GameTcpSession::OnDisconnected()
 {
-	std::cout << "OnDisconnected : TCP\n";
+	std::cout << "[TCP] OnDisconnected\n"; // debug
 
 	auto service = dynamic_pointer_cast<ClientService>(GetService());
 	if (service == nullptr)
@@ -49,12 +51,12 @@ void GameTcpSession::OnDisconnected()
 
 void GameTcpSession::OnSend(int32 len)
 {
-	std::cout << "OnSend : " << len << " bytes\n";
+	//std::cout << "[TCP] OnSend : " << len << " bytes\n"; // debug
 }
 
 void GameTcpSession::OnRecv(BYTE* buffer, int32 len)
 {
-	std::cout << "OnRecv : " << len << " bytes\n";
+	//std::cout << "[TCP] OnRecv : " << len << " bytes\n"; // debug
 
 	SessionRef session = static_pointer_cast<Session>(shared_from_this());
 

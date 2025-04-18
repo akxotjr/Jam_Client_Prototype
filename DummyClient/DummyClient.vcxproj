@@ -179,7 +179,6 @@
     <ClInclude Include="Actor.h" />
     <ClInclude Include="Bot.h" />
     <ClInclude Include="Character.h" />
-    <ClInclude Include="ClientService.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="DummyClient.h" />
     <ClInclude Include="Enum.pb.h" />
@@ -204,7 +203,6 @@
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="Bot.cpp" />
     <ClCompile Include="Character.cpp" />
-    <ClCompile Include="ClientService.cpp" />
     <ClCompile Include="DummyClient.cpp" />
     <ClCompile Include="Enum.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

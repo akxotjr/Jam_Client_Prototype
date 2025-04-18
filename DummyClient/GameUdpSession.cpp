@@ -12,23 +12,21 @@ GameUdpSession::GameUdpSession(ServiceRef service, boost::asio::any_io_executor 
 
 void GameUdpSession::OnConnected()
 {
-	std::cout << "OnConnected : UDP\n";
+	std::cout << "[UDP] OnConnected\n";
 
 	auto service = static_pointer_cast<ClientService>(GetService());
 	if (service == nullptr)
 		return;
 
 	SetConnected(true);
-	service->AddSession(static_pointer_cast<Session>(shared_from_this()));
+	//service->AddSession(static_pointer_cast<Session>(shared_from_this()));
 	service->SetGameUdpSession(static_pointer_cast<GameUdpSession>(shared_from_this()));
 	service->SetPendingGameUdpSession(nullptr);
-
-
 }
 
 void GameUdpSession::OnDisconnected()
 {
-	std::cout << "OnDisconnected : UDP\n";
+	std::cout << "[UDP] OnDisconnected\n";
 
 	auto service = static_pointer_cast<ClientService>(GetService());
 	if (service == nullptr)
@@ -39,12 +37,12 @@ void GameUdpSession::OnDisconnected()
 
 void GameUdpSession::OnSend(int32 len)
 {
-	std::cout << "OnSend : " << len << " bytes\n";
+	//std::cout << "[UDP] OnSend : " << len << " bytes\n";
 }
 
 void GameUdpSession::OnRecv(BYTE* buffer, int32 len)
 {
-	std::cout << "OnRecv : " << len << " bytes\n";
+	//std::cout << "[UDP] OnRecv : " << len << " bytes\n";
 
 	SessionRef session = GetSessionRef();
 

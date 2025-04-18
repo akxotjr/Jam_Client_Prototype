@@ -23,8 +23,12 @@ bool Handle_INVALID(SessionRef& session, BYTE* buffer, int32 len)
 
 bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt)
 {
+	std::cout << "[TCP] Recv : S_LOGIN\n";
+
 	if (pkt.success() == false)
 		return false;
+
+	std::cout << "[TCP] Send : C_ENTER_GAME\n";	// debug
 
 	Protocol::C_ENTER_GAME enterGamePkt;
 
@@ -36,6 +40,7 @@ bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt)
 
 bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 {
+	std::cout << "[TCP] Recv : S_ENTER_GAME\n";
 	if (pkt.success() == false)
 		return false;
 
@@ -44,12 +49,13 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 
 	auto service = static_pointer_cast<ClientService>(session->GetService());
 	service->SetUdpNetAddress(NetAddress(ip, to_string(port)));
-	service->SetSessionFactory<GameUdpSession>();
-	auto udpSession = static_pointer_cast<GameUdpSession>(service->CreateSession());
-	udpSession->Connect();
+
+	auto udpSession = static_pointer_cast<GameUdpSession>(service->CreateSession(ProtocolType::PROTOCOL_UDP));
 	service->SetPendingGameUdpSession(udpSession);
+	udpSession->Connect();
 
 	{
+		std::cout << "[UDP] Send : C_HANDSHAKE\n";	// debug
 		float timestamp = TimeManager::GetInstance()->GetClientTime();
 
 		Protocol::C_HANDSHAKE handshakePkt;
@@ -61,6 +67,8 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 
 bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 {
+	std::cout << "[TCP] Recv : S_ACK\n";
+
 	auto udpSession = static_pointer_cast<GameUdpSession>(session);
 	if (udpSession == nullptr)
 		return false;
@@ -75,6 +83,8 @@ bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 
 bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 {
+	std::cout << "[TCP] Recv : S_HANDSHAKE\n";
+
 	if (pkt.success() == false)
 		return false;
 
@@ -103,6 +113,8 @@ bool Handle_S_CHAT(SessionRef& session, Protocol::S_CHAT& pkt)
 
 bool Handle_S_TIMESYNC(SessionRef& session, Protocol::S_TIMESYNC& pkt)
 {
+	std::cout << "[TCP] Recv : S_TIMESYNC\n";
+
 	float timestamp = pkt.timestamp();
 	TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
 	return true;

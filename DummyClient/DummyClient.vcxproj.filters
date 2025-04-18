@@ -90,9 +90,6 @@
     <ClInclude Include="ServerPacketHandler.h">
       <Filter>01.Network</Filter>
     </ClInclude>
-    <ClInclude Include="ClientService.h">
-      <Filter>01.Network</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -153,9 +150,6 @@
       <Filter>01.Network</Filter>
     </ClCompile>
     <ClCompile Include="ServerPacketHandler.cpp">
-      <Filter>01.Network</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientService.cpp">
       <Filter>01.Network</Filter>
     </ClCompile>
   </ItemGroup>
