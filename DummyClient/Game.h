@@ -25,7 +25,7 @@ public:
 	void					Update();
 	void					Render();
 
-	ClientServiceRef		GetService() { return _service; }
+	ServiceRef				GetService() { return _service; }
 
 private:
 
@@ -39,6 +39,6 @@ private:
 
 
 	/* Network */
-	ClientServiceRef	_service;
+	ServiceRef	_service;
 };
 

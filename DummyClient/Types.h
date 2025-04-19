@@ -166,4 +166,4 @@ struct Vec2Int
 
 USING_SHARED_PTR(GameTcpSession);
 USING_SHARED_PTR(GameUdpSession);
-USING_SHARED_PTR(ClientService);
+USING_SHARED_PTR(GameUdpReceiver);

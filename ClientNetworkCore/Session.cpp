@@ -15,10 +15,10 @@ Session::~Session()
 TcpSession::TcpSession(ServiceRef service, boost::asio::any_io_executor executor)
 	: Session(service, executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
 {
-	//auto owner = _service.lock();
-	//if (!owner) return;
+	auto owner = _service.lock();
+	if (!owner) return;
 
-	//_netAddress = owner->GetTcpNetAddress();
+	_remoteEndpoint = owner->GetTcpRemoteEndpoint();
 }
 
 TcpSession::~TcpSession()
@@ -282,6 +282,10 @@ int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
 ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor)
 	: Session(service, executor)/*, _recvBuffer(BUFFER_SIZE)*/
 {
+	auto owner = _service.lock();
+	if (!owner) return;
+
+	_remoteEndpoint = owner->GetUdpRemoteEndpoint();
 }
 
 ReliableUdpSession::~ReliableUdpSession()
@@ -487,7 +491,7 @@ void ReliableUdpSession::RegisterSend(SendBufferRef sendBuffer)
 void ReliableUdpSession::ProcessConnect()
 {
 	_connected.store(true);
-	GetService()->AddUdpSession(static_pointer_cast<ReliableUdpSession>(shared_from_this()));
+	GetService()->CompleteUdpHandshake(GetRemoteEndpoint());
 	OnConnected();
 }
 

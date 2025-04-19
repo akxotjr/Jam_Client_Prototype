@@ -8,8 +8,12 @@
 
 
 #include "boost/asio.hpp"
+#include "boost/asio/ip/address.hpp"
 #include "GameTcpSession.h"
 #include "GameUdpSession.h"
+#include "GameUdpReceiver.h"
+
+using boost::asio::ip::address;
 
 Game::Game()
 {
@@ -38,18 +42,21 @@ void Game::Init(HWND hwnd)
 	SceneManager::GetInstance()->Init(shared_from_this());
 	SceneManager::GetInstance()->ChangeScene(SceneType::GameScene);
 
-	//TransportConfig config = { .tcpRemoteEndpoint = tcp::endpoint("127.0.0.1", 7777) };
+	TransportConfig config = {
+		.tcpRemoteEndpoint = tcp::endpoint(boost::asio::ip::make_address("127.0.0.1"), 7777)
+	};
 
-	//_service = MakeShared<Service>(config);
-	//_service->SetSessionFactory<GameTcpSession, GameUdpSession>();
-	//_service->Start();
+	_service = MakeShared<Service>(config);
+	_service->SetSessionFactory<GameTcpSession, GameUdpSession>();
+	_service->SetUdpReceiver<GameUdpReceiver>();
+	ASSERT_CRASH(_service->Start());
 }
 
 void Game::Update()
 {
 	InputManager::GetInstance()->Update();
 	TimeManager::GetInstance()->Update();
-//	SceneManager::GetInstance()->Update();
+	SceneManager::GetInstance()->Update();
 }
 
 void Game::Render()

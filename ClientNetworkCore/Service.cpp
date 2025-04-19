@@ -14,7 +14,7 @@ Service::~Service()
 	GThreadManager->Join();
 }
 
-void Service::Start()
+bool Service::Start()
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -27,10 +27,16 @@ void Service::Start()
 			});
 	}
 
+	if (_udpReceiver == nullptr)
+		return false;
+	if (_udpReceiver->Start(shared_from_this()) == false)
+		return false;
+
 	SessionRef session = CreateSession(ProtocolType::PROTOCOL_TCP);
 	if (session == nullptr)
-		return;
+		return false;
 	session->Connect();
+	return true;
 }
 
 SessionRef Service::CreateSession(ProtocolType protocol)
@@ -87,7 +93,7 @@ void Service::ReleaseUdpSession(ReliableUdpSessionRef session)
 	_udpSessionCount--;
 }
 
-ReliableUdpSessionRef Service::FindOrCreateUdpSession(udp::endpoint from)
+ReliableUdpSessionRef Service::FindOrCreateUdpSession(udp::endpoint& from)
 {
 	WRITE_LOCK
 
@@ -108,9 +114,24 @@ ReliableUdpSessionRef Service::FindOrCreateUdpSession(udp::endpoint from)
 		return nullptr;
 
 	newSession->SetRemoteEndpoint(from);
+	newSession->ProcessConnect();
+
 	_pendingUdpSessions[from] = newSession;
 
 	return newSession;
+}
+
+void Service::CompleteUdpHandshake(udp::endpoint& from)
+{
+	WRITE_LOCK
+
+	auto it = _pendingUdpSessions.find(from);
+	if (it != _pendingUdpSessions.end())
+	{
+		AddUdpSession(it->second);
+		//AddSession(it->second);              // 공용 세션 관리에 추가 (선택적)
+		_pendingUdpSessions.erase(it);
+	}
 }
 
 void Service::RegisterToContextAsync(JobRef job)

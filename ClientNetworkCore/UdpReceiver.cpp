@@ -22,15 +22,6 @@ bool UdpReceiver::Start(ServiceRef service)
     _socket.set_option(boost::asio::socket_base::reuse_address(true));
     _socket.bind(udp::endpoint(udp::v4(), 0));
 
-    //udp::resolver resolver(_socket.get_executor());
-    //auto endpoints = resolver.resolve(_service.lock()->GetUdpNetAddress().ip, _service.lock()->GetUdpNetAddress().port);
-    //_endpoint = *endpoints.begin();
-
-    //boost::asio::socket_base::reuse_address option(true);
-    //_socket.set_option(option);
-
-    //_socket.bind(_endpoint);
-
     const int32 maxSessionCount = _service.lock()->GetMaxUdpSessionCount();
     for (int32 i = 0; i < maxSessionCount; i++)
     {

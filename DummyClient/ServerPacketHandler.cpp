@@ -47,8 +47,7 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	uint32 port = pkt.port();
 
 	auto service = session->GetService();
-	//service->SetUdpNetAddress(NetAddress(ip, to_string(port)));
-	service->SetUdpRemoteEndpoint(udp::endpoint(ip, port));
+	service->SetUdpRemoteEndpoint(udp::endpoint(boost::asio::ip::make_address(ip), port));
 
 	auto udpSession = static_pointer_cast<GameUdpSession>(service->CreateSession(ProtocolType::PROTOCOL_UDP));
 	//service->SetPendingGameUdpSession(udpSession);
@@ -67,7 +66,7 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 
 bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 {
-	std::cout << "[TCP] Recv : S_ACK\n";
+	std::cout << "[UDP] Recv : S_ACK\n";
 
 	auto udpSession = static_pointer_cast<GameUdpSession>(session);
 	if (udpSession == nullptr)
@@ -83,7 +82,7 @@ bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 
 bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 {
-	std::cout << "[TCP] Recv : S_HANDSHAKE\n";
+	std::cout << "[UDP] Recv : S_HANDSHAKE\n";
 
 	if (pkt.success() == false)
 		return false;
@@ -91,8 +90,6 @@ bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 	auto udpSession = static_pointer_cast<GameUdpSession>(session);
 	if (udpSession == nullptr)
 		return false;
-
-	udpSession->OnConnected();
 
 	{
 		float timestamp = TimeManager::GetInstance()->GetClientTime();

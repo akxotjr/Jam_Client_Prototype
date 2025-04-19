@@ -26,7 +26,7 @@ public:
 	Service(TransportConfig config, int32 maxSTcpSessionCount = 1, int32 maxUdpSessionCount = 1);
 	virtual ~Service();
 
-	void							Start();
+	bool							Start();
 	bool							CanStart() { return _tcpSessionFactory != nullptr || _udpSessionFactory != nullptr; }
 
 	SessionRef						CreateSession(ProtocolType protocol);
@@ -40,8 +40,8 @@ public:
 	void							ReleaseUdpSession(ReliableUdpSessionRef session);
 
 
-	ReliableUdpSessionRef			FindOrCreateUdpSession(udp::endpoint from);
-
+	ReliableUdpSessionRef			FindOrCreateUdpSession(udp::endpoint& from);
+	void							CompleteUdpHandshake(udp::endpoint& from);
 
 	int32							GetCurrentTcpSessionCount() { return _tcpSessionCount; }
 	int32							GetMaxTcpSessionCount() { return _maxTcpSessionCount; }
@@ -50,11 +50,12 @@ public:
 
 	tcp::endpoint					GetTcpRemoteEndpoint() { return _config.tcpRemoteEndpoint.value_or(tcp::endpoint(tcp::v4(), 0)); }
 	void							SetTcpRemoteEndpoint(const tcp::endpoint& ep) { _config.tcpRemoteEndpoint = ep; }
-	udp::endpoint					GetUdpRemtoeEndpoint() { return _config.udpRemoteEndpoint.value_or(udp::endpoint(udp::v4(), 0)); }
+	udp::endpoint					GetUdpRemoteEndpoint() { return _config.udpRemoteEndpoint.value_or(udp::endpoint(udp::v4(), 0)); }
 	void							SetUdpRemoteEndpoint(const udp::endpoint& ep) { _config.udpRemoteEndpoint = ep; }
 
+	template<typename T>
+	void							SetUdpReceiver();
 
-	void							SetUdpReceiver(UdpReceiverRef udpReceiver) { _udpReceiver = udpReceiver; }
 	udp::socket&					GetUdpSocket() const { return _udpReceiver->GetSocket(); }
 
 	ServiceRef						GetServiceRef() { return static_pointer_cast<Service>(shared_from_this()); }
@@ -106,4 +107,13 @@ inline void Service::SetSessionFactory()
 			auto session = MakeShared<UDP>(self, self->GetExecutor());
 			return static_pointer_cast<Session>(session);
 		};
+}
+
+template<typename T>
+inline void Service::SetUdpReceiver()
+{
+	//if (CanCast<T, UdpReceiver>() == false)
+	//	return;
+
+	_udpReceiver = MakeShared<T>(GetExecutor());
 }
