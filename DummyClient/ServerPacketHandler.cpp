@@ -6,7 +6,6 @@
 #include "Scene.h"
 #include "GameScene.h"
 #include "Service.h"
-#include "ClientService.h"
 #include "GameUdpSession.h"
 #include "Player.h"
 #include "Bot.h"
@@ -47,12 +46,13 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	string ip = pkt.ip();
 	uint32 port = pkt.port();
 
-	auto service = static_pointer_cast<ClientService>(session->GetService());
-	service->SetUdpNetAddress(NetAddress(ip, to_string(port)));
+	auto service = session->GetService();
+	//service->SetUdpNetAddress(NetAddress(ip, to_string(port)));
+	service->SetUdpRemoteEndpoint(udp::endpoint(ip, port));
 
 	auto udpSession = static_pointer_cast<GameUdpSession>(service->CreateSession(ProtocolType::PROTOCOL_UDP));
-	service->SetPendingGameUdpSession(udpSession);
-	udpSession->Connect();
+	//service->SetPendingGameUdpSession(udpSession);
+	//udpSession->Connect();
 
 	{
 		std::cout << "[UDP] Send : C_HANDSHAKE\n";	// debug

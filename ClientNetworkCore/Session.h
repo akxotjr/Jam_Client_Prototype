@@ -76,9 +76,6 @@ private:
 	void								RegisterConnect();
 	void								RegisterDisconnect();
 	void								RegisterSend();
-	//void								RegisterRecvHeader();
-	//void								RegisterRecvBody(int32 bodySize);
-
 	void								RegisterRecv();
 
 public:
@@ -144,17 +141,17 @@ public:
 	uint32									GenerateAckBitfield(uint16 latestSeq);
 
 private:	
-	void									RegisterConnect();
-	void									RegisterDisconnect();
-	void									RegisterSend();
-	void									RegisterRecv();
+	//void									RegisterConnect();
+	//void									RegisterDisconnect();
+	void									RegisterSend(SendBufferRef sendBuffer);
+	//void									RegisterRecv();
 
 	void									ProcessConnect();
 	void									ProcessDisconnect();
 	void									ProcessSend(int32 numOfBytes);
-	void									ProcessRecv(int32 numOfBytes);
+	//void									ProcessRecv(int32 numOfBytes);
 
-	int32									IsParsingPacket(BYTE* buffer, int32 len);
+	//int32									IsParsingPacket(BYTE* buffer, int32 len);
 	void									Update(float serverTime);	// resend 
 
 
@@ -165,7 +162,7 @@ private:
 	queue<SendBufferRef>					_sendQueue;
 	Vector<SendBufferRef>					_currentSendBuffers;
 
-	RecvBuffer								_recvBuffer;
+	//RecvBuffer								_recvBuffer;
 
 protected:
 	unordered_map<uint16, PendingPacket>	_pendingAckMap;

@@ -1,10 +1,8 @@
 #pragma once
 #include <functional>
-#include <boost/asio/thread_pool.hpp>
 #include <boost/asio/any_io_executor.hpp>
-#include <type_traits>
-#include <utility>
-#include "Job.h"
+#include "UdpReceiver.h"
+
 
 using boost::asio::ip::tcp;
 using boost::asio::ip::udp;
@@ -18,8 +16,8 @@ enum class ProtocolType
 
 struct TransportConfig
 {
-	optional<tcp::endpoint> tcpEndpoint;	// local
-	optional<udp::endpoint> udpEndpoint;
+	optional<tcp::endpoint> tcpRemoteEndpoint;
+	optional<udp::endpoint> udpRemoteEndpoint;
 };
 
 class Service : public enable_shared_from_this<Service>
@@ -34,9 +32,6 @@ public:
 	SessionRef						CreateSession(ProtocolType protocol);
 
 	void							Broadcast(SendBufferRef sendBuffer);
-
-	bool							AddSession(SessionRef session);
-	void							ReleaseSession(SessionRef session);
 
 	void							AddTcpSession(TcpSessionRef session);
 	void							ReleaseTcpSession(TcpSessionRef session);
@@ -53,12 +48,14 @@ public:
 	int32							GetCurrentUdpSessionCount() { return _udpSessionCount; }
 	int32							GetMaxUdpSessionCount() { return _maxUdpSessionCount; }
 
-	tcp::endpoint					GetTcpEndpoint() { return _config.tcpEndpoint.value_or(tcp::endpoint(tcp::v4(), 0)); }
-	void							SetTcpEndpoint(const tcp::endpoint& ep) { _config.tcpEndpoint = ep; }
+	tcp::endpoint					GetTcpRemoteEndpoint() { return _config.tcpRemoteEndpoint.value_or(tcp::endpoint(tcp::v4(), 0)); }
+	void							SetTcpRemoteEndpoint(const tcp::endpoint& ep) { _config.tcpRemoteEndpoint = ep; }
+	udp::endpoint					GetUdpRemtoeEndpoint() { return _config.udpRemoteEndpoint.value_or(udp::endpoint(udp::v4(), 0)); }
+	void							SetUdpRemoteEndpoint(const udp::endpoint& ep) { _config.udpRemoteEndpoint = ep; }
 
-	udp::endpoint					GetUdpEndpoint() { return _config.udpEndpoint.value_or(udp::endpoint(udp::v4(), 0)); }
-	void							SetUdpEndpoint(const udp::endpoint& ep) { _config.udpEndpoint = ep; }
 
+	void							SetUdpReceiver(UdpReceiverRef udpReceiver) { _udpReceiver = udpReceiver; }
+	udp::socket&					GetUdpSocket() const { return _udpReceiver->GetSocket(); }
 
 	ServiceRef						GetServiceRef() { return static_pointer_cast<Service>(shared_from_this()); }
 	boost::asio::any_io_executor	GetExecutor() { return _io_context.get_executor(); }
@@ -71,11 +68,10 @@ public:
 private:
 	USE_LOCK
 
-	TransportConfig						_config;
+	TransportConfig										_config;
 
-	boost::asio::io_context				_io_context;
+	boost::asio::io_context								_io_context;
 
-	//<SessionRef>						_sessions;
 
 	Set<TcpSessionRef>									_tcpSessions;
 	Set<ReliableUdpSessionRef>							_udpSessions;
@@ -86,11 +82,11 @@ private:
 	int32												_udpSessionCount = 0;
 	int32												_maxUdpSessionCount = 0;
 
-	//int32								_sessionCount = 0;
-	//int32								_maxSessionCount = 1;
 
-	SessionFactory						_tcpSessionFactory;
-	SessionFactory						_udpSessionFactory;
+	SessionFactory										_tcpSessionFactory;
+	SessionFactory										_udpSessionFactory;
+
+	UdpReceiverRef										_udpReceiver = nullptr;
 };
 
 

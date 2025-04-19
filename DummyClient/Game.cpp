@@ -5,7 +5,7 @@
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
-#include  "ClientService.h"
+
 
 #include "boost/asio.hpp"
 #include "GameTcpSession.h"
@@ -38,11 +38,11 @@ void Game::Init(HWND hwnd)
 	SceneManager::GetInstance()->Init(shared_from_this());
 	SceneManager::GetInstance()->ChangeScene(SceneType::GameScene);
 
-	TransportConfig config = { .tcpAddress =NetAddress("127.0.0.1", "7777") };
+	//TransportConfig config = { .tcpRemoteEndpoint = tcp::endpoint("127.0.0.1", 7777) };
 
-	_service = make_shared<ClientService>(config);
-	_service->SetSessionFactory<GameTcpSession, GameUdpSession>();
-	_service->Start();
+	//_service = MakeShared<Service>(config);
+	//_service->SetSessionFactory<GameTcpSession, GameUdpSession>();
+	//_service->Start();
 }
 
 void Game::Update()

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "UdpReceiver.h"
+#include "Service.h"
 
 UdpReceiver::UdpReceiver(boost::asio::any_io_executor executor)
     : _socket(executor), _recvBuffer(BUFFER_SIZE)
@@ -18,15 +19,17 @@ bool UdpReceiver::Start(ServiceRef service)
         return false;
 
     _socket.open(udp::v4());
+    _socket.set_option(boost::asio::socket_base::reuse_address(true));
+    _socket.bind(udp::endpoint(udp::v4(), 0));
 
-    udp::resolver resolver(_socket.get_executor());
-    auto endpoints = resolver.resolve(_service.lock()->GetUdpNetAddress().ip, _service.lock()->GetUdpNetAddress().port);
-    _endpoint = *endpoints.begin();
+    //udp::resolver resolver(_socket.get_executor());
+    //auto endpoints = resolver.resolve(_service.lock()->GetUdpNetAddress().ip, _service.lock()->GetUdpNetAddress().port);
+    //_endpoint = *endpoints.begin();
 
-    boost::asio::socket_base::reuse_address option(true);
-    _socket.set_option(option);
+    //boost::asio::socket_base::reuse_address option(true);
+    //_socket.set_option(option);
 
-    _socket.bind(_endpoint);
+    //_socket.bind(_endpoint);
 
     const int32 maxSessionCount = _service.lock()->GetMaxUdpSessionCount();
     for (int32 i = 0; i < maxSessionCount; i++)
@@ -64,7 +67,7 @@ bool UdpReceiver::ProcessRecv(int32 numOfBytes)
 
     if (_recvBuffer.OnWrite(numOfBytes) == false)
     {
-        return;
+        return false;
     }
 
     int32 dataSize = _recvBuffer.DataSize();
@@ -72,7 +75,7 @@ bool UdpReceiver::ProcessRecv(int32 numOfBytes)
 
     if (processLen < 0 || dataSize < processLen || _recvBuffer.OnRead(processLen) == false)
     {
-        return;
+        return false;
     }
 
     _recvBuffer.Clean();

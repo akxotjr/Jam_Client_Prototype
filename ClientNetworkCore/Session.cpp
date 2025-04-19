@@ -10,16 +10,15 @@ Session::Session(ServiceRef service, boost::asio::any_io_executor executor)
 
 Session::~Session()
 {
-
 }
 
 TcpSession::TcpSession(ServiceRef service, boost::asio::any_io_executor executor)
 	: Session(service, executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
 {
-	auto owner = _service.lock();
-	if (!owner) return;
+	//auto owner = _service.lock();
+	//if (!owner) return;
 
-	_netAddress = owner->GetTcpNetAddress();
+	//_netAddress = owner->GetTcpNetAddress();
 }
 
 TcpSession::~TcpSession()
@@ -62,13 +61,18 @@ void TcpSession::Disconnect(const string cause)
 
 void TcpSession::RegisterConnect()
 {
-	tcp::resolver resolver(_executor);
+	_socket.open(tcp::v4());
 
-	auto endpoints = resolver.resolve(_netAddress.ip, _netAddress.port);
-	_endpoint = *endpoints.begin();
+	_socket.set_option(boost::asio::ip::tcp::no_delay(true));
+	_socket.set_option(boost::asio::socket_base::keep_alive(true));
 
-	boost::asio::async_connect(_socket, endpoints,
-		[this, self = shared_from_this()](const boost::system::error_code& ec, const tcp::endpoint& endpoint) {
+	_socket.bind(tcp::endpoint(tcp::v4(), 0));
+
+	if (GetRemoteEndpoint().port() == 0) return;
+
+	_socket.async_connect(GetRemoteEndpoint(),
+		[this, self = shared_from_this()](const boost::system::error_code& ec)
+		{
 			if (!ec)
 			{
 				ProcessConnect();
@@ -78,6 +82,18 @@ void TcpSession::RegisterConnect()
 				std::cout << "[ERROR] Connection failed: " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
 			}
 		});
+
+	//boost::asio::async_connect(_socket, endpoints,
+	//	[this, self = shared_from_this()](const boost::system::error_code& ec, const tcp::endpoint& endpoint) {
+	//		if (!ec)
+	//		{
+	//			ProcessConnect();
+	//		}
+	//		else
+	//		{
+	//			std::cout << "[ERROR] Connection failed: " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
+	//		}
+	//	});
 }
 
 void TcpSession::RegisterDisconnect()
@@ -129,12 +145,11 @@ void TcpSession::RegisterSend()
 	}
 
 	// Scatter-Gather
-
 	boost::asio::async_write(_socket, sendBuffers,
 		[this](const boost::system::error_code& ec, std::size_t bytes_transferred) {
 			if (!ec)
 			{
-				ProcessSend(static_cast<int32>(bytes_transferred));
+				ProcessSend(bytes_transferred);
 			}
 			else
 			{
@@ -174,17 +189,16 @@ void TcpSession::RegisterRecv()
 void TcpSession::ProcessConnect()
 {
 	_connected.store(true);
-	GetService()->AddSession(GetSessionRef());
+	GetService()->AddTcpSession(static_pointer_cast<TcpSession>(shared_from_this()));
 	OnConnected();
 
-	//RegisterRecvHeader();
 	RegisterRecv();
 }
 
 void TcpSession::ProcesssDisconnect()
 {
 	OnDisconnected();
-	GetService()->ReleaseSession(GetSessionRef());
+	GetService()->ReleaseTcpSession(static_pointer_cast<TcpSession>(shared_from_this()));
 
 	{
 		WRITE_LOCK
@@ -236,8 +250,6 @@ void TcpSession::ProcessRecv(int32 numOfBytes)
 	}
 
 	_recvBuffer.Clean();
-
-	//RegisterRecvHeader();
 	RegisterRecv();
 }
 
@@ -268,22 +280,17 @@ int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
 
 
 ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor)
-	: Session(service, executor), _socket(executor), _recvBuffer(BUFFER_SIZE)
+	: Session(service, executor)/*, _recvBuffer(BUFFER_SIZE)*/
 {
-	//auto owner = _service.lock();
-	//if (!owner) return;
-
-	//_netAddress = owner->GetUdpNetAddress();
 }
 
 ReliableUdpSession::~ReliableUdpSession()
 {
-	_socket.close();
 }
 
 void ReliableUdpSession::Connect()
 {
-	RegisterConnect();
+	//RegisterConnect();
 }
 
 void ReliableUdpSession::Disconnect(const string cause)
@@ -291,23 +298,23 @@ void ReliableUdpSession::Disconnect(const string cause)
 	if (_connected.exchange(false) == false)
 		return;
 
-	RegisterDisconnect();
+	//RegisterDisconnect();
 }
 
 void ReliableUdpSession::Send(SendBufferRef sendBuffer)
 {
-	bool registerSend = false;
+	//bool registerSend = false;
 
-	{
-		WRITE_LOCK
-		_sendQueue.push(sendBuffer);
+	//{
+	//	WRITE_LOCK
+	//	_sendQueue.push(sendBuffer);
 
-		if (_sendRegistered.exchange(true) == false)
-			registerSend = true;
-	}
+	//	if (_sendRegistered.exchange(true) == false)
+	//		registerSend = true;
+	//}
 
-	if (registerSend)
-		RegisterSend();
+	//if (registerSend)
+	RegisterSend(sendBuffer);
 }
 
 void ReliableUdpSession::SendReliable(SendBufferRef sendBuffer, float timestamp)
@@ -367,135 +374,127 @@ uint32 ReliableUdpSession::GenerateAckBitfield(uint16 latestSeq)
 	return bitfield;
 }
 
-void ReliableUdpSession::RegisterConnect()
+//void ReliableUdpSession::RegisterConnect()
+//{
+//	_socket.open(udp::v4());
+//
+//	udp::resolver resolver(_executor);
+//	auto endpoints = resolver.resolve(_netAddress.ip, _netAddress.port);
+//	_endpoint = *endpoints.begin();
+//
+//	RegisterRecv();
+//}
+
+//void ReliableUdpSession::RegisterDisconnect()
+//{
+//	if (_socket.is_open())
+//	{
+//		boost::system::error_code ec;
+//		_socket.cancel(ec);
+//		_socket.close(ec);
+//		if (ec)
+//		{
+//			std::cout << "[ERROR] Socket Close Error : " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
+//		}
+//		else
+//		{
+//			ProcessDisconnect();
+//		}
+//	}
+//
+//	//{
+//	//	WRITE_LOCK
+//
+//	//	_sendQueue = {};
+//	//	_currentSendBuffers.clear();
+//	//	_sendRegistered.store(false);
+//	//}
+//}
+
+void ReliableUdpSession::RegisterSend(SendBufferRef sendBuffer)
 {
-	_socket.open(udp::v4());
-
-	udp::resolver resolver(_executor);
-	auto endpoints = resolver.resolve(_netAddress.ip, _netAddress.port);
-	_endpoint = *endpoints.begin();
-
-	RegisterRecv();
-}
-
-void ReliableUdpSession::RegisterDisconnect()
-{
-	if (_socket.is_open())
-	{
-		boost::system::error_code ec;
-		_socket.cancel(ec);
-		_socket.close(ec);
-		if (ec)
-		{
-			std::cout << "[ERROR] Socket Close Error : " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
-		}
-		else
-		{
-			ProcessDisconnect();
-		}
-	}
-
-	//{
-	//	WRITE_LOCK
-
-	//	_sendQueue = {};
-	//	_currentSendBuffers.clear();
-	//	_sendRegistered.store(false);
-	//}
-}
-
-void ReliableUdpSession::RegisterSend()
-{
-	if (_socket.is_open() == false)
+	if (GetService()->GetUdpSocket().is_open() == false)
 		return;
 
-	if (_sendQueue.empty())
-	{
-		_sendRegistered = false;
-		return;
-	}
-
-	Vector<boost::asio::const_buffer> sendBuffers;
-
-	_currentSendBuffers.clear();
-
-	{
-		WRITE_LOCK
-
-		int32 writeSize = 0;
-		while (!_sendQueue.empty())
-		{
-			SendBufferRef sendBuffer = _sendQueue.front();
-			if (sendBuffer->Buffer() && sendBuffer->WriteSize() > 0)
-			{
-				writeSize += sendBuffer->WriteSize();
-				_currentSendBuffers.push_back(sendBuffer);
-				sendBuffers.push_back(boost::asio::buffer(sendBuffer->Buffer(), sendBuffer->WriteSize()));
-			}
-			_sendQueue.pop();
-		}
-	}
-
-	_socket.async_send_to(sendBuffers, _endpoint,
+	GetService()->GetUdpSocket().async_send_to(
+		boost::asio::buffer(sendBuffer->Buffer(), sendBuffer->WriteSize()),
+		_remoteEndpoint,
 		[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
 		{
-			_sendRegistered.store(false);
 			if (!ec)
 			{
 				ProcessSend(static_cast<int32>(bytes_transferred));
 			}
 			else
 			{
-				std::cout << "[ERROR] UDP fail to send : " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
-				//Disconnect("Failed to send");
-				{
-					WRITE_LOCK
-					for (auto& buffer : _currentSendBuffers)
-					{
-						_sendQueue.push(buffer);
-					}
-					_currentSendBuffers.clear();
-				}
+				std::cout << "[ERROR] UDP send failed: " << ec.message() << " (code=" << ec.value() << ")\n";
+				// todo: retry logic or fallback
 			}
-		}
-	);
-}
+		});
 
-void ReliableUdpSession::RegisterRecv()
-{
-   if (_socket.is_open() == false)
-       return;
+	//if (_sendQueue.empty())
+	//{
+	//	_sendRegistered = false;
+	//	return;
+	//}
 
-   auto remoteEndpoint = MakeShared<udp::endpoint>();
+	//Vector<boost::asio::const_buffer> sendBuffers;
 
-   _socket.async_receive_from(
-       boost::asio::buffer(_recvBuffer.WritePos(), _recvBuffer.FreeSize()), *remoteEndpoint,
-       [this, self = shared_from_this(), remoteEndpoint](const boost::system::error_code& ec, size_t bytes_transferred) mutable
-       {
-           if (!ec && bytes_transferred > 0)
-           {
-               ProcessRecv(bytes_transferred); // 荐脚等 单捞磐 贸府
-           }
-           else
-           {
-               std::cout << "[ERROR] UDP fail to receive : " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
-               //RegisterDisconnect();
-           }
-       }
-   );
+	//_currentSendBuffers.clear();
+
+	//{
+	//	WRITE_LOCK
+
+	//	int32 writeSize = 0;
+	//	while (!_sendQueue.empty())
+	//	{
+	//		SendBufferRef sendBuffer = _sendQueue.front();
+	//		if (sendBuffer->Buffer() && sendBuffer->WriteSize() > 0)
+	//		{
+	//			writeSize += sendBuffer->WriteSize();
+	//			_currentSendBuffers.push_back(sendBuffer);
+	//			sendBuffers.push_back(boost::asio::buffer(sendBuffer->Buffer(), sendBuffer->WriteSize()));
+	//		}
+	//		_sendQueue.pop();
+	//	}
+	//}
+
+	//_socket.async_send_to(sendBuffers, _endpoint,
+	//	[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
+	//	{
+	//		_sendRegistered.store(false);
+	//		if (!ec)
+	//		{
+	//			ProcessSend(static_cast<int32>(bytes_transferred));
+	//		}
+	//		else
+	//		{
+	//			std::cout << "[ERROR] UDP fail to send : " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
+	//			//Disconnect("Failed to send");
+	//			{
+	//				WRITE_LOCK
+	//				for (auto& buffer : _currentSendBuffers)
+	//				{
+	//					_sendQueue.push(buffer);
+	//				}
+	//				_currentSendBuffers.clear();
+	//			}
+	//		}
+	//	}
+	//);
 }
 
 void ReliableUdpSession::ProcessConnect()
 {
 	_connected.store(true);
-	GetService()->AddSession(GetSessionRef());
+	GetService()->AddUdpSession(static_pointer_cast<ReliableUdpSession>(shared_from_this()));
 	OnConnected();
 }
 
 void ReliableUdpSession::ProcessDisconnect()
 {
 	OnDisconnected();
-	GetService()->ReleaseSession(GetSessionRef());
+	GetService()->ReleaseUdpSession(static_pointer_cast<ReliableUdpSession>(shared_from_this()));
 
 	{
 		WRITE_LOCK
@@ -516,64 +515,64 @@ void ReliableUdpSession::ProcessSend(int32 numOfBytes)
 
 	OnSend(numOfBytes);
 
-	WRITE_LOCK
-	if (_sendQueue.empty())
-		_sendRegistered.store(false);
-	else
-		RegisterSend();
+	//WRITE_LOCK
+	//if (_sendQueue.empty())
+	//	_sendRegistered.store(false);
+	//else
+	//	RegisterSend();
 }
 
-void ReliableUdpSession::ProcessRecv(int32 numOfBytes)
-{
-	if (numOfBytes == 0)
-	{
-		Disconnect("Recv 0");
-		return;
-	}
+//void ReliableUdpSession::ProcessRecv(int32 numOfBytes)
+//{
+//	if (numOfBytes == 0)
+//	{
+//		Disconnect("Recv 0");
+//		return;
+//	}
+//
+//	if (_recvBuffer.OnWrite(numOfBytes) == false)
+//	{
+//		Disconnect("OnWrite Overflow");
+//		return;
+//	}
+//
+//	int32 dataSize = _recvBuffer.DataSize();
+//	int32 processLen = IsParsingPacket(_recvBuffer.ReadPos(), dataSize);
+//
+//	if (processLen < 0 || dataSize < processLen || _recvBuffer.OnRead(processLen) == false)
+//	{
+//		Disconnect("OnRead Overflow");
+//		return;
+//	}
+//
+//	_recvBuffer.Clean();
+//
+//	RegisterRecv();
+//}
 
-	if (_recvBuffer.OnWrite(numOfBytes) == false)
-	{
-		Disconnect("OnWrite Overflow");
-		return;
-	}
-
-	int32 dataSize = _recvBuffer.DataSize();
-	int32 processLen = IsParsingPacket(_recvBuffer.ReadPos(), dataSize);
-
-	if (processLen < 0 || dataSize < processLen || _recvBuffer.OnRead(processLen) == false)
-	{
-		Disconnect("OnRead Overflow");
-		return;
-	}
-
-	_recvBuffer.Clean();
-
-	RegisterRecv();
-}
-
-int32 ReliableUdpSession::IsParsingPacket(BYTE* buffer, int32 len)
-{
-	int32 processLen = 0;
-
-	while (true)
-	{
-		int32 dataSize = len - processLen;
-
-		if (dataSize < sizeof(UdpPacketHeader))
-			break;
-
-		UdpPacketHeader* header = reinterpret_cast<UdpPacketHeader*>(&buffer[processLen]);
-
-		if (dataSize < header->size || header->size < sizeof(UdpPacketHeader))
-			break;
-
-		OnRecv(&buffer[processLen], header->size);
-
-		processLen += header->size;
-	}
-
-	return processLen;
-}
+//int32 ReliableUdpSession::IsParsingPacket(BYTE* buffer, int32 len)
+//{
+//	int32 processLen = 0;
+//
+//	while (true)
+//	{
+//		int32 dataSize = len - processLen;
+//
+//		if (dataSize < sizeof(UdpPacketHeader))
+//			break;
+//
+//		UdpPacketHeader* header = reinterpret_cast<UdpPacketHeader*>(&buffer[processLen]);
+//
+//		if (dataSize < header->size || header->size < sizeof(UdpPacketHeader))
+//			break;
+//
+//		OnRecv(&buffer[processLen], header->size);
+//
+//		processLen += header->size;
+//	}
+//
+//	return processLen;
+//}
 
 void ReliableUdpSession::Update(float serverTime)
 {

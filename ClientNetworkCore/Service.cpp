@@ -2,6 +2,7 @@
 #include "Service.h"
 #include "Session.h"
 #include "ThreadManager.h"
+#include "Job.h"
 
 Service::Service(TransportConfig config, int32 maxTcpSessionCount, int32 maxUdpSessionCount)
 	: _config(config), _maxTcpSessionCount(maxTcpSessionCount), _maxUdpSessionCount(maxUdpSessionCount)
@@ -34,8 +35,6 @@ void Service::Start()
 
 SessionRef Service::CreateSession(ProtocolType protocol)
 {
-	//if (GetCurrentSessionCount() + 1 > GetMaxSessionCount())
-	//	return nullptr;
 	SessionRef session = nullptr;
 
 	if (protocol == ProtocolType::PROTOCOL_TCP)
@@ -59,28 +58,6 @@ void Service::Broadcast(SendBufferRef sendBuffer)
 	//	session->Send(sendBuffer);
 	//}
 }
-
-
-//bool Service::AddSession(SessionRef session)
-//{
-//	WRITE_LOCK
-//	_sessions.insert(session);
-//	_sessionCount++;
-//
-//	cout << "Service::AddSession  Current Session Count : " << _sessionCount << '\n';
-//
-//	return true;
-//}
-//
-//void Service::ReleaseSession(SessionRef session)
-//{
-//	WRITE_LOCK
-//	ASSERT_CRASH(_sessions.erase(session) != 0);
-//	_sessionCount--;
-//
-//	cout << "Service::ReleaseSession  Current Session Count : " << _sessionCount << '\n';
-//}
-
 
 void Service::AddTcpSession(TcpSessionRef session)
 {
@@ -130,7 +107,7 @@ ReliableUdpSessionRef Service::FindOrCreateUdpSession(udp::endpoint from)
 	if (newSession == nullptr)
 		return nullptr;
 
-	newSession->GetRemoteEndpoint(from);
+	newSession->SetRemoteEndpoint(from);
 	_pendingUdpSessions[from] = newSession;
 
 	return newSession;
