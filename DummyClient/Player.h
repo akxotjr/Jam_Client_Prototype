@@ -39,6 +39,8 @@ private:
 	void ApplyInput(Input& input);
 
 private:
+	USE_LOCK
+
 	//temp
 	KeyState	_prevState = KeyState::None;
 

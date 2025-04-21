@@ -83,6 +83,8 @@ Input Player::CaptureInput()
 
 void Player::ApplyInput(Input& input)
 {
+	WRITE_LOCK
+
 	float deltaTime = input.deltaTime;
 
 	if ((_targetPos - _position).Length() < 1.5f)
@@ -104,12 +106,14 @@ void Player::ApplyInput(Input& input)
 		deltaTime = TimeManager::GetInstance()->GetDeltaTime();
 	}
 
-	_position = _position + _velocity * input.deltaTime;
+	_position = _position + _velocity * deltaTime;
 
 }
 
 void Player::Reconcile(Vec2 serverPosition, Vec2 serverVelocity, uint32 ackSequenceNumber)
 {
+	WRITE_LOCK
+
 	_position = serverPosition;
 	_velocity = serverVelocity;
 	// ackCommandSequenceNumber 이후의 입력들만 다시 적용
