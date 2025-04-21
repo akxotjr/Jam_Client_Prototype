@@ -105,7 +105,7 @@ void TimeManager::RealUpdate()
 	{
 		if (_session)
 		{
-			std::cout << "[TCP] Send : C_TIMESYNC\n";
+			//std::cout << "[TCP] Send : C_TIMESYNC\n";
 			Protocol::C_TIMESYNC timesyncPkt;
 			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timesyncPkt);
 			_session->Send(sendBuffer);

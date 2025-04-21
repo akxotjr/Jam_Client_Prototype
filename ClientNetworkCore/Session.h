@@ -152,7 +152,8 @@ private:
 	//void									ProcessRecv(int32 numOfBytes);
 
 	//int32									IsParsingPacket(BYTE* buffer, int32 len);
-	void									Update(float serverTime);	// resend 
+	void									Update(float serverTime);	// resend
+	bool									IsSeqGreater(uint16 a, uint16 b) { return static_cast<int16>(a - b) > 0; }
 
 
 private:
@@ -169,6 +170,7 @@ protected:
 
 	bitset<1024>							_receiveHistory;
 
+	uint16									_latestSeq = 0;
 	uint16									_sendSeq = 1;			// 다음 보낼 sequence
 	float									_resendIntervalMs = 0.1f; // 재전송 대기 시간
 };

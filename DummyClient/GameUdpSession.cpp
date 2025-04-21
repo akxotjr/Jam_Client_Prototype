@@ -35,7 +35,7 @@ void GameUdpSession::OnDisconnected()
 
 void GameUdpSession::OnSend(int32 len)
 {
-	std::cout << "[UDP] OnSend : " << len << " bytes\n";
+	//std::cout << "[UDP] OnSend : " << len << " bytes\n";
 }
 
 void GameUdpSession::OnRecv(BYTE* buffer, int32 len)

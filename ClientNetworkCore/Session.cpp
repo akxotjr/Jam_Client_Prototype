@@ -299,6 +299,8 @@ void ReliableUdpSession::Connect()
 
 void ReliableUdpSession::Disconnect(const string cause)
 {
+	std::cout << "[UDP] Disconnect : " << cause << std::endl;
+
 	if (_connected.exchange(false) == false)
 		return;
 
@@ -342,24 +344,35 @@ void ReliableUdpSession::HandleAck(uint16 latestSeq, uint32 bitfield)
 {
 	WRITE_LOCK
 
+	std::cout << "[ACK] seq = ";
+
 	for (int i = 0; i <= 32; ++i)
 	{
 		uint16 ackSeq = latestSeq - i;
 
 		if (i == 0 || (bitfield & (1 << (i - 1))))
 		{
-			_pendingAckMap.erase(ackSeq);
-			std::cout << "[ACK] seq = " << ackSeq << '\n';
+			auto it = _pendingAckMap.find(ackSeq);
+			if (it != _pendingAckMap.end())
+			{
+				_pendingAckMap.erase(it);
+				std::cout << ackSeq << " ";
+			}
 		}
 	}
+	std::cout << "\n";
 }
 
 bool ReliableUdpSession::CheckAndRecordReceiveHistory(uint16 seq)
 {
+	if (!IsSeqGreater(seq, _latestSeq - 1024))
+		return false;
+
 	if (_receiveHistory.test(seq % 1024))
 		return false;
 
 	_receiveHistory.set(seq % 1024);
+	_latestSeq = IsSeqGreater(seq, _latestSeq) ? seq : _latestSeq;
 	return true;
 }
 
@@ -369,12 +382,15 @@ uint32 ReliableUdpSession::GenerateAckBitfield(uint16 latestSeq)
 	for (int i = 1; i <= 32; ++i)
 	{
 		uint16 seq = latestSeq - i;
+
+		if (!IsSeqGreater(latestSeq, seq))
+			continue;
+
 		if (_receiveHistory.test(seq % 1024))
 		{
 			bitfield |= (1 << (i - 1));
 		}
 	}
-
 	return bitfield;
 }
 
@@ -427,9 +443,6 @@ void ReliableUdpSession::RegisterSend(SendBufferRef sendBuffer)
 		{
 			if (!ec)
 			{
-				UdpPacketHeader header = *reinterpret_cast<UdpPacketHeader*>(sendBuffer->Buffer());
-				cout << "ProcessSend  " << header.id << " : " << header.size << endl;
-
 				ProcessSend(static_cast<int32>(bytes_transferred));
 			}
 			else
@@ -438,57 +451,6 @@ void ReliableUdpSession::RegisterSend(SendBufferRef sendBuffer)
 				// todo: retry logic or fallback
 			}
 		});
-
-	//if (_sendQueue.empty())
-	//{
-	//	_sendRegistered = false;
-	//	return;
-	//}
-
-	//Vector<boost::asio::const_buffer> sendBuffers;
-
-	//_currentSendBuffers.clear();
-
-	//{
-	//	WRITE_LOCK
-
-	//	int32 writeSize = 0;
-	//	while (!_sendQueue.empty())
-	//	{
-	//		SendBufferRef sendBuffer = _sendQueue.front();
-	//		if (sendBuffer->Buffer() && sendBuffer->WriteSize() > 0)
-	//		{
-	//			writeSize += sendBuffer->WriteSize();
-	//			_currentSendBuffers.push_back(sendBuffer);
-	//			sendBuffers.push_back(boost::asio::buffer(sendBuffer->Buffer(), sendBuffer->WriteSize()));
-	//		}
-	//		_sendQueue.pop();
-	//	}
-	//}
-
-	//_socket.async_send_to(sendBuffers, _endpoint,
-	//	[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
-	//	{
-	//		_sendRegistered.store(false);
-	//		if (!ec)
-	//		{
-	//			ProcessSend(static_cast<int32>(bytes_transferred));
-	//		}
-	//		else
-	//		{
-	//			std::cout << "[ERROR] UDP fail to send : " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
-	//			//Disconnect("Failed to send");
-	//			{
-	//				WRITE_LOCK
-	//				for (auto& buffer : _currentSendBuffers)
-	//				{
-	//					_sendQueue.push(buffer);
-	//				}
-	//				_currentSendBuffers.clear();
-	//			}
-	//		}
-	//	}
-	//);
 }
 
 void ReliableUdpSession::ProcessConnect()
@@ -521,65 +483,7 @@ void ReliableUdpSession::ProcessSend(int32 numOfBytes)
 	}
 
 	OnSend(numOfBytes);
-
-	//WRITE_LOCK
-	//if (_sendQueue.empty())
-	//	_sendRegistered.store(false);
-	//else
-	//	RegisterSend();
 }
-
-//void ReliableUdpSession::ProcessRecv(int32 numOfBytes)
-//{
-//	if (numOfBytes == 0)
-//	{
-//		Disconnect("Recv 0");
-//		return;
-//	}
-//
-//	if (_recvBuffer.OnWrite(numOfBytes) == false)
-//	{
-//		Disconnect("OnWrite Overflow");
-//		return;
-//	}
-//
-//	int32 dataSize = _recvBuffer.DataSize();
-//	int32 processLen = IsParsingPacket(_recvBuffer.ReadPos(), dataSize);
-//
-//	if (processLen < 0 || dataSize < processLen || _recvBuffer.OnRead(processLen) == false)
-//	{
-//		Disconnect("OnRead Overflow");
-//		return;
-//	}
-//
-//	_recvBuffer.Clean();
-//
-//	RegisterRecv();
-//}
-
-//int32 ReliableUdpSession::IsParsingPacket(BYTE* buffer, int32 len)
-//{
-//	int32 processLen = 0;
-//
-//	while (true)
-//	{
-//		int32 dataSize = len - processLen;
-//
-//		if (dataSize < sizeof(UdpPacketHeader))
-//			break;
-//
-//		UdpPacketHeader* header = reinterpret_cast<UdpPacketHeader*>(&buffer[processLen]);
-//
-//		if (dataSize < header->size || header->size < sizeof(UdpPacketHeader))
-//			break;
-//
-//		OnRecv(&buffer[processLen], header->size);
-//
-//		processLen += header->size;
-//	}
-//
-//	return processLen;
-//}
 
 void ReliableUdpSession::Update(float serverTime)
 {
@@ -615,7 +519,7 @@ void ReliableUdpSession::Update(float serverTime)
 		if (it != _pendingAckMap.end())
 		{
 			std::cout << "[ReliableUDP] Re-sending seq: " << seq << "\n";
-			Send(it->second.buffer);
+			SendReliable(it->second.buffer, serverTime);
 		}
 	}
 }

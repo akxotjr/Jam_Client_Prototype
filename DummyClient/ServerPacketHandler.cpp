@@ -117,7 +117,7 @@ bool Handle_S_CHAT(SessionRef& session, Protocol::S_CHAT& pkt)
 
 bool Handle_S_TIMESYNC(SessionRef& session, Protocol::S_TIMESYNC& pkt)
 {
-	std::cout << "[TCP] Recv : S_TIMESYNC\n";
+	//std::cout << "[TCP] Recv : S_TIMESYNC\n";
 
 	float timestamp = pkt.timestamp();
 	TimeManager::GetInstance()->OnServerTimeReceived(timestamp);
@@ -206,7 +206,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 
 bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pkt)
 {
-	std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
+	//std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
 
 	float timestamp = pkt.timestamp();
 
