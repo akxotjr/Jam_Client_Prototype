@@ -423,10 +423,13 @@ void ReliableUdpSession::RegisterSend(SendBufferRef sendBuffer)
 	GetService()->GetUdpSocket().async_send_to(
 		boost::asio::buffer(sendBuffer->Buffer(), sendBuffer->WriteSize()),
 		_remoteEndpoint,
-		[this, self = shared_from_this()](const boost::system::error_code& ec, size_t bytes_transferred)
+		[this, self = shared_from_this(), sendBuffer](const boost::system::error_code& ec, size_t bytes_transferred)
 		{
 			if (!ec)
 			{
+				UdpPacketHeader header = *reinterpret_cast<UdpPacketHeader*>(sendBuffer->Buffer());
+				cout << "ProcessSend  " << header.id << " : " << header.size << endl;
+
 				ProcessSend(static_cast<int32>(bytes_transferred));
 			}
 			else

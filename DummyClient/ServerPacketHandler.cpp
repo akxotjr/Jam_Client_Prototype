@@ -6,6 +6,7 @@
 #include "Scene.h"
 #include "GameScene.h"
 #include "Service.h"
+#include "GameTcpSession.h"
 #include "GameUdpSession.h"
 #include "Player.h"
 #include "Bot.h"
@@ -27,12 +28,17 @@ bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt)
 	if (pkt.success() == false)
 		return false;
 
-	std::cout << "[TCP] Send : C_ENTER_GAME\n";	// debug
+	uint32 id = pkt.userid();
+	
+	//temp
+	session->GetService()->SetUserId(id);
+	//~temp
 
 	Protocol::C_ENTER_GAME enterGamePkt;
-
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterGamePkt);
 	session->Send(sendBuffer);
+
+	std::cout << "[TCP] Send : C_ENTER_GAME\n";	// debug
 
 	return true;
 }
@@ -50,16 +56,17 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	service->SetUdpRemoteEndpoint(udp::endpoint(boost::asio::ip::make_address(ip), port));
 
 	auto udpSession = static_pointer_cast<GameUdpSession>(service->CreateSession(ProtocolType::PROTOCOL_UDP));
-	//service->SetPendingGameUdpSession(udpSession);
-	//udpSession->Connect();
 
 	{
-		std::cout << "[UDP] Send : C_HANDSHAKE\n";	// debug
 		float timestamp = TimeManager::GetInstance()->GetClientTime();
+		uint32 id = service->GetUserId();
 
 		Protocol::C_HANDSHAKE handshakePkt;
+		handshakePkt.set_userid(id);
 		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(handshakePkt);
 		udpSession->SendReliable(sendBuffer, timestamp);
+
+		std::cout << "[UDP] Send : C_HANDSHAKE\n";	// debug
 	}
 	return true;
 }
@@ -119,6 +126,8 @@ bool Handle_S_TIMESYNC(SessionRef& session, Protocol::S_TIMESYNC& pkt)
 
 bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 {
+	std::cout << "[UDP] Recv : S_SPAWN_ACTOR\n";
+
 	uint32 playerId = pkt.playerid();
 
 	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
@@ -197,6 +206,8 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 
 bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pkt)
 {
+	std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
+
 	float timestamp = pkt.timestamp();
 
 	const auto& characters = pkt.characterinfo(); // or pkt.characterinfo(i) per index
@@ -245,6 +256,8 @@ bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pk
 
 bool Handle_S_PLAYER_INPUT(SessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
+	std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
+
 	// todo
 	uint32 sequenceNumber = pkt.sequencenumber();
 

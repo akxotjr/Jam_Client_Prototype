@@ -11,14 +11,14 @@ public:
 	GameScene();
 	virtual ~GameScene();
 
-	virtual void Init();
-	virtual void Update();
-	virtual void Render(HDC hdc);
+	virtual void			Init();
+	virtual void			Update();
+	virtual void			Render(HDC hdc);
 
-	void SetPlayer(shared_ptr<Player> player) { _player = player; }
-	shared_ptr<Player> GetPlayer() { return _player; }
+	void					SetPlayer(shared_ptr<Player> player) { _player = player; }
+	shared_ptr<Player>		GetPlayer() { return _player; }
 
 private:
-	shared_ptr<Player> _player = nullptr;
+	shared_ptr<Player>		_player = nullptr;
 };
 

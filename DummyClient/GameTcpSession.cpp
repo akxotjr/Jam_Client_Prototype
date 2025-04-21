@@ -38,12 +38,6 @@ void GameTcpSession::OnConnected()
 void GameTcpSession::OnDisconnected()
 {
 	std::cout << "[TCP] OnDisconnected\n"; // debug
-
-	//auto service = dynamic_pointer_cast<ClientService>(GetService());
-	//if (service == nullptr)
-	//	return;
-
-	//service->SetGameTcpSession(nullptr);
 }
 
 void GameTcpSession::OnSend(int32 len)

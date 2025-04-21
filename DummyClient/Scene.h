@@ -11,20 +11,20 @@ public:
 	Scene();
 	virtual ~Scene();
 
-	virtual void Init();
-	virtual void Update();
-	virtual void Render(HDC hdc);
+	virtual void								Init();
+	virtual void								Update();
+	virtual void								Render(HDC hdc);
 
-	void AddActor(uint32 id, shared_ptr<Actor> actor);
-	void RemoveActor(uint32 id);
+	void										AddActor(uint32 id, shared_ptr<Actor> actor);
+	void										RemoveActor(uint32 id);
 
-	shared_ptr<Actor> GetActorById(uint32 id) { return _actors[id]; }
+	shared_ptr<Actor>							GetActorById(uint32 id) { return _actors[id]; }
 
-	SessionRef GetSessionByType(SessionType type);
+	SessionRef									GetSessionByProtocolType(ProtocolType type);
 
-	unordered_map<uint32, shared_ptr<Actor>>& GetActors() { return _actors; }
+	unordered_map<uint32, shared_ptr<Actor>>&	GetActors() { return _actors; }
 
 private:
-	unordered_map<uint32, shared_ptr<Actor>> _actors;
+	unordered_map<uint32, shared_ptr<Actor>>	_actors;
 };
 

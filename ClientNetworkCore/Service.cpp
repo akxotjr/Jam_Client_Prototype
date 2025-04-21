@@ -114,9 +114,8 @@ ReliableUdpSessionRef Service::FindOrCreateUdpSession(udp::endpoint& from)
 		return nullptr;
 
 	newSession->SetRemoteEndpoint(from);
-	newSession->ProcessConnect();
-
 	_pendingUdpSessions[from] = newSession;
+	newSession->ProcessConnect();
 
 	return newSession;
 }

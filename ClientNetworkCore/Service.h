@@ -66,6 +66,27 @@ public:
 
 	void							RegisterToContextAsync(JobRef job);
 
+
+	//temp
+	uint32					GetUserId() { return _userId; }
+	void					SetUserId(uint32 id) { _userId = id; }
+
+	TcpSessionRef GetTcpSession() 
+	{ 
+		if (_tcpSessions.empty())
+			int a = 0;
+
+		return *_tcpSessions.begin(); 
+	}
+	ReliableUdpSessionRef GetUdpSession() 
+	{ 
+		if (_udpSessions.empty())
+			int a = 0;
+
+		return *_udpSessions.begin(); 
+	}
+	//~temp
+
 private:
 	USE_LOCK
 
@@ -88,6 +109,11 @@ private:
 	SessionFactory										_udpSessionFactory;
 
 	UdpReceiverRef										_udpReceiver = nullptr;
+
+
+	//temp
+	uint32 _userId = 0;
+	//~temp
 };
 
 
@@ -112,7 +138,7 @@ inline void Service::SetSessionFactory()
 template<typename T>
 inline void Service::SetUdpReceiver()
 {
-	//if (CanCast<T, UdpReceiver>() == false)
+	//if (CanCast<T, UdpReceiver>() == false)	// todo: validation check
 	//	return;
 
 	_udpReceiver = MakeShared<T>(GetExecutor());

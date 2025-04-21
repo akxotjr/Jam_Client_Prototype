@@ -49,6 +49,9 @@ void Scene::Render(HDC hdc)
 void Scene::AddActor(uint32 id, shared_ptr<Actor> actor)
 {
 	_actors[id] = actor;
+
+	//TEMP
+	actor->SetScene(shared_from_this());
 }
 
 void Scene::RemoveActor(uint32 id)
@@ -56,11 +59,17 @@ void Scene::RemoveActor(uint32 id)
 	_actors.erase(id);
 }
 
-SessionRef Scene::GetSessionByType(SessionType type)  
+SessionRef Scene::GetSessionByProtocolType(ProtocolType type)  
 {  
-	//if (auto game = SceneManager::GetInstance()->GetGame())  
-	//{  
-	//	return game->GetService()->GetSessionByType(type);  
-	//}  
+	if (auto game = SceneManager::GetInstance()->GetGame())
+	{
+		auto service = game->GetService();
+		if (service == nullptr) return nullptr;
+
+		if (type == ProtocolType::PROTOCOL_TCP)
+			return service->GetTcpSession();
+		else if (type == ProtocolType::PROTOCOL_UDP)
+			return service->GetUdpSession();
+	}
 	return nullptr;  
 }

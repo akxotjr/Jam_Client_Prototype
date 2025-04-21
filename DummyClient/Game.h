@@ -5,14 +5,14 @@ class Session;
 class Scene;
 
 // temp
-enum class SessionType : int32
-{
-	None = 0,
-	GAME_SESSION,
-	CHAT_SESSION,
-
-	COUNT
-};
+//enum class SessionType : int32
+//{
+//	None = 0,
+//	GAME_SESSION,
+//	CHAT_SESSION,
+//
+//	COUNT
+//};
 
 
 class Game : public enable_shared_from_this<Game>
