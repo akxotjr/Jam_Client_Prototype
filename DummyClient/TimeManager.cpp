@@ -5,7 +5,6 @@
 #include "SceneManager.h"
 #include "GameScene.h"
 #include "Character.h"
-#include <boost/asio.hpp>
 
 shared_ptr<TimeManager> TimeManager::instance = nullptr;
 
@@ -22,9 +21,9 @@ void TimeManager::Update()
 	_update();
 }
 
-void TimeManager::OnServerTimeReceived(float serverTime)
+void TimeManager::OnServerTimeReceived(double serverTime)
 {
-	float now = GetRawLocalTime();
+	double now = GetRawLocalTime();
 	_rtt = now - _lastTimeSyncSent;
 
 	_baseServerTime = serverTime + _rtt * 0.5f;
@@ -54,16 +53,16 @@ void TimeManager::OnServerTimeReceived(float serverTime)
 
 }
 
-float TimeManager::GetClientTime()
+double TimeManager::GetClientTime()
 {
 	return _baseServerTime + (GetRawLocalTime() - _baseLocalTime);
 }
 
-float TimeManager::GetRawLocalTime()
+double TimeManager::GetRawLocalTime()
 {
 	uint64 currentCount;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
-	return currentCount / static_cast<float>(_frequency);
+	return currentCount / static_cast<double>(_frequency);
 }
 
 void TimeManager::EmptyUpdate()
@@ -71,7 +70,7 @@ void TimeManager::EmptyUpdate()
 	uint64 currentCount;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
 
-	_deltaTime = (currentCount - _prevCount) / static_cast<float>(_frequency);
+	_deltaTime = (currentCount - _prevCount) / static_cast<double>(_frequency);
 	_adjustDeltaTime = _deltaTime * _timeScale;
 	_prevCount = currentCount;
 
@@ -92,7 +91,7 @@ void TimeManager::RealUpdate()
 	uint64 currentCount;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
 
-	_deltaTime = (currentCount - _prevCount) / static_cast<float>(_frequency);
+	_deltaTime = (currentCount - _prevCount) / static_cast<double>(_frequency);
 	_adjustDeltaTime = _deltaTime * _timeScale;
 	_prevCount = currentCount;
 

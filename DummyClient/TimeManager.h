@@ -10,21 +10,21 @@ class TimeManager : public enable_shared_from_this<TimeManager>
 public:
 	void			Init();
 	void			Update();
-	void			OnServerTimeReceived(float serverTime);
+	void			OnServerTimeReceived(double serverTime);
 
 
 	uint32			GetFps() { return _fps; }
-	float			GetDeltaTime() { return _deltaTime; }
-	float			GetAdjustDeltaTime() { return _adjustDeltaTime; }
+	double			GetDeltaTime() { return _deltaTime; }
+	double			GetAdjustDeltaTime() { return _adjustDeltaTime; }
 
-	void			SetTimeScale(float timeScale) { _timeScale = timeScale; }
+	void			SetTimeScale(double timeScale) { _timeScale = timeScale; }
 
-	float			GetClientTime();
+	double			GetClientTime();
 
-	float			GetRawLocalTime();
+	double			GetRawLocalTime();
 
-	float			GetRoundTripTime() { return _rtt; }
-	float			GetJitter() { return _jitter; }
+	double			GetRoundTripTime() { return _rtt; }
+	double			GetJitter() { return _jitter; }
 
 	void			SetSession(SessionRef session) { _session = session; }
 
@@ -39,24 +39,24 @@ private:
 
 	uint64			_frequency = 0;
 	uint64			_prevCount = 0;
-	float			_deltaTime = 0.f;
-	float			_adjustDeltaTime = 0.f;
-	float			_timeScale = 1.f;
+	double			_deltaTime = 0.f;
+	double			_adjustDeltaTime = 0.f;
+	double			_timeScale = 1.f;
 	uint32			_frameCount = 0;
-	float			_frameTime = 0.f;
+	double			_frameTime = 0.f;
 	uint32			_fps = 0;
 
 	//float			_clientTime = 0.f;
 	//float			_prevClientTime = 0.f;	
-	float			_sumTime = 0.f;
-	float			_lastTimeSyncSent = 0.f;
+	double			_sumTime = 0.f;
+	double			_lastTimeSyncSent = 0.f;
 
-	float			_baseServerTime = 0.f;
-	float			_baseLocalTime = 0.f;
+	double			_baseServerTime = 0.f;
+	double			_baseLocalTime = 0.f;
 
 
-	float			_rtt = 0.f;
-	float			_jitter = 0.f;
+	double			_rtt = 0.f;
+	double			_jitter = 0.f;
 
 	bool			_isSynchronized = false;
 

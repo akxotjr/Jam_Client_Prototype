@@ -3,7 +3,7 @@
 #include "TimeManager.h"
 
 MovementInterpolator::MovementInterpolator()
-	: _interpolationDelay(0.1f), _extrapolationLimit(0.25f), _lastRenderedPosition(Vec2{0,0})
+	: _interpolationDelay(0.05), _extrapolationLimit(0.25), _lastRenderedPosition(Vec2{0,0})
 {
 }
 
@@ -20,8 +20,8 @@ void MovementInterpolator::AddSnapshot(const Snapshot& snap)
 
 void MovementInterpolator::Update()
 {
-	float currentTime = TimeManager::GetInstance()->GetClientTime();
-	float renderTime = currentTime - _interpolationDelay;
+	double currentTime = TimeManager::GetInstance()->GetClientTime();
+	double renderTime = currentTime - _interpolationDelay;
 
 	Vec2 pos = {};
 	if (CanInterpolate(renderTime))
@@ -42,7 +42,7 @@ void MovementInterpolator::Render()
 }
 
 
-Vec2 MovementInterpolator::Interpolate(float renderTime)
+Vec2 MovementInterpolator::Interpolate(double renderTime)
 {
 	READ_LOCK
 	for (int i = 0; i < _buffer.size(); i++)
@@ -52,7 +52,7 @@ Vec2 MovementInterpolator::Interpolate(float renderTime)
 
 		if (prev.timestamp <= renderTime && next.timestamp >= renderTime)
 		{
-			float t = (renderTime - prev.timestamp) / (next.timestamp - prev.timestamp);
+			double t = (renderTime - prev.timestamp) / (next.timestamp - prev.timestamp);
 			return Lerp(prev.position, next.position, t);
 		}
 	}
@@ -60,7 +60,7 @@ Vec2 MovementInterpolator::Interpolate(float renderTime)
 	return _buffer.back().position;
 }
 
-Vec2 MovementInterpolator::Extrapolate(float currentTime)
+Vec2 MovementInterpolator::Extrapolate(double currentTime)
 {
 	READ_LOCK
 	if (_buffer.empty())
@@ -69,7 +69,7 @@ Vec2 MovementInterpolator::Extrapolate(float currentTime)
 	}
 
 	Snapshot& last = _buffer.back();	// todo const
-	float delta = currentTime - last.timestamp;
+	double delta = currentTime - last.timestamp;
 
 	if (delta > _extrapolationLimit)
 	{
@@ -79,7 +79,7 @@ Vec2 MovementInterpolator::Extrapolate(float currentTime)
 	return last.position + last.velocity * delta;
 }
 
-bool MovementInterpolator::CanInterpolate(float renderTime)
+bool MovementInterpolator::CanInterpolate(double renderTime)
 {
 	WRITE_LOCK
 	if (_buffer.size() < 2)
@@ -100,22 +100,22 @@ bool MovementInterpolator::CanInterpolate(float renderTime)
 
 void MovementInterpolator::SetBasedOnServerRate()
 {
-	float avgRTT = TimeManager::GetInstance()->GetRoundTripTime();
-	float jitter = TimeManager::GetInstance()->GetJitter();
+	double avgRTT = TimeManager::GetInstance()->GetRoundTripTime();
+	double jitter = TimeManager::GetInstance()->GetJitter();
 
-	float safetyMargin = 0.03f;
+	double safetyMargin = 0.03f;
 
 	//_interpolationDelay = 0.05f + avgRTT * 0.5f + jitter + safetyMargin;
 
 	//_interpolationDelay = std::clamp(_interpolationDelay, 0.05f, 0.3f);
 }
 
-Vec2 MovementInterpolator::Lerp(Vec2& a, Vec2& b, float& t)
+Vec2 MovementInterpolator::Lerp(Vec2& a, Vec2& b, double& t)
 {
-	return a * (1 - t) + b * t;
+	return a * (1.0 - t) + b * t;
 }
 
-//Vec2 MovementInterpolator::CatmullRom(Vec2 a, Vec2 b, Vec2 c, Vec2 d, float t)
+//Vec2 MovementInterpolator::CatmullRom(Vec2 a, Vec2 b, Vec2 c, Vec2 d, double t)
 //{
 //	return ((b * 2) + (a * (-1) + c) * t + (a * 2 - b * 5 + c * 4 - d) * t * t + (a * (-1) + b * 3 - c * 3 + d) * t * t * t) * 0.5f;
 //}

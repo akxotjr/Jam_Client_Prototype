@@ -59,7 +59,7 @@ void Player::SendInputToServer(const Input& input)
 	if (session == nullptr)
 		return;
 
-	float timestamp = TimeManager::GetInstance()->GetClientTime();
+	double timestamp = TimeManager::GetInstance()->GetClientTime();
 
 	session->SendReliable(sendBuffer, timestamp);
 }
@@ -85,7 +85,7 @@ void Player::ApplyInput(Input& input)
 {
 	WRITE_LOCK
 
-	float deltaTime = input.deltaTime;
+	double deltaTime = input.deltaTime;
 
 	if ((_targetPos - _position).Length() < 1.5f)
 	{

@@ -99,7 +99,7 @@ bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 		return false;
 
 	{
-		float timestamp = TimeManager::GetInstance()->GetClientTime();
+		double timestamp = TimeManager::GetInstance()->GetClientTime();
 
 		Protocol::C_SPAWN_ACTOR spawnActorPkt;
 		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(spawnActorPkt);
@@ -206,7 +206,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 
 bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pkt)
 {
-	//std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
+	std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
 
 	float timestamp = pkt.timestamp();
 
@@ -256,7 +256,7 @@ bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pk
 
 bool Handle_S_PLAYER_INPUT(SessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
-	std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
+	//std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
 
 	// todo
 	uint32 sequenceNumber = pkt.sequencenumber();

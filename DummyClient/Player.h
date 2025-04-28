@@ -6,16 +6,16 @@ struct Input
 {
 	Input() {};
 
-	Input(float ts, KeyType key, POINT pos, int seq, float dt)
+	Input(double ts, KeyType key, POINT pos, int seq, double dt)
 		: timestamp(ts), keyType(key), mousePosition(pos), sequenceNumber(seq), deltaTime(dt) 
 	{
 	}
 
-	float timestamp = 0.f;
+	double timestamp = 0.f;
 	KeyType keyType = KeyType::None;
 	POINT mousePosition = {};
 	uint32 sequenceNumber = 0;
-	float deltaTime = 0.f;
+	double deltaTime = 0.f;
 };
 
 class Player : public Character
