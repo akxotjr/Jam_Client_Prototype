@@ -2,24 +2,16 @@
 #include "Actor.h"
 #include "Scene.h"
 
-Actor::Actor()
-{
-}
-
 Actor::~Actor()
 {
 }
 
-void Actor::Init()
+void Actor::Init(SceneRef scene)
 {
-	// todo : null check
-	//_owner = owner;
+	_owner = scene;
 }
 
-void Actor::Update()
+void Actor::SetTransform(uint64 position, uint64 velocity_speed, uint64 speed)
 {
-}
 
-void Actor::Render(HDC hdc)
-{
 }

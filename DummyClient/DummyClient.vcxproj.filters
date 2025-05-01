@@ -22,6 +22,9 @@
     <Filter Include="04.Scene">
       <UniqueIdentifier>{e93c8b37-6fe0-44ba-b79d-6d93a682b5a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="97. Utils">
+      <UniqueIdentifier>{2d5e5a2c-c9a1-496d-a486-3b0120b034e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -53,9 +56,6 @@
     </ClInclude>
     <ClInclude Include="TimeManager.h">
       <Filter>02.Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Actor.h">
-      <Filter>03.Actor</Filter>
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>03.Actor</Filter>
@@ -93,6 +93,18 @@
     <ClInclude Include="GameUdpReceiver.h">
       <Filter>01.Network</Filter>
     </ClInclude>
+    <ClInclude Include="TransformCompressor.h">
+      <Filter>97. Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="IdManager.h">
+      <Filter>97. Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>03.Actor</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteActor.h">
+      <Filter>03.Actor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -121,9 +133,6 @@
     </ClCompile>
     <ClCompile Include="TimeManager.cpp">
       <Filter>02.Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor.cpp">
-      <Filter>03.Actor</Filter>
     </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>03.Actor</Filter>
@@ -157,6 +166,18 @@
     </ClCompile>
     <ClCompile Include="GameUdpReceiver.cpp">
       <Filter>01.Network</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformCompressor.cpp">
+      <Filter>97. Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="IdManager.cpp">
+      <Filter>97. Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>03.Actor</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteActor.cpp">
+      <Filter>03.Actor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

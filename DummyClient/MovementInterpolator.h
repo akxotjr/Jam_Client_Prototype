@@ -2,45 +2,45 @@
 
 struct Snapshot
 {
-	double timestamp = 0.f;
-	Vec2 position = {};
-	Vec2 velocity = {};
+	double timestamp = 0.0;
+	Vec3 position = {};
+	Vec3 velocity = {};
 };
 
 class MovementInterpolator
 {
 public:
 	MovementInterpolator();
+	~MovementInterpolator() = default;
 
-	void AddSnapshot(const Snapshot& snap);
-	void Update();
-	void Render();
+	void				Update();
+	void				AddSnapshot(const Snapshot& snap);
 
-	void SetInterpolationDelay(double delay) { _interpolationDelay = delay; }
-	void SetExtrapolationLimit(double maxDelta) { _extrapolationLimit = maxDelta; }
+	void				SetInterpolationDelay(double delay) { _interpolationDelay = delay; }
+	void				SetExtrapolationLimit(double maxDelta) { _extrapolationLimit = maxDelta; }
 
-	Vec2& GetLastRenderedPosition() { return _lastRenderedPosition; }
+	Vec3&				GetLastRenderedPosition() { return _lastRenderedPosition; }
 
 	// temp
-	void SetBasedOnServerRate();
+	void				SetBasedOnServerRate();
 
 private:
-	Vec2 Interpolate(double renderTime);
-	Vec2 Extrapolate(double currentTime);
-	bool CanInterpolate(double renderTime);
+	Vec3				Interpolate(double renderTime);
+	Vec3				Extrapolate(double currentTime);
+	bool				CanInterpolate(double renderTime);
 
 //	void SetBasedOnServerRate();
 
-	Vec2 Lerp(Vec2& a, Vec2& b, double& t);
-	Vec2 CatmullRom(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& d, const double& t);
+	Vec3				Lerp(Vec3& a, Vec3& b, float& t);
+	Vec3				CatmullRom(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const double& t);
 
 private:
 	USE_LOCK
 
-	Deque<Snapshot> _buffer;
-	double _interpolationDelay = 0.f;
-	double _extrapolationLimit = 0.f;
+	Deque<Snapshot>		_snapshotBuffer;
+	double				_interpolationDelay = 0.f;
+	double				_extrapolationLimit = 0.f;
 
-	Vec2 _lastRenderedPosition = {};
+	Vec3				_lastRenderedPosition = {};
 };
 

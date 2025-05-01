@@ -9,16 +9,16 @@ class GameScene : public Scene
 
 public:
 	GameScene();
-	virtual ~GameScene();
+	virtual ~GameScene() override;
 
-	virtual void			Init();
-	virtual void			Update();
-	virtual void			Render(HDC hdc);
+	virtual void			Init() override;
+	virtual void			Update() override;
+	virtual void			Render(HDC hdc) override;
 
-	void					SetPlayer(shared_ptr<Player> player) { _player = player; }
-	shared_ptr<Player>		GetPlayer() { return _player; }
+	void					SetPlayer(const PlayerRef& player) { _player = player; }
+	PlayerRef				GetPlayer() { return _player; }
 
 private:
-	shared_ptr<Player>		_player = nullptr;
+	PlayerRef				_player = nullptr;
 };
 

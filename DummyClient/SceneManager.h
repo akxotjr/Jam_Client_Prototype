@@ -18,6 +18,7 @@ public:
 	shared_ptr<Scene>		GetCurrentScene() { return _scene; }
 	shared_ptr<Game>		GetGame() { return _game; }
 
+
 private:
 	shared_ptr<Scene>		_scene = nullptr;
 	SceneType				_sceneType = SceneType::None;

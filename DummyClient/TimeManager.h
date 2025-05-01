@@ -3,7 +3,7 @@
 
 using UpdateFunc = std::function<void()>;
 
-class TimeManager : public enable_shared_from_this<TimeManager>
+class TimeManager
 {
 	DECLARE_SINGLETON(TimeManager)
 

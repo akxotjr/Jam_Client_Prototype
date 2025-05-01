@@ -14,19 +14,18 @@ Scene::~Scene()
 
 void Scene::Init()
 {
-	for (auto& [id, actor] : _actors)
+	for (auto& actor : _actors | views::values)
 	{
 		if (actor)
 		{
-			actor->Init();
-			actor->SetScene(shared_from_this());
+			actor->Init(shared_from_this());
 		}
 	}
 }
 
 void Scene::Update()
 {
-	for (auto& [id, actor] : _actors)
+	for (auto& actor : _actors | views::values)
 	{
 		if (actor)
 		{
@@ -37,7 +36,7 @@ void Scene::Update()
 
 void Scene::Render(HDC hdc)
 {
-	for (auto& [id, actor] : _actors)
+	for (auto& actor : _actors | views::values)
 	{
 		if (actor)
 		{
@@ -46,12 +45,10 @@ void Scene::Render(HDC hdc)
 	}
 }
 
-void Scene::AddActor(uint32 id, shared_ptr<Actor> actor)
+void Scene::AddActor(ActorRef actor)
 {
-	_actors[id] = actor;
-
-	//TEMP
-	actor->SetScene(shared_from_this());
+	actor->Init(shared_from_this());
+	_actors.insert({ actor->GetActorId(), actor });
 }
 
 void Scene::RemoveActor(uint32 id)
@@ -59,9 +56,18 @@ void Scene::RemoveActor(uint32 id)
 	_actors.erase(id);
 }
 
+ActorRef Scene::GetActorByActorId(uint32 actorId)
+{
+	if (_actors.contains(actorId)) 
+	{
+		return _actors[actorId];
+	}
+	return nullptr;
+}
+
 SessionRef Scene::GetSessionByProtocolType(ProtocolType type)  
 {  
-	if (auto game = SceneManager::GetInstance()->GetGame())
+	if (auto game = SceneManager::Instance().GetGame())
 	{
 		auto service = game->GetService();
 		if (service == nullptr) return nullptr;

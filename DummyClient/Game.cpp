@@ -6,9 +6,6 @@
 #include "TimeManager.h"
 #include "SceneManager.h"
 
-
-#include "boost/asio.hpp"
-#include "boost/asio/ip/address.hpp"
 #include "GameTcpSession.h"
 #include "GameUdpSession.h"
 #include "GameUdpReceiver.h"
@@ -17,10 +14,13 @@ using boost::asio::ip::address;
 
 Game::Game()
 {
+	_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, _allocatorCallback, _errorCallback);
 }
 
 Game::~Game()
 {
+	_foundation->release();
+	_foundation = nullptr;
 }
 
 void Game::Init(HWND hwnd)
@@ -37,10 +37,10 @@ void Game::Init(HWND hwnd)
 
 	ServerPacketHandler::Init();
 
-	InputManager::GetInstance()->Init(hwnd);
-	TimeManager::GetInstance()->Init();
-	SceneManager::GetInstance()->Init(shared_from_this());
-	SceneManager::GetInstance()->ChangeScene(SceneType::GameScene);
+	InputManager::Instance().Init(hwnd);
+	TimeManager::Instance().Init();
+	SceneManager::Instance().Init(shared_from_this());
+	SceneManager::Instance().ChangeScene(SceneType::GameScene);
 
 	TransportConfig config = {
 		.tcpRemoteEndpoint = tcp::endpoint(boost::asio::ip::make_address("127.0.0.1"), 7777)
@@ -54,20 +54,20 @@ void Game::Init(HWND hwnd)
 
 void Game::Update()
 {
-	InputManager::GetInstance()->Update();
-	TimeManager::GetInstance()->Update();
-	SceneManager::GetInstance()->Update();
+	InputManager::Instance().Update();
+	TimeManager::Instance().Update();
+	SceneManager::Instance().Update();
 }
 
 void Game::Render()
 {
-	SceneManager::GetInstance()->Render(_hdcBack);
+	SceneManager::Instance().Render(_hdcBack);
 
 	{
 		// temp
-		double rtt = TimeManager::GetInstance()->GetRoundTripTime();
-		double clientTime = TimeManager::GetInstance()->GetClientTime();
-		double deltaTime = TimeManager::GetInstance()->GetDeltaTime();
+		double rtt = TimeManager::Instance().GetRoundTripTime();
+		double clientTime = TimeManager::Instance().GetClientTime();
+		double deltaTime = TimeManager::Instance().GetDeltaTime();
 		wstring str = std::format(L"ClientTime({0}), DeltaTime({1})", clientTime, deltaTime);
 
 		Utils::PrintText(_hdcBack, Vec2(10, 10), str);

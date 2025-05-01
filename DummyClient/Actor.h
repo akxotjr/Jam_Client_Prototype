@@ -5,28 +5,29 @@ class Scene;
 class Actor : public enable_shared_from_this<Actor>
 {
 public:
-	Actor();
+	Actor() = default;
 	virtual ~Actor();
 
-	virtual void		Init();
-	virtual void		Update();
-	virtual void		Render(HDC hdc);
+	virtual void				Init(SceneRef scene);
+	virtual void				Update() = 0;
+	virtual void				Render(HDC hdc) = 0;
 
-	void				SetName(string name) { _name = name; }
-	string				GetName() { return _name; }
-	void				SetId(uint32 id) { _id = id; }
-	uint32				GetId() { return _id; }
 
-	Vec2&				GetPosition() { return _position; }
-	void				SetPosition(Vec2 position) { _position = position; }
+	void						SetActorId(uint32 id) { _actorId = id; }
+	uint32						GetActorId() const { return _actorId; }
 
-	void				SetScene(shared_ptr<Scene> owner) { _owner = owner; }
+	SceneRef					GetOwnerScene() const { return _owner.lock(); }
+
+	void						SetTransform(uint64 position, uint64 velocity_speed, uint64 speed);
 
 protected:
-	string				_name = "";
-	uint32				_id = 0;
-	Vec2				_position = {};
+	std::weak_ptr<Scene>		_owner;
 
-	weak_ptr<Scene>		_owner;
+	uint32						_actorId = 0;
+
+	Vec3						_position = {};
+	Vec3						_rotation = {};
+	Vec3						_velocity = {};
+	float						_moveSpeed = 0.0f;
 };
 

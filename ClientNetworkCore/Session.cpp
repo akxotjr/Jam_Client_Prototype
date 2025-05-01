@@ -280,7 +280,7 @@ int32 TcpSession::IsParsingPacket(BYTE* buffer, int32 len)
 
 
 ReliableUdpSession::ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor)
-	: Session(service, executor)/*, _recvBuffer(BUFFER_SIZE)*/
+	: Session(service, executor)
 {
 	auto owner = _service.lock();
 	if (!owner) return;
@@ -323,7 +323,7 @@ void ReliableUdpSession::Send(SendBufferRef sendBuffer)
 	RegisterSend(sendBuffer);
 }
 
-void ReliableUdpSession::SendReliable(SendBufferRef sendBuffer, float timestamp)
+void ReliableUdpSession::SendReliable(SendBufferRef sendBuffer, double timestamp)
 {
 	uint16 seq = _sendSeq++;
 

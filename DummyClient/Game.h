@@ -30,15 +30,13 @@ public:
 private:
 
 	/* Rendering */
-	HWND				_hwnd;
-	HDC					_hdc;
-
-	RECT				_rect;
-	HDC					_hdcBack = {};
-	HBITMAP				_bmpBack = {};
-
+	HWND							_hwnd;
+	HDC								_hdc;
+	RECT							_rect;
+	HDC								_hdcBack = {};
+	HBITMAP							_bmpBack = {};
 
 	/* Network */
-	ServiceRef	_service;
+	ServiceRef						_service;
 };
 

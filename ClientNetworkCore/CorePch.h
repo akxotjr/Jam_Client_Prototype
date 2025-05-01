@@ -14,9 +14,11 @@ using namespace std;
 #include <mswsock.h>
 #include <ws2tcpip.h>
 
-#pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "mswsock.lib")
-#pragma comment(lib, "advapi32.lib")
+#include <boost/asio.hpp>
+
+//#pragma comment(lib, "ws2_32.lib")
+//#pragma comment(lib, "mswsock.lib")
+//#pragma comment(lib, "advapi32.lib")
 
 #include "Memory.h"
 #include "Lock.h"

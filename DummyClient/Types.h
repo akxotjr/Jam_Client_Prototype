@@ -1,4 +1,5 @@
 #pragma once
+#include <cmath>
 
 enum class SceneType
 {
@@ -164,6 +165,96 @@ struct Vec2Int
 	int32 y = 0;
 };
 
+
+struct Vec3
+{
+	Vec3() {}
+	Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+	// 연산자 오버로딩
+	Vec3 operator+(const Vec3& other) const
+	{
+		return Vec3(x + other.x, y + other.y, z + other.z);
+	}
+
+	Vec3 operator-(const Vec3& other) const
+	{
+		return Vec3(x - other.x, y - other.y, z - other.z);
+	}
+
+	Vec3 operator*(float value) const
+	{
+		return Vec3(x * value, y * value, z * value);
+	}
+
+	void operator+=(const Vec3& other)
+	{
+		x += other.x; y += other.y; z += other.z;
+	}
+
+	void operator-=(const Vec3& other)
+	{
+		x -= other.x; y -= other.y; z -= other.z;
+	}
+
+	void operator*=(float ratio)
+	{
+		x *= ratio; y *= ratio; z *= ratio;
+	}
+
+	bool operator==(const Vec3& other) const
+	{
+		return x == other.x && y == other.y && z == other.z;
+	}
+
+	// 벡터 연산
+	float LengthSquared() const
+	{
+		return x * x + y * y + z * z;
+	}
+
+	float Length() const
+	{
+		return std::sqrt(LengthSquared());
+	}
+
+	void Normalize()
+	{
+		float len = Length();
+		if (len < 1e-8f)
+			return;
+
+		x /= len;
+		y /= len;
+		z /= len;
+	}
+
+	float Dot(const Vec3& other) const
+	{
+		return x * other.x + y * other.y + z * other.z;
+	}
+
+	Vec3 Cross(const Vec3& other) const
+	{
+		return Vec3(
+			y * other.z - z * other.y,
+			z * other.x - x * other.z,
+			x * other.y - y * other.x
+		);
+	}
+
+	float x = 0;
+	float y = 0;
+	float z = 0;
+};
+
+
+
 USING_SHARED_PTR(GameTcpSession);
 USING_SHARED_PTR(GameUdpSession);
 USING_SHARED_PTR(GameUdpReceiver);
+USING_SHARED_PTR(Game)
+USING_SHARED_PTR(Actor)
+USING_SHARED_PTR(Player)
+USING_SHARED_PTR(Scene)
+USING_SHARED_PTR(GameScene)

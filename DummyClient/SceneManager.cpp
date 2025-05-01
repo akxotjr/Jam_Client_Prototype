@@ -2,8 +2,6 @@
 #include "SceneManager.h"
 #include "GameScene.h"
 
-shared_ptr<SceneManager> SceneManager::instance = nullptr;
-
 void SceneManager::Init(shared_ptr<Game> game)
 {
 	_game = game;

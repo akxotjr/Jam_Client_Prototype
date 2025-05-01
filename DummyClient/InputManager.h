@@ -40,7 +40,7 @@ enum
 	KEY_STATE_COUNT = static_cast<int32>(KeyState::End)
 };
 
-class InputManager : public enable_shared_from_this<InputManager>
+class InputManager
 {
 	DECLARE_SINGLETON(InputManager)
 

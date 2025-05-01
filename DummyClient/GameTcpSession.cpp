@@ -13,19 +13,14 @@ void GameTcpSession::OnConnected()
 {
 	std::cout << "[TCP] OnConnected\n"; // debug
 
-	//auto service = GetService();
-
-	//service->SetGameTcpSession(static_pointer_cast<GameTcpSession>(shared_from_this()));
-
 	{
-		std::cout << "[TCP] Send : C_TIMESYNC\n"; // debug
-		Protocol::C_TIMESYNC timesyncPkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timesyncPkt);
+		std::cout << "[TCP] Send : C_SYNC_TIME\n"; // debug
+		Protocol::C_SYNC_TIME syncPkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(syncPkt);
 		Send(sendBuffer);
 	}
 
-
-	TimeManager::GetInstance()->SetSession(GetSessionRef());
+	TimeManager::Instance().SetSession(GetSessionRef());
 
 	{
 		std::cout << "[TCP] Send : C_LOGIN\n"; // debug
@@ -49,7 +44,6 @@ void GameTcpSession::OnRecv(BYTE* buffer, int32 len)
 {
 	//std::cout << "[TCP] OnRecv : " << len << " bytes\n"; // debug
 
-	SessionRef session = static_pointer_cast<Session>(shared_from_this());
-
+	SessionRef session = GetSessionRef();
 	ServerPacketHandler::HandlePacket<TcpPacketHeader>(session, buffer, len);
 }

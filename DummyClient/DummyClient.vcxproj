@@ -187,16 +187,19 @@
     <ClInclude Include="GameTcpSession.h" />
     <ClInclude Include="GameUdpReceiver.h" />
     <ClInclude Include="GameUdpSession.h" />
+    <ClInclude Include="IdManager.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MovementInterpolator.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Protocol.pb.h" />
+    <ClInclude Include="RemoteActor.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ServerPacketHandler.h" />
     <ClInclude Include="Struct.pb.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="TransformCompressor.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
@@ -216,6 +219,7 @@
     <ClCompile Include="GameTcpSession.cpp" />
     <ClCompile Include="GameUdpReceiver.cpp" />
     <ClCompile Include="GameUdpSession.cpp" />
+    <ClCompile Include="IdManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="MovementInterpolator.cpp" />
     <ClCompile Include="pch.cpp">
@@ -231,6 +235,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RemoteActor.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ServerPacketHandler.cpp" />
@@ -241,6 +246,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="TransformCompressor.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>

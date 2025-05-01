@@ -110,7 +110,7 @@ struct PendingPacket
 {
 	SendBufferRef buffer;
 	uint16 sequence;
-	float timestamp;
+	double timestamp;
 	uint32 retryCount = 0;
 };
 
@@ -131,7 +131,7 @@ public:
 	virtual void							Connect() override;
 	virtual void							Disconnect(const string cause) override;
 	virtual void							Send(SendBufferRef sendBuffer) override;
-	virtual void							SendReliable(SendBufferRef sendBuffer, float timestamp);
+	virtual void							SendReliable(SendBufferRef sendBuffer, double timestamp);
 
 	void									SetRemoteEndpoint(udp::endpoint& ep) { _remoteEndpoint = ep; }
 	udp::endpoint&							GetRemoteEndpoint() { return _remoteEndpoint; }

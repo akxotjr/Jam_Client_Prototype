@@ -16,9 +16,9 @@ Player::~Player()
 {
 }
 
-void Player::Init()
+void Player::Init(SceneRef scene)
 {
-	Super::Init();
+	Super::Init(scene);
 }
 
 void Player::Update()
@@ -59,7 +59,7 @@ void Player::SendInputToServer(const Input& input)
 	if (session == nullptr)
 		return;
 
-	double timestamp = TimeManager::GetInstance()->GetClientTime();
+	double timestamp = TimeManager::Instance().GetClientTime();
 
 	session->SendReliable(sendBuffer, timestamp);
 }
@@ -68,12 +68,12 @@ void Player::SendInputToServer(const Input& input)
 Input Player::CaptureInput()
 {
 	// temp : 현재는 마우스 입력밖에 안받음
-	if (InputManager::GetInstance()->GetButton(KeyType::LeftMouse))
+	if (InputManager::Instance().GetButton(KeyType::LeftMouse))
 	{
-		float timestamp = TimeManager::GetInstance()->GetClientTime();
+		float timestamp = TimeManager::Instance().GetClientTime();
 		KeyType type = KeyType::LeftMouse;
-		POINT mousePos = InputManager::GetInstance()->GetMousePos();
-		float dt = TimeManager::GetInstance()->GetDeltaTime();
+		POINT mousePos = InputManager::Instance().GetMousePos();
+		float dt = TimeManager::Instance().GetDeltaTime();
 
 		return Input(timestamp, type, mousePos, _lastSequenceNumber++, dt);
 	}
@@ -87,30 +87,28 @@ void Player::ApplyInput(Input& input)
 
 	double deltaTime = input.deltaTime;
 
-	if ((_targetPos - _position).Length() < 1.5f)
-	{
-		return;
-	}
+
+	//double deltaTime = input.deltaTime;
+
+	//if ((_targetPos - _position).Length() < 1.5f)
+	//{
+	//	return;
+	//}
 
 
-	if (input.keyType != KeyType::None)
-	{
-		_targetPos = input.mousePosition;
-		_direction = _targetPos - _position;
-		_direction.Normalize();
+	//if (input.keyType != KeyType::None)
+	//{
+	//	_velocity = _direction * _speed;
+	//}
+	//else
+	//{
+	//	deltaTime = TimeManager::Instance().GetDeltaTime();
+	//}
 
-		_velocity = _direction * _speed;
-	}
-	else
-	{
-		deltaTime = TimeManager::GetInstance()->GetDeltaTime();
-	}
-
-	_position = _position + _velocity * deltaTime;
-
+	//_position = _position + _velocity * static_cast<float>(deltaTime);
 }
 
-void Player::Reconcile(Vec2 serverPosition, Vec2 serverVelocity, uint32 ackSequenceNumber)
+void Player::Reconcile(Vec3 serverPosition, Vec3 serverVelocity, uint32 ackSequenceNumber)
 {
 	WRITE_LOCK
 
