@@ -26,9 +26,7 @@ void GameUdpSession::OnSend(int32 len)
 void GameUdpSession::OnRecv(BYTE* buffer, int32 len)
 {
 	//std::cout << "[UDP] OnRecv : " << len << " bytes\n";
-	
 
 	SessionRef session = GetSessionRef();
-
 	ServerPacketHandler::HandlePacket<UdpPacketHeader>(session, buffer, len);
 }
