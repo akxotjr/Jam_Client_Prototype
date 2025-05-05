@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Game.h"
+#include "Renderer.h"
 #include "Service.h"
 #include "ServerPacketHandler.h"
 #include "InputManager.h"
@@ -14,32 +15,32 @@ using boost::asio::ip::address;
 
 Game::Game()
 {
-	_foundation = PxCreateFoundation(PX_PHYSICS_VERSION, _allocatorCallback, _errorCallback);
 }
 
 Game::~Game()
 {
-	_foundation->release();
-	_foundation = nullptr;
+	Renderer::Instance().Shutdown();
 }
 
-void Game::Init(HWND hwnd)
+void Game::Init(/*HWND hwnd*/)
 {
-	_hwnd = hwnd;
-	_hdc = ::GetDC(hwnd);
+	//_hwnd = hwnd;
+	//_hdc = ::GetDC(hwnd);
 
-	::GetClientRect(hwnd, &_rect);
+	//::GetClientRect(hwnd, &_rect);
 
-	_hdcBack = ::CreateCompatibleDC(_hdc);
-	_bmpBack = ::CreateCompatibleBitmap(_hdc, _rect.right, _rect.bottom);
-	HBITMAP prev = (HBITMAP)::SelectObject(_hdcBack, _bmpBack);
-	::DeleteObject(prev);
+	//_hdcBack = ::CreateCompatibleDC(_hdc);
+	//_bmpBack = ::CreateCompatibleBitmap(_hdc, _rect.right, _rect.bottom);
+	//HBITMAP prev = (HBITMAP)::SelectObject(_hdcBack, _bmpBack);
+	//::DeleteObject(prev);
+
+	Renderer::Instance().Init();
 
 	ServerPacketHandler::Init();
 
-	InputManager::Instance().Init(hwnd);
+	InputManager::Instance().Init(/*hwnd*/);
 	TimeManager::Instance().Init();
-	SceneManager::Instance().Init(shared_from_this());
+	SceneManager::Instance().Init(/*shared_from_this()*/);
 	SceneManager::Instance().ChangeScene(SceneType::GameScene);
 
 	TransportConfig config = {
@@ -61,19 +62,19 @@ void Game::Update()
 
 void Game::Render()
 {
-	SceneManager::Instance().Render(_hdcBack);
+	SceneManager::Instance().Render(/*_hdcBack*/);
+	Renderer::Instance().Render();
+	//{
+	//	// temp
+	//	double rtt = TimeManager::Instance().GetRoundTripTime();
+	//	double clientTime = TimeManager::Instance().GetClientTime();
+	//	double deltaTime = TimeManager::Instance().GetDeltaTime();
+	//	wstring str = std::format(L"ClientTime({0}), DeltaTime({1})", clientTime, deltaTime);
 
-	{
-		// temp
-		double rtt = TimeManager::Instance().GetRoundTripTime();
-		double clientTime = TimeManager::Instance().GetClientTime();
-		double deltaTime = TimeManager::Instance().GetDeltaTime();
-		wstring str = std::format(L"ClientTime({0}), DeltaTime({1})", clientTime, deltaTime);
-
-		Utils::PrintText(_hdcBack, Vec2(10, 10), str);
-	}
+	//	Utils::PrintText(_hdcBack, Vec2(10, 10), str);
+	//}
 
 
-	::BitBlt(_hdc, 0, 0, _rect.right, _rect.bottom, _hdcBack, 0, 0, SRCCOPY);
-	::PatBlt(_hdcBack, 0, 0, _rect.right, _rect.bottom, WHITENESS);
+	//::BitBlt(_hdc, 0, 0, _rect.right, _rect.bottom, _hdcBack, 0, 0, SRCCOPY);
+	//::PatBlt(_hdcBack, 0, 0, _rect.right, _rect.bottom, WHITENESS);
 }

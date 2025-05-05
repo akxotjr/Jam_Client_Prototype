@@ -19,9 +19,9 @@ public:
 
 	void			SetTimeScale(double timeScale) { _timeScale = timeScale; }
 
-	double			GetClientTime();
+	double			GetClientTime() const;
 
-	double			GetRawLocalTime();
+	double			GetRawLocalTime() const;
 
 	double			GetRoundTripTime() { return _rtt; }
 	double			GetJitter() { return _jitter; }

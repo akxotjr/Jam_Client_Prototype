@@ -13,6 +13,7 @@ enum class ActorTypePrefix : uint8
 
 class IdManager
 {
+public:
 	static ActorTypePrefix		GetActorType(uint32 actorId);
 	static uint32				GetActorInstanceId(uint32 actorId);
 };

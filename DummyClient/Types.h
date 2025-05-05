@@ -248,6 +248,91 @@ struct Vec3
 	float z = 0;
 };
 
+struct Vec4
+{
+	Vec4() {}
+	Vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) {}
+
+	// 연산자 오버로딩
+	Vec4 operator+(const Vec4& other) const
+	{
+		return Vec4(x + other.x, y + other.y, z + other.z, w + other.w);
+	}
+
+	Vec4 operator-(const Vec4& other) const
+	{
+		return Vec4(x - other.x, y - other.y, z - other.z, w - other.w);
+	}
+
+	Vec4 operator*(float value) const
+	{
+		return Vec4(x * value, y * value, z * value, w * value);
+	}
+
+	void operator+=(const Vec4& other)
+	{
+		x += other.x; y += other.y; z += other.z; w += other.w;
+	}
+
+	void operator-=(const Vec4& other)
+	{
+		x -= other.x; y -= other.y; z -= other.z; w -= other.w;
+	}
+
+	void operator*=(float ratio)
+	{
+		x *= ratio; y *= ratio; z *= ratio; w *= ratio;
+	}
+
+	bool operator==(const Vec4& other) const
+	{
+		return x == other.x && y == other.y && z == other.z; w == other.w;
+	}
+
+	// 벡터 연산
+	float LengthSquared() const
+	{
+		return x * x + y * y + z * z + w * w;
+	}
+
+	float Length() const
+	{
+		return std::sqrt(LengthSquared());
+	}
+
+	void Normalize()
+	{
+		float len = Length();
+		if (len < 1e-8f)
+			return;
+
+		x /= len;
+		y /= len;
+		z /= len;
+		w /= len;
+	}
+
+	float Dot(const Vec4& other) const
+	{
+		return x * other.x + y * other.y + z * other.z + w * other.w;
+	}
+
+	Vec4 Cross(const Vec4& other) const
+	{
+		return Vec4(
+			y * other.z - z * other.y,
+			z * other.x - x * other.z,
+			x * other.y - y * other.x,
+			0.0f
+		);
+	}
+
+	float x = 0.0f;
+	float y = 0.0f;
+	float z = 0.0f;
+	float w = 0.0f;
+};
+
 
 
 USING_SHARED_PTR(GameTcpSession);
@@ -255,6 +340,7 @@ USING_SHARED_PTR(GameUdpSession);
 USING_SHARED_PTR(GameUdpReceiver);
 USING_SHARED_PTR(Game)
 USING_SHARED_PTR(Actor)
+USING_SHARED_PTR(RemoteActor)
 USING_SHARED_PTR(Player)
 USING_SHARED_PTR(Scene)
 USING_SHARED_PTR(GameScene)

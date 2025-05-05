@@ -17,7 +17,7 @@ public:
    bool								Start(ServiceRef service);
    virtual void						OnRecv(SessionRef& session, BYTE* buffer, int32 len) = 0;
 
-   udp::socket&						GetSocket() { return _socket; } // Changed return type to reference
+   udp::socket&						GetSocket() { return _socket; }
 
 private:
    void								RegisterRecv();

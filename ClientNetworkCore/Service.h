@@ -20,6 +20,10 @@ struct TransportConfig
 	optional<udp::endpoint> udpRemoteEndpoint;
 };
 
+/**
+ * @brief 
+ */
+
 class Service : public enable_shared_from_this<Service>
 {   
 public:
@@ -27,7 +31,7 @@ public:
 	virtual ~Service();
 
 	bool							Start();
-	bool							CanStart() { return _tcpSessionFactory != nullptr || _udpSessionFactory != nullptr; }
+	bool							CanStart() const { return _tcpSessionFactory != nullptr || _udpSessionFactory != nullptr; }
 
 	SessionRef						CreateSession(ProtocolType protocol);
 
@@ -43,14 +47,14 @@ public:
 	ReliableUdpSessionRef			FindOrCreateUdpSession(udp::endpoint& from);
 	void							CompleteUdpHandshake(udp::endpoint& from);
 
-	int32							GetCurrentTcpSessionCount() { return _tcpSessionCount; }
-	int32							GetMaxTcpSessionCount() { return _maxTcpSessionCount; }
-	int32							GetCurrentUdpSessionCount() { return _udpSessionCount; }
-	int32							GetMaxUdpSessionCount() { return _maxUdpSessionCount; }
+	int32							GetCurrentTcpSessionCount() const { return _tcpSessionCount; }
+	int32							GetMaxTcpSessionCount() const { return _maxTcpSessionCount; }
+	int32							GetCurrentUdpSessionCount() const { return _udpSessionCount; }
+	int32							GetMaxUdpSessionCount() const { return _maxUdpSessionCount; }
 
-	tcp::endpoint					GetTcpRemoteEndpoint() { return _config.tcpRemoteEndpoint.value_or(tcp::endpoint(tcp::v4(), 0)); }
+	tcp::endpoint					GetTcpRemoteEndpoint() const { return _config.tcpRemoteEndpoint.value_or(tcp::endpoint(tcp::v4(), 0)); }
 	void							SetTcpRemoteEndpoint(const tcp::endpoint& ep) { _config.tcpRemoteEndpoint = ep; }
-	udp::endpoint					GetUdpRemoteEndpoint() { return _config.udpRemoteEndpoint.value_or(udp::endpoint(udp::v4(), 0)); }
+	udp::endpoint					GetUdpRemoteEndpoint() const { return _config.udpRemoteEndpoint.value_or(udp::endpoint(udp::v4(), 0)); }
 	void							SetUdpRemoteEndpoint(const udp::endpoint& ep) { _config.udpRemoteEndpoint = ep; }
 
 	template<typename T>
@@ -64,27 +68,27 @@ public:
 	template<typename TCP, typename UDP>
 	void							SetSessionFactory();
 
-	void							RegisterToContextAsync(JobRef job);
+	void							RegisterToContextAsync(JobRef job);	//TODO
 
 
 	//temp
-	uint32					GetUserId() { return _userId; }
-	void					SetUserId(uint32 id) { _userId = id; }
+	//uint32					GetUserId() { return _userId; }
+	//void					SetUserId(uint32 id) { _userId = id; }
 
-	TcpSessionRef GetTcpSession() 
-	{ 
-		if (_tcpSessions.empty())
-			int a = 0;
+	//TcpSessionRef GetTcpSession() 
+	//{ 
+	//	if (_tcpSessions.empty())
+	//		int a = 0;
 
-		return *_tcpSessions.begin(); 
-	}
-	ReliableUdpSessionRef GetUdpSession() 
-	{ 
-		if (_udpSessions.empty())
-			int a = 0;
+	//	return *_tcpSessions.begin(); 
+	//}
+	//ReliableUdpSessionRef GetUdpSession() 
+	//{ 
+	//	if (_udpSessions.empty())
+	//		int a = 0;
 
-		return *_udpSessions.begin(); 
-	}
+	//	return *_udpSessions.begin(); 
+	//}
 	//~temp
 
 private:
@@ -112,7 +116,7 @@ private:
 
 
 	//temp
-	uint32 _userId = 0;
+	//uint32 _userId = 0;
 	//~temp
 };
 

@@ -1,20 +1,13 @@
 #include "pch.h"
 #include "Player.h"
+#include "Renderer.h"
 #include "InputManager.h"
 #include "TimeManager.h"
-#include "SendBuffer.h"
 #include "Session.h"
 #include "GameUdpSession.h"
 #include "ServerPacketHandler.h"
-#include "Scene.h"
+#include "SessionManager.h"
 
-Player::Player()
-{
-}
-
-Player::~Player()
-{
-}
 
 void Player::Init(SceneRef scene)
 {
@@ -23,39 +16,44 @@ void Player::Init(SceneRef scene)
 
 void Player::Update()
 {
-	//1. 입력처리
-	//2. 서버로 입력 전송
-	//3. 서버에서 위치 도착했으면 되새김 처리 (비동기 처리)
-	Input input = CaptureInput();
-	if (input.keyType != KeyType::None)
+	//1. Input Processing
+	//2. Send Input to Server
+	//3. Reconcile
+
+	Input input = InputManager::Instance().CaptureInput();
+	if (input.timestamp != 0.0)
 	{
+		input.sequence = _lastSequenceNumber++;
+
 		_pendingInputs.push_back(input);
 		SendInputToServer(input);
 	}
 
 	ApplyInput(input);
+	Renderer::Instance().UpdateCamera(_position, _rotation, 5.f);
 }
 
-void Player::Render(HDC hdc)
+void Player::Render(/*HDC hdc*/)
 {
-	Super::Render(hdc);
+	Renderer::Instance().DrawCube(_position, _rotation, Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
-void Player::SendInputToServer(const Input& input)
+void Player::SendInputToServer(const Input& input) const
 {
 	cout << "[UDP] Send : C_PLAYER_INPUT\n";
 
 	Protocol::C_PLAYER_INPUT pkt;
 	pkt.set_timestamp(input.timestamp);
-	pkt.set_sequencenumber(input.sequenceNumber);
-	pkt.set_keyfield(InputManager::Instance().ConvertToProtoKey(input.keyType));
+	pkt.set_sequencenumber(input.sequence);
+	pkt.set_keyfield(input.keyField);
 	pkt.set_deltatime(input.deltaTime);
 	pkt.set_mouseposx(input.mousePosition.x);
 	pkt.set_mouseposy(input.mousePosition.y);
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(pkt);
 
-	auto session = static_pointer_cast<GameUdpSession>(_owner.lock()->GetSessionByProtocolType(ProtocolType::PROTOCOL_UDP));
+	//auto session = static_pointer_cast<GameUdpSession>(_owner.lock()->GetSessionByProtocolType(ProtocolType::PROTOCOL_UDP));
+	auto session = SessionManager::Instance().GetUdpSession();
 	if (session == nullptr)
 		return;
 
@@ -64,48 +62,12 @@ void Player::SendInputToServer(const Input& input)
 	session->SendReliable(sendBuffer, timestamp);
 }
 
-
-Input Player::CaptureInput()
-{
-	// temp : 현재는 마우스 입력밖에 안받음
-	if (InputManager::Instance().GetButton(KeyType::LeftMouse))
-	{
-		float timestamp = TimeManager::Instance().GetClientTime();
-		KeyType type = KeyType::LeftMouse;
-		POINT mousePos = InputManager::Instance().GetMousePos();
-		float dt = TimeManager::Instance().GetDeltaTime();
-
-		return Input(timestamp, type, mousePos, _lastSequenceNumber++, dt);
-	}
-
-	return Input();
-}
-
-void Player::ApplyInput(Input& input)
+void Player::ApplyInput(const Input& input)
 {
 	WRITE_LOCK
 
-	double deltaTime = input.deltaTime;
-
-
-	//double deltaTime = input.deltaTime;
-
-	//if ((_targetPos - _position).Length() < 1.5f)
-	//{
-	//	return;
-	//}
-
-
-	//if (input.keyType != KeyType::None)
-	//{
-	//	_velocity = _direction * _speed;
-	//}
-	//else
-	//{
-	//	deltaTime = TimeManager::Instance().GetDeltaTime();
-	//}
-
-	//_position = _position + _velocity * static_cast<float>(deltaTime);
+	double deltaTime = input.deltaTime;		
+	_position += _velocity * static_cast<float>(deltaTime);
 }
 
 void Player::Reconcile(Vec3 serverPosition, Vec3 serverVelocity, uint32 ackSequenceNumber)
@@ -114,11 +76,12 @@ void Player::Reconcile(Vec3 serverPosition, Vec3 serverVelocity, uint32 ackSeque
 
 	_position = serverPosition;
 	_velocity = serverVelocity;
+
 	// ackCommandSequenceNumber 이후의 입력들만 다시 적용
 	Vector<Input> newPending;
 	for (auto& input : _pendingInputs)
 	{
-		if (input.sequenceNumber > ackSequenceNumber)
+		if (input.sequence > ackSequenceNumber)
 		{
 			ApplyInput(input);
 			newPending.push_back(input);

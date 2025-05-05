@@ -19,7 +19,7 @@ void GameScene::Update()
 	Super::Update();
 }
 
-void GameScene::Render(HDC hdc)
+void GameScene::Render(/*HDC hdc*/)
 {
-	Super::Render(hdc);
+	Super::Render(/*hdc*/);
 }

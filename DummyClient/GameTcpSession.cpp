@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GameTcpSession.h"
+#include "SessionManager.h"
 #include "ServerPacketHandler.h"
 #include "TimeManager.h"
 
@@ -11,6 +12,8 @@ GameTcpSession::GameTcpSession(ServiceRef service, boost::asio::any_io_executor 
 
 void GameTcpSession::OnConnected()
 {
+	SessionManager::Instance().SetTcpSession(static_pointer_cast<GameTcpSession>(shared_from_this()));
+
 	std::cout << "[TCP] OnConnected\n"; // debug
 
 	{
@@ -20,7 +23,7 @@ void GameTcpSession::OnConnected()
 		Send(sendBuffer);
 	}
 
-	TimeManager::Instance().SetSession(GetSessionRef());
+	TimeManager::Instance().SetSession(GetSessionRef());		// TODO:?
 
 	{
 		std::cout << "[TCP] Send : C_LOGIN\n"; // debug
@@ -32,6 +35,7 @@ void GameTcpSession::OnConnected()
 
 void GameTcpSession::OnDisconnected()
 {
+	SessionManager::Instance().SetTcpSession(nullptr);
 	std::cout << "[TCP] OnDisconnected\n"; // debug
 }
 

@@ -10,7 +10,7 @@ public:
 
 	virtual void				Init(SceneRef scene);
 	virtual void				Update() = 0;
-	virtual void				Render(HDC hdc) = 0;
+	virtual void				Render(/*HDC hdc*/) = 0;
 
 
 	void						SetActorId(uint32 id) { _actorId = id; }
@@ -18,7 +18,7 @@ public:
 
 	SceneRef					GetOwnerScene() const { return _owner.lock(); }
 
-	void						SetTransform(uint64 position, uint64 velocity_speed, uint64 speed);
+	void						SetTransform(uint64 position, uint64 velocity_speed, uint64 rotation);
 
 protected:
 	std::weak_ptr<Scene>		_owner;

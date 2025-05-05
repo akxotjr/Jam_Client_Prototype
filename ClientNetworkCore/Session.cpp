@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Session.h"
 #include "SendBuffer.h"
-#include <boost/system/error_code.hpp>
 
 Session::Session(ServiceRef service, boost::asio::any_io_executor executor)
 	: _service(service), _executor(executor)
@@ -109,7 +108,7 @@ void TcpSession::RegisterDisconnect()
 		}
 		else
 		{
-			ProcesssDisconnect();
+			ProcessDisconnect();
 		}
 	}
 }
@@ -195,8 +194,9 @@ void TcpSession::ProcessConnect()
 	RegisterRecv();
 }
 
-void TcpSession::ProcesssDisconnect()
+void TcpSession::ProcessDisconnect()
 {
+	_connected.store(false);
 	OnDisconnected();
 	GetService()->ReleaseTcpSession(static_pointer_cast<TcpSession>(shared_from_this()));
 
@@ -462,6 +462,7 @@ void ReliableUdpSession::ProcessConnect()
 
 void ReliableUdpSession::ProcessDisconnect()
 {
+	_connected.store(false);
 	OnDisconnected();
 	GetService()->ReleaseUdpSession(static_pointer_cast<ReliableUdpSession>(shared_from_this()));
 

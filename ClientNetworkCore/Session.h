@@ -80,7 +80,7 @@ private:
 
 public:
 	void								ProcessConnect();
-	void								ProcesssDisconnect();
+	void								ProcessDisconnect();
 	void								ProcessSend(int32 numOfBytes);
 	void								ProcessRecv(int32 numOfBytes);
 

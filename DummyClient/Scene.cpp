@@ -34,13 +34,13 @@ void Scene::Update()
 	}
 }
 
-void Scene::Render(HDC hdc)
+void Scene::Render(/*HDC hdc*/)
 {
 	for (auto& actor : _actors | views::values)
 	{
 		if (actor)
 		{
-			actor->Render(hdc);
+			actor->Render(/*hdc*/);
 		}
 	}
 }
@@ -65,17 +65,17 @@ ActorRef Scene::GetActorByActorId(uint32 actorId)
 	return nullptr;
 }
 
-SessionRef Scene::GetSessionByProtocolType(ProtocolType type)  
-{  
-	if (auto game = SceneManager::Instance().GetGame())
-	{
-		auto service = game->GetService();
-		if (service == nullptr) return nullptr;
-
-		if (type == ProtocolType::PROTOCOL_TCP)
-			return service->GetTcpSession();
-		else if (type == ProtocolType::PROTOCOL_UDP)
-			return service->GetUdpSession();
-	}
-	return nullptr;  
-}
+//SessionRef Scene::GetSessionByProtocolType(ProtocolType type)  
+//{  
+//	if (auto game = SceneManager::Instance().GetGame())
+//	{
+//		auto service = game->GetService();
+//		if (service == nullptr) return nullptr;
+//
+//		if (type == ProtocolType::PROTOCOL_TCP)
+//			return service->GetTcpSession();
+//		else if (type == ProtocolType::PROTOCOL_UDP)
+//			return service->GetUdpSession();
+//	}
+//	return nullptr;  
+//}

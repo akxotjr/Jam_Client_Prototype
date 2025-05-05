@@ -1,43 +1,47 @@
 #include "pch.h"
 #include "InputManager.h"
+#include "Renderer.h"
+#include "TimeManager.h"
 
-void InputManager::Init(HWND hwnd)
+void InputManager::Init(/*HWND hwnd*/)
 {
-	_hwnd = hwnd;
-	//_states.resize(KEY_TYPE_COUNT, KeyState::None);
+	//_hwnd = hwnd;
+	_window = Renderer::Instance().GetWindow();
 }
 
 void InputManager::Update()
 {
-	BYTE asciiKeys[KEY_TYPE_COUNT] = {};
-	if (::GetKeyboardState(asciiKeys) == false)
-		return;
-
-	for (uint32 key = 0; key < KEY_TYPE_COUNT; key++)
-	{
-
-		if (asciiKeys[key] & 0x80)
-		{
-			KeyState& state = _states[key];
-
-			if (state == KeyState::Press || state == KeyState::Down)
-				state = KeyState::Press;
-			else
-				state = KeyState::Down;
-		}
-		else
-		{
-			KeyState& state = _states[key];
-
-
-			if (state == KeyState::Press || state == KeyState::Down)
-				state = KeyState::Up;
-			else
-				state = KeyState::None;
-		}
-	}
+	UpdateKeyField();
 
 	// Mouse
-	::GetCursorPos(&_mousePos);
-	::ScreenToClient(_hwnd, &_mousePos);
+	//::GetCursorPos(&_mousePos);
+	//::ScreenToClient(_hwnd, &_mousePos);
+	double mx, my;
+	glfwGetCursorPos(_window, &mx, &my);
+	_mousePos = Vec2{ static_cast<float>(mx), static_cast<float>(my) };
+}
+
+Input InputManager::CaptureInput() const
+{
+	if (uint32 keyField = GetKeyField())
+	{
+		double timestamp = TimeManager::Instance().GetClientTime();
+		double deltaTime = TimeManager::Instance().GetDeltaTime();
+		Vec2 mouse = { static_cast<float>(_mousePos.x), static_cast<float>(_mousePos.y) };
+
+		return {timestamp, keyField, mouse, 0, deltaTime};
+	}
+
+	return {0.0, 0, Vec2(0,0), 0, 0.0};
+}
+
+void InputManager::UpdateKeyField()
+{
+	_keyField = 0;
+
+	for (const auto& [inputKey, vk] : INPUT_KEY_TO_VK)
+	{
+		if (::GetAsyncKeyState(vk) & 0x8000) // Press 
+			_keyField |= (1 << static_cast<uint32>(inputKey));
+	}
 }

@@ -45,9 +45,6 @@
     <ClInclude Include="Game.h">
       <Filter>00.Main</Filter>
     </ClInclude>
-    <ClInclude Include="Types.h">
-      <Filter>99.Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Utils.h">
       <Filter>99.Headers</Filter>
     </ClInclude>
@@ -57,14 +54,8 @@
     <ClInclude Include="TimeManager.h">
       <Filter>02.Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>03.Actor</Filter>
-    </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>04.Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Bot.h">
-      <Filter>03.Actor</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>03.Actor</Filter>
@@ -105,6 +96,13 @@
     <ClInclude Include="RemoteActor.h">
       <Filter>03.Actor</Filter>
     </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>00.Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>00.Main</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -134,14 +132,8 @@
     <ClCompile Include="TimeManager.cpp">
       <Filter>02.Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>03.Actor</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>04.Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Bot.cpp">
-      <Filter>03.Actor</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>03.Actor</Filter>
@@ -179,6 +171,10 @@
     <ClCompile Include="RemoteActor.cpp">
       <Filter>03.Actor</Filter>
     </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>00.Main</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Enum.proto">

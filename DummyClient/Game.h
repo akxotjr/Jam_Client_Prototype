@@ -21,22 +21,22 @@ public:
 	Game();
 	~Game();
 
-	void					Init(HWND hwnd);
+	void					Init(/*HWND hwnd*/);
 	void					Update();
 	void					Render();
 
-	ServiceRef				GetService() { return _service; }
+	//ServiceRef				GetService() { return _service; }
 
 private:
 
 	/* Rendering */
-	HWND							_hwnd;
-	HDC								_hdc;
-	RECT							_rect;
-	HDC								_hdcBack = {};
-	HBITMAP							_bmpBack = {};
+	//HWND							_hwnd;
+	//HDC								_hdc;
+	//RECT							_rect;
+	//HDC								_hdcBack = {};
+	//HBITMAP							_bmpBack = {};
 
 	/* Network */
-	ServiceRef						_service;
+	ServiceRef				_service;
 };
 

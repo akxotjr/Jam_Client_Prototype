@@ -1,16 +1,13 @@
 #include "pch.h"
 #include "TimeManager.h"
-#include "SendBuffer.h"
 #include "ServerPacketHandler.h"
 #include "SceneManager.h"
 #include "GameScene.h"
-#include "Character.h"
 
-shared_ptr<TimeManager> TimeManager::instance = nullptr;
 
 void TimeManager::Init()
 {
-	_update = std::bind(&TimeManager::EmptyUpdate, this);
+	_update = [this] { EmptyUpdate(); };
 
 	::QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&_frequency));
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&_prevCount));
@@ -31,34 +28,34 @@ void TimeManager::OnServerTimeReceived(double serverTime)
 
 	if (!_isSynchronized)
 	{
-		_update = std::bind(&TimeManager::RealUpdate, this);
+		_update = [this] { RealUpdate(); };
 		_isSynchronized = true;
 	}
 
 	{
-		auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-		if (gameScene)
-		{
-			auto& actors = gameScene->GetActors();
-			for (auto& [id, actor] : actors)
-			{
-				auto character = dynamic_pointer_cast<Character>(actor);
-				if (character)
-				{
-					character->interpolator.SetBasedOnServerRate();
-				}
-			}
-		}
+		auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene());
+		//if (gameScene)
+		//{
+		//	auto& actors = gameScene->GetActors();
+		//	for (auto& [id, actor] : actors)
+		//	{
+		//		auto character = dynamic_pointer_cast<Character>(actor);
+		//		if (character)
+		//		{
+		//			character->interpolator.SetBasedOnServerRate();
+		//		}
+		//	}
+		//}
 	}
 
 }
 
-double TimeManager::GetClientTime()
+double TimeManager::GetClientTime() const
 {
 	return _baseServerTime + (GetRawLocalTime() - _baseLocalTime);
 }
 
-double TimeManager::GetRawLocalTime()
+double TimeManager::GetRawLocalTime() const
 {
 	uint64 currentCount;
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currentCount));
@@ -105,8 +102,8 @@ void TimeManager::RealUpdate()
 		if (_session)
 		{
 			//std::cout << "[TCP] Send : C_TIMESYNC\n";
-			Protocol::C_SYNC_TIME timesyncPkt;
-			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timesyncPkt);
+			Protocol::C_SYNC_TIME timeSyncPkt;
+			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timeSyncPkt);
 			_session->Send(sendBuffer);
 
 			_lastTimeSyncSent = GetRawLocalTime();

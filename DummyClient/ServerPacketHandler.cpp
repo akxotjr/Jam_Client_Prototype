@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 #include "ServerPacketHandler.h"
+#include "SessionManager.h"
+#include "Actor.h"
 #include "Job.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
@@ -8,8 +10,10 @@
 #include "Service.h"
 #include "GameTcpSession.h"
 #include "GameUdpSession.h"
+#include "IdManager.h"
 #include "Player.h"
-#include "Bot.h"
+#include "RemoteActor.h"
+
 
 PacketHandlerFunc GPacketHandler_Tcp[UINT16_MAX];
 PacketHandlerFunc GPacketHandler_Udp[UINT16_MAX];
@@ -27,11 +31,9 @@ bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt)
 
 	uint32 userId = pkt.userid();
 	if (userId == 0)
-		return false;
-	
-	//temp
-	session->GetService()->SetUserId(userId);
-	//~temp
+		return false;		// TODO : processing when failed login to server
+
+	SessionManager::Instance().SetUserId(userId);
 
 	Protocol::C_ENTER_GAME enterGamePkt;
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterGamePkt);
@@ -57,8 +59,8 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 	auto udpSession = static_pointer_cast<GameUdpSession>(service->CreateSession(ProtocolType::PROTOCOL_UDP));
 
 	{
-		float timestamp = TimeManager::Instance().GetClientTime();
-		uint32 userId = service->GetUserId();
+		double timestamp = TimeManager::Instance().GetClientTime();
+		uint32 userId = SessionManager::Instance().GetUserId();
 
 		Protocol::C_HANDSHAKE handshakePkt;
 		handshakePkt.set_userid(userId);
@@ -78,7 +80,7 @@ bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
 	if (udpSession == nullptr)
 		return false;
 
-	uint16 latestSeq = pkt.latestsequence();
+	uint16 latestSeq = static_cast<uint16>(pkt.latestsequence());
 	uint32 bitfield = pkt.bitfield();
 
 	udpSession->HandleAck(latestSeq, bitfield);
@@ -118,161 +120,80 @@ bool Handle_S_SYNC_TIME(SessionRef& session, Protocol::S_SYNC_TIME& pkt)
 {
 	//std::cout << "[TCP] Recv : S_SYNC_TIME\n";
 
-	float timestamp = pkt.timestamp();
+	double timestamp = pkt.timestamp();
 	TimeManager::Instance().OnServerTimeReceived(timestamp);
 	return true;
 }
 
 bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 {
+	uint32 playerActorId = pkt.playeractorid();
 	const auto& actors = pkt.actorinfo();
 
-	auto scene = static_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene());
+	auto gameScene = static_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene());
 
 	for (int32 i = 0; i < actors.size(); ++i)
 	{
 		auto& info = actors.Get(i);
-		uint32 actorId = info.id();
 
-		auto& transform = info.transform();
+		const uint32 actorId = info.id();
+		const Protocol::Transform& transform = info.transform();
+
+		if (gameScene->GetActorByActorId(actorId))	// if actor is already spawned then continue
+			continue;
 
 		uint64 position = transform.position();
 		uint64 velocity_speed = transform.velocity_speed();
 		uint64 rotation = transform.rotation();
 
-		if (scene->GetActorByActorId(actorId))
-			continue;
+		if (actorId == playerActorId)
+		{
+			PlayerRef player = MakeShared<Player>();
+			player->SetActorId(actorId);
+			player->SetTransform(position, velocity_speed, rotation);
 
-		ActorRef actor = MakeShared<Actor>();
-		actor->SetActorId(actorId);
-		actor->SetTransform(position, velocity_speed, rotation);
+			gameScene->SetPlayer(player);
+		}
+		else
+		{
+			RemoteActorRef remoteActor = MakeShared<RemoteActor>();
+			remoteActor->SetActorId(actorId);
+			remoteActor->SetTransform(position, velocity_speed, rotation);
 
-		scene->AddActor(actor);
+			gameScene->AddActor(remoteActor);
+		}
 	}
-
-	//std::cout << "[UDP] Recv : S_SPAWN_ACTOR\n";
-
-	//uint32 playerId = pkt.playerid();
-
-	//auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-
-	//const auto& characters = pkt.characterinfo();
-
-	//for (int i = 0; i < characters.size(); ++i)
-	//{
-	//	const Protocol::CharacterInfo& info = characters.Get(i);
-	//	Protocol::CharacterMovementInfo movementInfo = info.movementinfo();
-
-	//	Protocol::ActorType type = info.type();
-	//	string name = info.name();
-	//	uint32 id = info.id();
-
-	//	auto actor = gameScene->GetActorById(id);	
-	//	if (actor && actor->GetId() == id)
-	//	{
-	//		continue;
-	//	}
-
-
-	//	float px = movementInfo.positionx();
-	//	float py = movementInfo.positiony();
-	//	float vx = movementInfo.velocityx();
-	//	float vy = movementInfo.velocityy();
-	//	float speed = movementInfo.speed();
-
-	//	if (type == Protocol::ActorType::ACTOR_TYPE_BOT)
-	//	{
-	//		shared_ptr<Bot> bot = MakeShared<Bot>();
-	//		bot->SetName(name);
-	//		bot->SetId(id);
-	//		bot->SetPosition(Vec2(px, py));
-	//		bot->SetVelocity(Vec2(vx, vy));
-	//		bot->SetSpeed(speed);
-
-	//		bot->Init();
-
-	//		gameScene->AddActor(id, bot);
-	//	}
-	//	else if (type == Protocol::ActorType::ACTOR_TYPE_PLAYER)
-	//	{
-	//		if (!gameScene->GetPlayer() && id == playerId)
-	//		{
-	//			shared_ptr<Player> player = MakeShared<Player>();
-
-	//			player->SetName(name);
-	//			player->SetId(id);
-	//			player->SetPosition(Vec2(px, py));
-	//			player->SetVelocity(Vec2(vx, vy));
-	//			player->SetSpeed(speed);
-	//			player->Init();
-
-	//			gameScene->AddActor(id, player);
-	//			gameScene->SetPlayer(player);
-	//		}
-	//		else
-	//		{
-	//			shared_ptr<Character> otherPlayer = MakeShared<Character>();
-
-	//			otherPlayer->SetName(name);
-	//			otherPlayer->SetId(id);
-	//			otherPlayer->SetPosition(Vec2(px, py));
-	//			otherPlayer->SetVelocity(Vec2(vx, vy));
-	//			otherPlayer->SetSpeed(speed);
-	//			otherPlayer->Init();
-
-	//			gameScene->AddActor(id, otherPlayer);
-	//		}
-	//	}
-	//}
 
 	return true;
 }
 
-bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pkt)
+bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 {
-	std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
+	//std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
 
-	float timestamp = pkt.timestamp();
+	const double& timestamp = pkt.timestamp();
+	const auto& actors = pkt.actorinfo();
 
-	const auto& characters = pkt.characterinfo(); // or pkt.characterinfo(i) per index
+	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene());
 
-	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-
-	for (int i = 0; i < characters.size(); ++i)
+	for (int32 i = 0; i < actors.size(); ++i)
 	{
-		const Protocol::CharacterInfo& info = characters.Get(i);
+		const Protocol::ActorInfo& info = actors.Get(i);
 
-		string name = info.name();
-		uint32 id = info.id();
+		const uint32& actorId = info.id();
+		const Protocol::Transform& transform = info.transform();
 
-		float px = info.movementinfo().positionx();
-		float py = info.movementinfo().positiony();
-		float vx = info.movementinfo().velocityx();
-		float vy = info.movementinfo().velocityy();
+		const uint64& position = transform.position();
+		const uint64& velocity_speed = transform.velocity_speed();
+		const uint64& rotation = transform.rotation();
 
-		auto player = gameScene->GetPlayer();
-		if (player && id == player->GetId())
-		{
-			//player->Reconcile(Vec2(px, py);
+		ActorRef actor = gameScene->GetActorByActorId(actorId);
 
-			continue;
-		}
-
-		auto actor = gameScene->GetActorById(id);
-
-		if (actor == nullptr)
+		if (IdManager::GetActorType(actorId) == ActorTypePrefix::Player)
 			continue;
 
-		auto character = dynamic_pointer_cast<Character>(actor);
-		if (character == nullptr)
-			continue;
-
-		Snapshot snap;
-		snap.timestamp = timestamp;
-		snap.position = Vec2(px, py);
-		snap.velocity = Vec2(vx, vy);
-
-		character->AddSnapshot(snap);
+		auto remoteActor = static_pointer_cast<RemoteActor>(actor);
+		remoteActor->UpdateSnapshot(position, velocity_speed, rotation, timestamp);
 	}
 
 	return true;
@@ -280,31 +201,31 @@ bool Handle_S_CHARACTER_SYNC(SessionRef& session, Protocol::S_CHARACTER_SYNC& pk
 
 bool Handle_S_PLAYER_INPUT(SessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
-	//std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
+	////std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
 
-	// todo
-	uint32 sequenceNumber = pkt.sequencenumber();
+	//// todo
+	//uint32 sequenceNumber = pkt.sequencenumber();
 
-	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-	if (!gameScene)
-		return false;
+	//auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
+	//if (!gameScene)
+	//	return false;
 
-	auto player = gameScene->GetPlayer();
-	if (!player)
-		return false;
+	//auto player = gameScene->GetPlayer();
+	//if (!player)
+	//	return false;
 
-	auto& info = pkt.characterinfo();
-	uint32 id = info.id();
+	//auto& info = pkt.characterinfo();
+	//uint32 id = info.id();
 
-	if (player->GetId() != id)
-		return false;
+	//if (player->GetId() != id)
+	//	return false;
 
-	float px = info.movementinfo().positionx();
-	float py = info.movementinfo().positiony();
-	float vx = info.movementinfo().velocityx();
-	float vy = info.movementinfo().velocityy();
+	//float px = info.movementinfo().positionx();
+	//float py = info.movementinfo().positiony();
+	//float vx = info.movementinfo().velocityx();
+	//float vy = info.movementinfo().velocityy();
 
-	player->Reconcile(Vec2(px, py), Vec2(vx, vy), sequenceNumber);
+	//player->Reconcile(Vec2(px, py), Vec2(vx, vy), sequenceNumber);
 
 	return true;
 }

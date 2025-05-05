@@ -48,8 +48,11 @@ static const std::unordered_map<EInputKey, int32> INPUT_KEY_TO_VK = {
 	{ EInputKey::AltFire, VK_RBUTTON },
 	{ EInputKey::Skill1, '1' },
 	{ EInputKey::Skill2, '2' },
+	{ EInputKey::Skill3, '3' },
+	{ EInputKey::Skill4, '4' },
 	{ EInputKey::QSkill, 'Q' },
 	{ EInputKey::ESkill, 'E' },
+	{ EInputKey::TabOpen, VK_TAB }
 };
 
 
@@ -69,14 +72,24 @@ enum class KeyState
 //	KEY_STATE_COUNT = static_cast<int32>(KeyState::End)
 //};
 
+struct Input
+{
+	Input(double ts, uint32 kf, Vec2 pos, int seq, double dt)
+		: timestamp(ts), keyField(kf), mousePosition(pos), sequence(seq), deltaTime(dt) {}
 
+	double	timestamp = 0.0;
+	uint32	keyField = 0;
+	Vec2	mousePosition = {};
+	uint32	sequence = 0;
+	double	deltaTime = 0.0;
+};
 
 class InputManager
 {
 	DECLARE_SINGLETON(InputManager)
 
 public:
-	void				Init(HWND hwnd);
+	void				Init(/*HWND hwnd*/);
 	void				Update();
 
 	//KeyState			GetButtonState(KeyType key) const { return GetState(key); }
@@ -86,15 +99,21 @@ public:
 
 	//POINT				GetMousePos() const { return _mousePos; }
 
+	Input				CaptureInput() const;
+
+	uint32				GetKeyField() const { return _keyField; }
+
 private:
+	void				UpdateKeyField();
 	//KeyState			GetState(KeyType key) const { return _states[static_cast<uint8>(key)]; }
 
 private:
-	HWND				_hwnd = nullptr;
-	//vector<KeyState>	_states;
-	uint32 _keyField = 0;
-	uint32 _keyDownField = 0;
-	uint32 _keyUpField = 0;
+	//HWND				_hwnd = nullptr;
+	GLFWwindow*			_window = nullptr;
 
-	POINT				_mousePos;
+	uint32				_keyField = 0;
+	uint32				_keyDownField = 0;
+	uint32				_keyUpField = 0;
+
+	Vec2				_mousePos;
 };

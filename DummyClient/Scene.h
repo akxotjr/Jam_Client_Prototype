@@ -12,14 +12,14 @@ public:
 
 	virtual void								Init();
 	virtual void								Update();
-	virtual void								Render(HDC hdc);
+	virtual void								Render(/*HDC hdc*/);
 
 	void										AddActor(ActorRef actor);
 	void										RemoveActor(uint32 id);
 
 	ActorRef									GetActorByActorId(uint32 actorId);
 
-	SessionRef									GetSessionByProtocolType(ProtocolType type);
+//	SessionRef									GetSessionByProtocolType(ProtocolType type);
 
 	unordered_map<uint32, ActorRef>&			GetActors() { return _actors; }
 

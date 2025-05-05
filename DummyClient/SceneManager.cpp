@@ -2,9 +2,9 @@
 #include "SceneManager.h"
 #include "GameScene.h"
 
-void SceneManager::Init(shared_ptr<Game> game)
+void SceneManager::Init(/*shared_ptr<Game> game*/)
 {
-	_game = game;
+	//_game = game;
 }
 
 void SceneManager::Update()
@@ -13,10 +13,10 @@ void SceneManager::Update()
 		_scene->Update();
 }
 
-void SceneManager::Render(HDC hdc)
+void SceneManager::Render(/*HDC hdc*/)
 {
 	if (_scene)
-		_scene->Render(hdc);
+		_scene->Render(/*hdc*/);
 }
 
 void SceneManager::ChangeScene(SceneType sceneType)
