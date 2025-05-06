@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "GameScene.h"
 
+#include "Player.h"
+
 GameScene::GameScene()
 {
 }
@@ -17,9 +19,15 @@ void GameScene::Init()
 void GameScene::Update()
 {
 	Super::Update();
+
+	if (_player)
+		_player->Update();
 }
 
 void GameScene::Render(/*HDC hdc*/)
 {
 	Super::Render(/*hdc*/);
+
+	if (_player)
+		_player->Render();
 }

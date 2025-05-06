@@ -22,25 +22,15 @@ Game::~Game()
 	Renderer::Instance().Shutdown();
 }
 
-void Game::Init(/*HWND hwnd*/)
+void Game::Init()
 {
-	//_hwnd = hwnd;
-	//_hdc = ::GetDC(hwnd);
-
-	//::GetClientRect(hwnd, &_rect);
-
-	//_hdcBack = ::CreateCompatibleDC(_hdc);
-	//_bmpBack = ::CreateCompatibleBitmap(_hdc, _rect.right, _rect.bottom);
-	//HBITMAP prev = (HBITMAP)::SelectObject(_hdcBack, _bmpBack);
-	//::DeleteObject(prev);
-
 	Renderer::Instance().Init();
 
 	ServerPacketHandler::Init();
 
-	InputManager::Instance().Init(/*hwnd*/);
+	InputManager::Instance().Init();
 	TimeManager::Instance().Init();
-	SceneManager::Instance().Init(/*shared_from_this()*/);
+	SceneManager::Instance().Init();
 	SceneManager::Instance().ChangeScene(SceneType::GameScene);
 
 	TransportConfig config = {
@@ -56,25 +46,13 @@ void Game::Init(/*HWND hwnd*/)
 void Game::Update()
 {
 	InputManager::Instance().Update();
-	TimeManager::Instance().Update();
+	//TimeManager::Instance().Update();
 	SceneManager::Instance().Update();
 }
 
 void Game::Render()
 {
-	SceneManager::Instance().Render(/*_hdcBack*/);
-	Renderer::Instance().Render();
-	//{
-	//	// temp
-	//	double rtt = TimeManager::Instance().GetRoundTripTime();
-	//	double clientTime = TimeManager::Instance().GetClientTime();
-	//	double deltaTime = TimeManager::Instance().GetDeltaTime();
-	//	wstring str = std::format(L"ClientTime({0}), DeltaTime({1})", clientTime, deltaTime);
-
-	//	Utils::PrintText(_hdcBack, Vec2(10, 10), str);
-	//}
-
-
-	//::BitBlt(_hdc, 0, 0, _rect.right, _rect.bottom, _hdcBack, 0, 0, SRCCOPY);
-	//::PatBlt(_hdcBack, 0, 0, _rect.right, _rect.bottom, WHITENESS);
+	Renderer::Instance().PreRender();
+	SceneManager::Instance().Render();
+	Renderer::Instance().PostRender();
 }

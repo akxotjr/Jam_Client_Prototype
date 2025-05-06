@@ -14,6 +14,7 @@
 #include "CorePch.h"
 #include "Types.h"
 #include "Defines.h"
+#include "Values.h"
 #include "Utils.h"
 #include "Enum.pb.h"
 #include "Protocol.pb.h"

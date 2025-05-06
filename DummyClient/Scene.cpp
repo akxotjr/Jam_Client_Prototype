@@ -1,8 +1,6 @@
 #include "pch.h"
-#include "Game.h"
 #include "Scene.h"
 #include "Actor.h"
-#include "SceneManager.h"
 
 Scene::Scene()
 {
@@ -27,11 +25,13 @@ void Scene::Update()
 {
 	for (auto& actor : _actors | views::values)
 	{
-		if (actor)
+		if (actor.get())
 		{
 			actor->Update();
 		}
 	}
+
+
 }
 
 void Scene::Render(/*HDC hdc*/)

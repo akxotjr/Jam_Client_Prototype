@@ -8,7 +8,11 @@ class Renderer
 public:
 	void			Init();
 	void			Shutdown();
-	void			Render();
+
+
+	//void			Render();
+	void			PreRender();
+	void			PostRender();
 
 	void			DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& size, const glm::vec4& color);
 

@@ -73,7 +73,7 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 }
 
 bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
-{
+ {
 	std::cout << "[UDP] Recv : S_ACK\n";
 
 	auto udpSession = static_pointer_cast<GameUdpSession>(session);
@@ -105,6 +105,8 @@ bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt)
 		Protocol::C_SPAWN_ACTOR spawnActorPkt;
 		auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(spawnActorPkt);
 		udpSession->SendReliable(sendBuffer, timestamp);
+
+		std::cout << "[UDP] Send : C_SPAWN_ACTOR\n";
 	}
 
 	return true;
@@ -118,7 +120,7 @@ bool Handle_S_CHAT(SessionRef& session, Protocol::S_CHAT& pkt)
 
 bool Handle_S_SYNC_TIME(SessionRef& session, Protocol::S_SYNC_TIME& pkt)
 {
-	//std::cout << "[TCP] Recv : S_SYNC_TIME\n";
+	std::cout << "[TCP] Recv : S_SYNC_TIME\n";
 
 	double timestamp = pkt.timestamp();
 	TimeManager::Instance().OnServerTimeReceived(timestamp);
@@ -127,6 +129,8 @@ bool Handle_S_SYNC_TIME(SessionRef& session, Protocol::S_SYNC_TIME& pkt)
 
 bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 {
+	std::cout << "[TCP] Recv : S_SPAWN_ACTOR\n";
+
 	uint32 playerActorId = pkt.playeractorid();
 	const auto& actors = pkt.actorinfo();
 
@@ -169,7 +173,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 
 bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 {
-	//std::cout << "[UDP] Recv : S_CHARACTER_SYNC\n";
+	std::cout << "[UDP] Recv : S_SYNC_ACTOR\n";
 
 	const double& timestamp = pkt.timestamp();
 	const auto& actors = pkt.actorinfo();
@@ -201,7 +205,7 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 
 bool Handle_S_PLAYER_INPUT(SessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
-	////std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
+	std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
 
 	//// todo
 	//uint32 sequenceNumber = pkt.sequencenumber();

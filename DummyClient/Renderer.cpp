@@ -66,6 +66,8 @@ void Renderer::Init()
     _shaderLocMVP = glGetUniformLocation(_shaderProgram, "uMVP");
     _shaderLocColor = glGetUniformLocation(_shaderProgram, "uColor");
 
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
     InitCube();
 }
 
@@ -82,7 +84,23 @@ void Renderer::Shutdown()
     glfwTerminate();
 }
 
-void Renderer::Render()
+//void Renderer::Render()
+//{
+//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//
+//    UpdateCamera(Vec3(0, 0, 0), Vec3(0, 0, -1), 5.f);
+//    DrawCube(Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(1, 1, 1), glm::vec4(1, 0, 0, 1));
+//
+//    glfwSwapBuffers(_window);
+//    glfwPollEvents();
+//}
+
+void Renderer::PreRender()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Renderer::PostRender()
 {
     glfwSwapBuffers(_window);
     glfwPollEvents();
@@ -119,6 +137,13 @@ void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& 
     glBindVertexArray(_cubeVAO);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cout << "OpenGL Error: " << err << '\n';
+    }
 }
 
 void Renderer::UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloat cameraDist)
@@ -130,7 +155,7 @@ void Renderer::UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloa
     //glm::vec3 cameraOffset = glm::normalize(directionXZ + glm::vec3(0, heightRatio, 0)) * cameraDist;
 
 
-	glm::vec3 cameraOffset = glm::normalize(glm::vec3(playerDir.x, 1, -playerDir.z)) * cameraDist;
+	glm::vec3 cameraOffset = glm::normalize(glm::vec3(-playerDir.x, 1, -playerDir.z)) * cameraDist;
     glm::vec3 cameraPos = glm::vec3(playerPos.x, playerPos.y, playerPos.z) + cameraOffset;
 
     _view = glm::lookAt(cameraPos, glm::vec3(playerPos.x, playerPos.y, playerPos.z), _cameraUp);

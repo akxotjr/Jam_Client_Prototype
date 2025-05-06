@@ -202,6 +202,7 @@
     <ClInclude Include="TransformCompressor.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Values.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />

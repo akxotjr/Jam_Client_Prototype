@@ -30,12 +30,16 @@ void Player::Update()
 	}
 
 	ApplyInput(input);
-	Renderer::Instance().UpdateCamera(_position, _rotation, 5.f);
 }
 
-void Player::Render(/*HDC hdc*/)
+void Player::Render()
 {
+	Renderer::Instance().UpdateCamera(_position, Vec3(1, 0, 1), 5.f);
 	Renderer::Instance().DrawCube(_position, _rotation, Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+
+	/*Renderer::Instance().UpdateCamera(Vec3(0, 0, 0), Vec3(0, 0, -1), 5.f);
+	Renderer::Instance().DrawCube(Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(1, 1, 1), glm::vec4(1, 0, 0, 1));*/
+
 }
 
 void Player::SendInputToServer(const Input& input) const

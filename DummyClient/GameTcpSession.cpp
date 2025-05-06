@@ -13,6 +13,7 @@ GameTcpSession::GameTcpSession(ServiceRef service, boost::asio::any_io_executor 
 void GameTcpSession::OnConnected()
 {
 	SessionManager::Instance().SetTcpSession(static_pointer_cast<GameTcpSession>(shared_from_this()));
+	TimeManager::Instance().SetSession(GetSessionRef());		// TODO:?
 
 	std::cout << "[TCP] OnConnected\n"; // debug
 
@@ -23,7 +24,6 @@ void GameTcpSession::OnConnected()
 		Send(sendBuffer);
 	}
 
-	TimeManager::Instance().SetSession(GetSessionRef());		// TODO:?
 
 	{
 		std::cout << "[TCP] Send : C_LOGIN\n"; // debug
