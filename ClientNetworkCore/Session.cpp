@@ -344,7 +344,7 @@ void ReliableUdpSession::HandleAck(uint16 latestSeq, uint32 bitfield)
 {
 	WRITE_LOCK
 
-	std::cout << "[ACK] seq = ";
+	//std::cout << "[ACK] seq = ";
 
 	for (int i = 0; i <= 32; ++i)
 	{

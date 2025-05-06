@@ -7,3 +7,7 @@ constexpr double TICK_RATE = 60.0;
 constexpr double TICK_INTERVAL_S = 1.0 / TICK_RATE;
 
 constexpr double SYNC_TIME_INTERVAL_S = 5.0;
+
+constexpr int32 WORLD_RANGE_MAX = 10000;
+constexpr int32 WORLD_RANGE_MIN = -10000;
+constexpr int32 WORLD_GRID_SIZE = 100;

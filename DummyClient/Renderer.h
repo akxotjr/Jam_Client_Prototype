@@ -9,11 +9,10 @@ public:
 	void			Init();
 	void			Shutdown();
 
-
-	//void			Render();
 	void			PreRender();
 	void			PostRender();
 
+	void			DrawGrid();
 	void			DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& size, const glm::vec4& color);
 
 	void			UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloat cameraDist);
@@ -25,6 +24,7 @@ private:
 	void			FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 	GLuint			CompileShader(GLenum type, const char* source);
 
+	void			InitGrid();
 	void			InitCube();
 
 private:
@@ -33,6 +33,12 @@ private:
 	GLFWwindow*		_window = nullptr;
 
 	GLuint			_shaderProgram = 0;
+
+	GLuint			_gridVAO = 0;
+	GLuint			_gridVBO = 0;
+	GLsizei			_gridVertexCount = 0;
+	bool			_gridInitialized = false;
+
 	GLuint			_cubeVAO = 0;
 	GLuint			_cubeVBO = 0;
 	GLuint			_cubeEBO = 0;

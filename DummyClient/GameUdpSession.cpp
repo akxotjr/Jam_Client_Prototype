@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameUdpSession.h"
 #include "ServerPacketHandler.h"
+#include "SessionManager.h"
 
 GameUdpSession::GameUdpSession(ServiceRef service, boost::asio::any_io_executor executor)
 	: ReliableUdpSession(service, executor)
@@ -10,6 +11,7 @@ GameUdpSession::GameUdpSession(ServiceRef service, boost::asio::any_io_executor 
 
 void GameUdpSession::OnConnected()
 {
+	SessionManager::Instance().SetUdpSession(static_pointer_cast<GameUdpSession>(shared_from_this()));
 	std::cout << "[UDP] OnConnected\n";
 }
 

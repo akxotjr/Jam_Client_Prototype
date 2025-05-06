@@ -6,13 +6,20 @@ void Renderer::Init()
 	_vertexShaderSource =
 		R"(
 			#version 330 core
-			layout(location = 0) in vec3 aPos;       
+			layout(location = 0) in vec3 aPos;
+			layout(location = 1) in vec3 aNormal;
 
-			uniform mat4 uMVP;                       
+			uniform mat4 uMVP;
+			uniform mat4 uModel;
+
+			out vec3 FragPos;
+			out vec3 Normal;
 
 			void main()
 			{
-			    gl_Position = uMVP * vec4(aPos, 1.0); 
+			    FragPos = vec3(uModel * vec4(aPos, 1.0));
+			    Normal = mat3(transpose(inverse(uModel))) * aNormal;
+			    gl_Position = uMVP * vec4(aPos, 1.0);
 			}
 		)";
 
@@ -20,11 +27,18 @@ void Renderer::Init()
 		R"(
 			#version 330 core
 			out vec4 FragColor;
-			uniform vec4 uColor;                    
+
+			in vec3 FragPos;
+			in vec3 Normal;
+
+			uniform vec4 uColor;
+			uniform vec3 lightDir; // e.g. vec3(-1, -1, -1)
 
 			void main()
 			{
-			    FragColor = uColor; 
+			    float diffuse = max(dot(normalize(Normal), normalize(-lightDir)), 0.0);
+			    vec3 finalColor = uColor.rgb * diffuse;
+			    FragColor = vec4(finalColor, uColor.a);
 			}
 		)";
 
@@ -66,16 +80,27 @@ void Renderer::Init()
     _shaderLocMVP = glGetUniformLocation(_shaderProgram, "uMVP");
     _shaderLocColor = glGetUniformLocation(_shaderProgram, "uColor");
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+    InitGrid();
     InitCube();
 }
 
 void Renderer::Shutdown()
 {
-    glDeleteVertexArrays(1, &_cubeVAO);
-    glDeleteBuffers(1, &_cubeVBO);
-    glDeleteBuffers(1, &_cubeEBO);
+    if (_gridInitialized)
+    {
+        glDeleteVertexArrays(1, &_gridVAO);
+        glDeleteBuffers(1, &_gridVBO);
+    }
+
+    if (_cubeInitialized)
+    {
+        glDeleteVertexArrays(1, &_cubeVAO);
+        glDeleteBuffers(1, &_cubeVBO);
+        glDeleteBuffers(1, &_cubeEBO);
+    }
+
     glDeleteProgram(_shaderProgram);
 
     if (_window)
@@ -84,16 +109,6 @@ void Renderer::Shutdown()
     glfwTerminate();
 }
 
-//void Renderer::Render()
-//{
-//    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//
-//    UpdateCamera(Vec3(0, 0, 0), Vec3(0, 0, -1), 5.f);
-//    DrawCube(Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(1, 1, 1), glm::vec4(1, 0, 0, 1));
-//
-//    glfwSwapBuffers(_window);
-//    glfwPollEvents();
-//}
 
 void Renderer::PreRender()
 {
@@ -105,6 +120,24 @@ void Renderer::PostRender()
     glfwSwapBuffers(_window);
     glfwPollEvents();
 }
+
+void Renderer::DrawGrid()
+{
+    if (!_gridInitialized)
+        InitGrid();
+
+    glUseProgram(_shaderProgram);
+    glUniform4f(_shaderLocColor, 0.6f, 0.6f, 0.6f, 1.0f);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 mvp = _proj * _view * model;
+    glUniformMatrix4fv(_shaderLocMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+
+    glBindVertexArray(_gridVAO);
+    glDrawArrays(GL_LINES, 0, _gridVertexCount);
+    glBindVertexArray(0);
+}
+
 
 void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& size, const glm::vec4& color)
 {
@@ -190,6 +223,45 @@ GLuint Renderer::CompileShader(GLenum type, const char* source)
     }
 	
     return shader;
+}
+
+void Renderer::InitGrid()
+{
+    if (_gridInitialized)
+        return;
+
+    std::vector<glm::vec3> lines;
+
+    const int gridMin = -10000;
+    const int gridMax = 10000;
+    const int gridStep = 100;
+
+    for (int z = gridMin; z <= gridMax; z += gridStep)
+    {
+        lines.emplace_back(gridMin, 0.0f, z);
+        lines.emplace_back(gridMax, 0.0f, z);
+    }
+
+    for (int x = gridMin; x <= gridMax; x += gridStep)
+    {
+        lines.emplace_back(x, 0.0f, gridMin);
+        lines.emplace_back(x, 0.0f, gridMax);
+    }
+
+    glGenVertexArrays(1, &_gridVAO);
+    glGenBuffers(1, &_gridVBO);
+
+    glBindVertexArray(_gridVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, _gridVBO);
+    glBufferData(GL_ARRAY_BUFFER, lines.size() * sizeof(glm::vec3), lines.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+    _gridVertexCount = static_cast<GLsizei>(lines.size());
+
+    _gridInitialized = true;
 }
 
 void Renderer::InitCube()

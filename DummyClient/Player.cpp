@@ -7,6 +7,7 @@
 #include "GameUdpSession.h"
 #include "ServerPacketHandler.h"
 #include "SessionManager.h"
+#include "TransformCompressor.h"
 
 
 void Player::Init(SceneRef scene)
@@ -16,10 +17,6 @@ void Player::Init(SceneRef scene)
 
 void Player::Update()
 {
-	//1. Input Processing
-	//2. Send Input to Server
-	//3. Reconcile
-
 	Input input = InputManager::Instance().CaptureInput();
 	if (input.timestamp != 0.0)
 	{
@@ -34,29 +31,22 @@ void Player::Update()
 
 void Player::Render()
 {
-	Renderer::Instance().UpdateCamera(_position, Vec3(1, 0, 1), 5.f);
+	Renderer::Instance().UpdateCamera(_position, Vec3(0,0,1), 5.f);
 	Renderer::Instance().DrawCube(_position, _rotation, Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-
-	/*Renderer::Instance().UpdateCamera(Vec3(0, 0, 0), Vec3(0, 0, -1), 5.f);
-	Renderer::Instance().DrawCube(Vec3(0, 0, 0), Vec3(0, 0, 0), Vec3(1, 1, 1), glm::vec4(1, 0, 0, 1));*/
-
 }
+
 
 void Player::SendInputToServer(const Input& input) const
 {
-	cout << "[UDP] Send : C_PLAYER_INPUT\n";
+	//cout << "[UDP] Send : C_PLAYER_INPUT\n";
 
 	Protocol::C_PLAYER_INPUT pkt;
-	pkt.set_timestamp(input.timestamp);
-	pkt.set_sequencenumber(input.sequence);
+	pkt.set_sequence(input.sequence);
 	pkt.set_keyfield(input.keyField);
-	pkt.set_deltatime(input.deltaTime);
 	pkt.set_mouseposx(input.mousePosition.x);
 	pkt.set_mouseposy(input.mousePosition.y);
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(pkt);
-
-	//auto session = static_pointer_cast<GameUdpSession>(_owner.lock()->GetSessionByProtocolType(ProtocolType::PROTOCOL_UDP));
 	auto session = SessionManager::Instance().GetUdpSession();
 	if (session == nullptr)
 		return;
@@ -74,23 +64,34 @@ void Player::ApplyInput(const Input& input)
 	_position += _velocity * static_cast<float>(deltaTime);
 }
 
-void Player::Reconcile(Vec3 serverPosition, Vec3 serverVelocity, uint32 ackSequenceNumber)
+void Player::Reconcile(uint64 position, uint64 velocity_speed, uint64 rotation, uint32 ackSequence)
 {
 	WRITE_LOCK
 
-	_position = serverPosition;
-	_velocity = serverVelocity;
+	Vec3 p = {};
+	Vec3 v = {};
+	Vec3 r = {};
+	float s = 0.f;
+	TransformCompressor::UnPackPosition(position, p.x, p.y, p.z);
+	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, v.x, v.y, v.z, s);
+	TransformCompressor::UnPackRotation(rotation, r.x, r.y, r.z);
 
-	// ackCommandSequenceNumber 이후의 입력들만 다시 적용
+	_position = p;
+	_velocity = v;
+
+	cout << "Position (" << _position.x << ", " << _position.y << ", " << _position.z << ")\n";
+
 	Vector<Input> newPending;
 	for (auto& input : _pendingInputs)
 	{
-		if (input.sequence > ackSequenceNumber)
+		if (input.sequence > ackSequence)
 		{
 			ApplyInput(input);
 			newPending.push_back(input);
 		}
 	}
 
-	_pendingInputs = newPending;
+	_pendingInputs = newPending;		// TODO
 }
+
+

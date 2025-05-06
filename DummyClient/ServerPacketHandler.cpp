@@ -74,7 +74,7 @@ bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 
 bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt)
  {
-	std::cout << "[UDP] Recv : S_ACK\n";
+	//std::cout << "[UDP] Recv : S_ACK\n";
 
 	auto udpSession = static_pointer_cast<GameUdpSession>(session);
 	if (udpSession == nullptr)
@@ -143,7 +143,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 		const uint32 actorId = info.id();
 		const Protocol::Transform& transform = info.transform();
 
-		if (gameScene->GetActorByActorId(actorId))	// if actor is already spawned then continue
+		if (gameScene->GetActorByActorId(actorId))	// if actor is already spawned then continue //TODO check player
 			continue;
 
 		uint64 position = transform.position();
@@ -173,7 +173,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 
 bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 {
-	std::cout << "[UDP] Recv : S_SYNC_ACTOR\n";
+	//std::cout << "[UDP] Recv : S_SYNC_ACTOR\n";
 
 	const double& timestamp = pkt.timestamp();
 	const auto& actors = pkt.actorinfo();
@@ -191,13 +191,23 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 		const uint64& velocity_speed = transform.velocity_speed();
 		const uint64& rotation = transform.rotation();
 
-		ActorRef actor = gameScene->GetActorByActorId(actorId);
+		auto player = gameScene->GetPlayer();
+		if (!player) continue;
 
-		if (IdManager::GetActorType(actorId) == ActorTypePrefix::Player)
-			continue;
-
-		auto remoteActor = static_pointer_cast<RemoteActor>(actor);
-		remoteActor->UpdateSnapshot(position, velocity_speed, rotation, timestamp);
+		if (actorId == player->GetActorId())
+		{
+			if (info.has_sequence())
+			{
+				const uint32& seq = info.sequence();
+				player->Reconcile(position, velocity_speed, rotation, seq);
+			}
+		}
+		else
+		{
+			auto remoteActor = static_pointer_cast<RemoteActor>(gameScene->GetActorByActorId(actorId));
+			if (remoteActor != nullptr)
+				remoteActor->UpdateSnapshot(position, velocity_speed, rotation, timestamp);
+		}
 	}
 
 	return true;
@@ -205,31 +215,5 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 
 bool Handle_S_PLAYER_INPUT(SessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
-	std::cout << "[UDP] Recv : S_PLAYER_INPUT\n";
-
-	//// todo
-	//uint32 sequenceNumber = pkt.sequencenumber();
-
-	//auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::GetInstance()->GetCurrentScene());
-	//if (!gameScene)
-	//	return false;
-
-	//auto player = gameScene->GetPlayer();
-	//if (!player)
-	//	return false;
-
-	//auto& info = pkt.characterinfo();
-	//uint32 id = info.id();
-
-	//if (player->GetId() != id)
-	//	return false;
-
-	//float px = info.movementinfo().positionx();
-	//float py = info.movementinfo().positiony();
-	//float vx = info.movementinfo().velocityx();
-	//float vy = info.movementinfo().velocityy();
-
-	//player->Reconcile(Vec2(px, py), Vec2(vx, vy), sequenceNumber);
-
 	return true;
 }

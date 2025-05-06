@@ -3,9 +3,8 @@
 #include "Renderer.h"
 #include "TimeManager.h"
 
-void InputManager::Init(/*HWND hwnd*/)
+void InputManager::Init()
 {
-	//_hwnd = hwnd;
 	_window = Renderer::Instance().GetWindow();
 }
 
@@ -13,9 +12,6 @@ void InputManager::Update()
 {
 	UpdateKeyField();
 
-	// Mouse
-	//::GetCursorPos(&_mousePos);
-	//::ScreenToClient(_hwnd, &_mousePos);
 	double mx, my;
 	glfwGetCursorPos(_window, &mx, &my);
 	_mousePos = Vec2{ static_cast<float>(mx), static_cast<float>(my) };

@@ -1,25 +1,5 @@
 #pragma once
 
-//enum class KeyType
-//{
-//	W = 'W',
-//	S = 'S',
-//	A = 'A',
-//	D = 'D',
-//	SpaceBar = VK_SPACE,
-//	LeftMouse = VK_LBUTTON,
-//	RightMouse = VK_RBUTTON,
-//	KEY_1 = '1',
-//	KEY_2 = '2',
-//	KEY_3 = '3',
-//	KEY_4 = '4',
-//	Q = 'Q',
-//	E = 'E',
-//	TabOpen = VK_TAB,
-//
-//	None
-//};
-
 enum class EInputKey : uint32
 {
 	MoveForward = 0,    // W
@@ -56,22 +36,6 @@ static const std::unordered_map<EInputKey, int32> INPUT_KEY_TO_VK = {
 };
 
 
-enum class KeyState
-{
-	None,
-	Press,
-	Down,
-	Up,
-
-	End
-};
-
-//enum
-//{
-//	KEY_TYPE_COUNT = static_cast<int32>(UINT8_MAX) + 1,
-//	KEY_STATE_COUNT = static_cast<int32>(KeyState::End)
-//};
-
 struct Input
 {
 	Input(double ts, uint32 kf, Vec2 pos, int seq, double dt)
@@ -89,15 +53,8 @@ class InputManager
 	DECLARE_SINGLETON(InputManager)
 
 public:
-	void				Init(/*HWND hwnd*/);
+	void				Init();
 	void				Update();
-
-	//KeyState			GetButtonState(KeyType key) const { return GetState(key); }
-	//bool				GetButton(KeyType key) const { return GetState(key) == KeyState::Press; }
-	//bool				GetButtonDown(KeyType key) const { return GetState(key) == KeyState::Down; }
-	//bool				GetButtonUp(KeyType key) const { return GetState(key) == KeyState::Up; }
-
-	//POINT				GetMousePos() const { return _mousePos; }
 
 	Input				CaptureInput() const;
 
@@ -105,10 +62,8 @@ public:
 
 private:
 	void				UpdateKeyField();
-	//KeyState			GetState(KeyType key) const { return _states[static_cast<uint8>(key)]; }
 
 private:
-	//HWND				_hwnd = nullptr;
 	GLFWwindow*			_window = nullptr;
 
 	uint32				_keyField = 0;

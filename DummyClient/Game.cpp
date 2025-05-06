@@ -53,6 +53,7 @@ void Game::Update()
 void Game::Render()
 {
 	Renderer::Instance().PreRender();
+	Renderer::Instance().DrawGrid();
 	SceneManager::Instance().Render();
 	Renderer::Instance().PostRender();
 }

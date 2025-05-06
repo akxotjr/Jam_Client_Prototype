@@ -102,9 +102,11 @@
     <ClInclude Include="Renderer.h">
       <Filter>00.Main</Filter>
     </ClInclude>
-    <ClInclude Include="SessionManager.h" />
     <ClInclude Include="Values.h">
       <Filter>99.Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionManager.h">
+      <Filter>02.Manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -177,7 +179,9 @@
     <ClCompile Include="Renderer.cpp">
       <Filter>00.Main</Filter>
     </ClCompile>
-    <ClCompile Include="SessionManager.cpp" />
+    <ClCompile Include="SessionManager.cpp">
+      <Filter>02.Manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Enum.proto">
