@@ -31,7 +31,7 @@ void Player::Update()
 
 void Player::Render()
 {
-	Renderer::Instance().UpdateCamera(_position, Vec3(0,0,1), 5.f);
+	Renderer::Instance().UpdateCamera(_position, Vec3(0,0,1), 20.f);
 	Renderer::Instance().DrawCube(_position, _rotation, Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 

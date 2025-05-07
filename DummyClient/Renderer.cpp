@@ -232,20 +232,17 @@ void Renderer::InitGrid()
 
     std::vector<glm::vec3> lines;
 
-    const int gridMin = -10000;
-    const int gridMax = 10000;
-    const int gridStep = 100;
 
-    for (int z = gridMin; z <= gridMax; z += gridStep)
+    for (int z = WORLD_RANGE_MIN; z <= WORLD_RANGE_MAX; z += WORLD_GRID_SIZE)
     {
-        lines.emplace_back(gridMin, 0.0f, z);
-        lines.emplace_back(gridMax, 0.0f, z);
+        lines.emplace_back(WORLD_RANGE_MIN, -1.0f, z);
+        lines.emplace_back(WORLD_RANGE_MAX, -1.0f, z);
     }
 
-    for (int x = gridMin; x <= gridMax; x += gridStep)
+    for (int x = WORLD_RANGE_MIN; x <= WORLD_RANGE_MAX; x += WORLD_GRID_SIZE)
     {
-        lines.emplace_back(x, 0.0f, gridMin);
-        lines.emplace_back(x, 0.0f, gridMax);
+        lines.emplace_back(x, -1.0f, WORLD_RANGE_MIN);
+        lines.emplace_back(x, -1.0f, WORLD_RANGE_MAX);
     }
 
     glGenVertexArrays(1, &_gridVAO);

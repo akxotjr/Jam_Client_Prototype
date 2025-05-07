@@ -10,4 +10,4 @@ constexpr double SYNC_TIME_INTERVAL_S = 5.0;
 
 constexpr int32 WORLD_RANGE_MAX = 10000;
 constexpr int32 WORLD_RANGE_MIN = -10000;
-constexpr int32 WORLD_GRID_SIZE = 100;
+constexpr int32 WORLD_GRID_SIZE = 1000;
