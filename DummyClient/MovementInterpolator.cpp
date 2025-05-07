@@ -3,28 +3,26 @@
 #include "TimeManager.h"
 
 MovementInterpolator::MovementInterpolator()
-	: _interpolationDelay(0.05), _extrapolationLimit(0.25), _lastRenderedPosition(Vec3{0,0,0})
+	: _interpolationDelay(0.05), _extrapolationLimit(0.25), _renderPosition(Vec3{0,0,0})
 {
 }
 
-void MovementInterpolator::Update()
+void MovementInterpolator::Process(OUT Vec3& renderPosition, OUT Vec3& renderRotation)
 {
 	double currentTime = TimeManager::Instance().GetClientTime();
 	double renderTime = currentTime - _interpolationDelay;
 
-	Vec3 p = {};
-	Vec3 r = {};
 	if (CanInterpolate(renderTime))
 	{
-		Interpolate(renderTime, p, r);
+		Interpolate(renderTime);
 	}
 	else
 	{
-		Extrapolate(currentTime, p, r);
+		Extrapolate(currentTime);
 	}
 
-	_lastRenderedPosition = p;
-	_lastRenderedRotation = r;
+	renderPosition = _renderPosition;
+	renderRotation = _renderRotation;
 }
 
 void MovementInterpolator::AddSnapshot(const Snapshot& snap)
@@ -39,7 +37,7 @@ void MovementInterpolator::AddSnapshot(const Snapshot& snap)
 }
 
 
-void MovementInterpolator::Interpolate(double renderTime, OUT Vec3& position, OUT Vec3& rotation)
+void MovementInterpolator::Interpolate(double renderTime)
 {
 	READ_LOCK
 	for (size_t i = 0; i + 1 < _snapshotBuffer.size(); i++)
@@ -50,46 +48,37 @@ void MovementInterpolator::Interpolate(double renderTime, OUT Vec3& position, OU
 		if (prev.timestamp <= renderTime && next.timestamp >= renderTime)
 		{
 			float t = static_cast<float>((renderTime - prev.timestamp) / (next.timestamp - prev.timestamp));
-			position = Lerp(prev.position, next.position, t);
-			rotation = Lerp(prev.rotation, next.rotation, t);
+			_renderPosition = Lerp(prev.position, next.position, t);
+			_renderRotation = Lerp(prev.rotation, next.rotation, t);
 			return;
 		}
 	}
-	position = _snapshotBuffer.back().position;
-	rotation = _snapshotBuffer.back().rotation;
+
+	_renderPosition = _snapshotBuffer.back().position;
+	_renderRotation = _snapshotBuffer.back().rotation;
 }
 
-void MovementInterpolator::Extrapolate(double currentTime, OUT Vec3& position, OUT Vec3& rotation)
+void MovementInterpolator::Extrapolate(double currentTime)
 {
 	READ_LOCK
+
 	if (_snapshotBuffer.empty())
-	{
-		//return _lastRenderedPosition;
-		position = _lastRenderedPosition;
-		rotation = _lastRenderedRotation;
 		return;
-	}
 
 	Snapshot& last = _snapshotBuffer.back();	// todo const
 	double delta = currentTime - last.timestamp;
 
 	if (delta > _extrapolationLimit)
-	{
-		//return _lastRenderedPosition;
-		position = _lastRenderedPosition;
-		rotation = _lastRenderedRotation;
 		return;
-	}
 
-	//return last.position + last.velocity * static_cast<float>(delta);
-	position = last.position + last.velocity * static_cast<float>(delta);
+	_renderPosition = last.position + last.velocity * static_cast<float>(delta);
 	//Vec3 normalizedRotation = last.rotation;
 	//normalizedRotation.Normalize();
 	//rotation = last.rotation + normalizedRotation * static_cast<float>(delta);
 
 	// TODO : angular velocity 가 필요
 	// temp : 일단 그냥 마지막값으로 계속
-	rotation = _lastRenderedRotation;
+	//rotation = _lastRenderedRotation;
 }
 
 bool MovementInterpolator::CanInterpolate(double renderTime)

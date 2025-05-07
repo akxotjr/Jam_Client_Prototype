@@ -344,8 +344,6 @@ void ReliableUdpSession::HandleAck(uint16 latestSeq, uint32 bitfield)
 {
 	WRITE_LOCK
 
-	//std::cout << "[ACK] seq = ";
-
 	for (int i = 0; i <= 32; ++i)
 	{
 		uint16 ackSeq = latestSeq - i;
@@ -356,11 +354,9 @@ void ReliableUdpSession::HandleAck(uint16 latestSeq, uint32 bitfield)
 			if (it != _pendingAckMap.end())
 			{
 				_pendingAckMap.erase(it);
-				std::cout << ackSeq << " ";
 			}
 		}
 	}
-	std::cout << "\n";
 }
 
 bool ReliableUdpSession::CheckAndRecordReceiveHistory(uint16 seq)

@@ -38,14 +38,13 @@ static const std::unordered_map<EInputKey, int32> INPUT_KEY_TO_VK = {
 
 struct Input
 {
-	Input(double ts, uint32 kf, Vec2 pos, int seq, double dt)
-		: timestamp(ts), keyField(kf), mousePosition(pos), sequence(seq), deltaTime(dt) {}
+	Input(double ts, uint32 kf, Vec2 pos, int seq)
+		: timestamp(ts), keyField(kf), mousePosition(pos), sequence(seq) {}
 
 	double	timestamp = 0.0;
 	uint32	keyField = 0;
 	Vec2	mousePosition = {};
 	uint32	sequence = 0;
-	double	deltaTime = 0.0;
 };
 
 class InputManager

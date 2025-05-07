@@ -28,6 +28,7 @@ public:
 private:
 	void				SendInputToServer(const Input& input) const;
 	void				ApplyInput(const Input& input);
+	void				ProcessKeyField(const uint32& keyField);
 
 private:
 	USE_LOCK

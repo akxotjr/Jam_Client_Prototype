@@ -3,9 +3,6 @@
 class TransformCompressor
 {
 public:
-    // World range
-    static constexpr float WORLD_RANGE_MIN = -10000.0f;
-    static constexpr float WORLD_RANGE_MAX = 10000.0f;
 
     // Position
     static uint64   PackPosition(float px, float py, float pz);

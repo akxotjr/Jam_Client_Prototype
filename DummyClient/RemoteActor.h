@@ -9,16 +9,19 @@ class RemoteActor : public Actor
 
 public:
 	RemoteActor();
-	virtual ~RemoteActor() override;
+	virtual ~RemoteActor() override = default;
 
 	/* Actor impl */
 	virtual void		Init(SceneRef scene) override;
 	virtual void		Update() override;
 	virtual void		Render(/*HDC hdc*/) override;
 
-	void				UpdateSnapshot(uint64 position, uint64 velocity_speed, uint64 rotation, double timestamp) const;
+	void				UpdateSnapshot(uint64 position, uint64 velocity_speed, uint64 rotation, double timestamp);
 
 private:
 	unique_ptr<MovementInterpolator>	_interpolator;
+
+	Vec3								_renderPosition;
+	Vec3								_renderRotation;
 };
 

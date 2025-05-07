@@ -2,14 +2,11 @@
 #include "RemoteActor.h"
 #include "MovementInterpolator.h"
 #include "TransformCompressor.h"
+#include "Renderer.h"
 
 RemoteActor::RemoteActor()
 {
 	_interpolator = make_unique<MovementInterpolator>();
-}
-
-RemoteActor::~RemoteActor()
-{
 }
 
 void RemoteActor::Init(SceneRef scene)
@@ -19,29 +16,21 @@ void RemoteActor::Init(SceneRef scene)
 
 void RemoteActor::Update()
 {
-	_interpolator->Update();
-	_position = _interpolator->GetLastRenderedPosition();
 }
 
-void RemoteActor::Render(/*HDC hdc*/)
+void RemoteActor::Render()
 {
-
+	_interpolator->Process(_renderPosition, _renderRotation);
+	Renderer::Instance().DrawCube(_renderPosition, _renderRotation, Vec3(1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
-void RemoteActor::UpdateSnapshot(uint64 position, uint64 velocity_speed, uint64 rotation, double timestamp) const
+void RemoteActor::UpdateSnapshot(uint64 position, uint64 velocity_speed, uint64 rotation, double timestamp)
 {
-	Vec3 p = {};
-	Vec3 v = {};
-	Vec3 r = {};
-	float s = 0.f;
+	TransformCompressor::UnPackPosition(position, _position.x, _position.y, _position.z);
+	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, _velocity.x, _velocity.y, _velocity.z, _moveSpeed);
+	TransformCompressor::UnPackRotation(rotation, _rotation.x, _rotation.y, _rotation.z);
 
-	TransformCompressor::UnPackPosition(position, p.x, p.y, p.z);
-	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, v.x, v.y, v.z, s);
-	TransformCompressor::UnPackRotation(rotation, r.x, r.y, r.z);
-
-	//_moveSpeed = s;
-
-	_interpolator->AddSnapshot(Snapshot{ .timestamp= timestamp, .position= p, .velocity= v, .rotation = r });
+	_interpolator->AddSnapshot(Snapshot{ .timestamp= timestamp, .position= _position, .velocity= _velocity, .rotation = _rotation });
 }
 
 

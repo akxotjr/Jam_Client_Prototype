@@ -1,45 +1,39 @@
 #include "pch.h"
 #include "Renderer.h"
+#include "TimeManager.h"
+#include "SessionManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
+#include "GameScene.h"
+#include "Player.h"
 
 void Renderer::Init()
 {
-	_vertexShaderSource =
-		R"(
-			#version 330 core
-			layout(location = 0) in vec3 aPos;
-			layout(location = 1) in vec3 aNormal;
+    _vertexShaderSource =
+        R"(
+		    #version 330 core
+		    layout(location = 0) in vec3 aPos;
 
-			uniform mat4 uMVP;
-			uniform mat4 uModel;
+		    uniform mat4 uMVP;
 
-			out vec3 FragPos;
-			out vec3 Normal;
-
-			void main()
-			{
-			    FragPos = vec3(uModel * vec4(aPos, 1.0));
-			    Normal = mat3(transpose(inverse(uModel))) * aNormal;
-			    gl_Position = uMVP * vec4(aPos, 1.0);
-			}
+		    void main()
+		    {
+		        gl_Position = uMVP * vec4(aPos, 1.0);
+		    }
 		)";
 
+
 	_fragmentShaderSource =
-		R"(
-			#version 330 core
-			out vec4 FragColor;
+        R"(
+		    #version 330 core
+		    out vec4 FragColor;
 
-			in vec3 FragPos;
-			in vec3 Normal;
+		    uniform vec4 uColor;
 
-			uniform vec4 uColor;
-			uniform vec3 lightDir; // e.g. vec3(-1, -1, -1)
-
-			void main()
-			{
-			    float diffuse = max(dot(normalize(Normal), normalize(-lightDir)), 0.0);
-			    vec3 finalColor = uColor.rgb * diffuse;
-			    FragColor = vec4(finalColor, uColor.a);
-			}
+		    void main()
+		    {
+		        FragColor = uColor;
+		    }
 		)";
 
 
@@ -58,6 +52,16 @@ void Renderer::Init()
     glfwMakeContextCurrent(_window);
     glfwSetFramebufferSizeCallback(_window, FramebufferSizeCallbackStatic);
     glfwSetWindowUserPointer(_window, this);
+
+
+    // ImGui init
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(_window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
 
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
@@ -102,6 +106,10 @@ void Renderer::Shutdown()
     }
 
     glDeleteProgram(_shaderProgram);
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     if (_window)
         glfwDestroyWindow(_window);
@@ -177,6 +185,34 @@ void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& 
     {
         std::cout << "OpenGL Error: " << err << '\n';
     }
+}
+
+void Renderer::DrawUI()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Debug Information");
+
+    float clientTime = TimeManager::Instance().GetClientTime();
+    ImGui::Text("Client Time : %.5f", clientTime);
+
+    uint32 userId = SessionManager::Instance().GetUserId();
+    ImGui::Text("User ID : %u", userId);
+
+    auto gameScene = static_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene());
+    if (auto player = gameScene->GetPlayer())
+    {
+        Vec3 position = player->GetPosition();
+        ImGui::Text("Position (%.5f, %.5f, %.5f)", position.x, position.y, position.z);
+    }
+
+
+    ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Renderer::UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloat cameraDist)

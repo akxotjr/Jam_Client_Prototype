@@ -40,13 +40,12 @@ void Game::Init()
 	_service = MakeShared<Service>(config);
 	_service->SetSessionFactory<GameTcpSession, GameUdpSession>();
 	_service->SetUdpReceiver<GameUdpReceiver>();
-	ASSERT_CRASH(_service->Start());
+	ASSERT_CRASH(_service->Start())
 }
 
 void Game::Update()
 {
 	InputManager::Instance().Update();
-	//TimeManager::Instance().Update();
 	SceneManager::Instance().Update();
 }
 
@@ -55,5 +54,6 @@ void Game::Render()
 	Renderer::Instance().PreRender();
 	Renderer::Instance().DrawGrid();
 	SceneManager::Instance().Render();
+	Renderer::Instance().DrawUI();
 	Renderer::Instance().PostRender();
 }

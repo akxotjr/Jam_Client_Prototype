@@ -14,20 +14,20 @@ public:
 	MovementInterpolator();
 	~MovementInterpolator() = default;
 
-	void				Update();
+	void				Process(Vec3& renderPosition, Vec3& renderRotation);
 	void				AddSnapshot(const Snapshot& snap);
 
 	void				SetInterpolationDelay(double delay) { _interpolationDelay = delay; }
 	void				SetExtrapolationLimit(double maxDelta) { _extrapolationLimit = maxDelta; }
 
-	Vec3&				GetLastRenderedPosition() { return _lastRenderedPosition; }
+	Vec3&				GetLastRenderedPosition() { return _renderPosition; }
 
 	// temp
 	void				SetBasedOnServerRate();
 
 private:
-	void				Interpolate(double renderTime, OUT Vec3& position, OUT Vec3& rotation);
-	void				Extrapolate(double currentTime, OUT Vec3& position, OUT Vec3& rotation);
+	void				Interpolate(double renderTime);
+	void				Extrapolate(double currentTime);
 	bool				CanInterpolate(double renderTime);
 
 	Vec3				Lerp(Vec3& a, Vec3& b, float& t);
@@ -41,7 +41,7 @@ private:
 	double				_interpolationDelay = 0.0f;
 	double				_extrapolationLimit = 0.0f;
 
-	Vec3				_lastRenderedPosition = {};
-	Vec3				_lastRenderedRotation = {};
+	Vec3				_renderPosition = {};
+	Vec3				_renderRotation = {};
 };
 

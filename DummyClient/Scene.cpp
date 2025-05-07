@@ -30,8 +30,6 @@ void Scene::Update()
 			actor->Update();
 		}
 	}
-
-
 }
 
 void Scene::Render(/*HDC hdc*/)

@@ -23,7 +23,7 @@ void TimeManager::Update()
 
 	_sumTime += _deltaTime;
 
-	if (_sumTime >= SYNC_TIME_INTERVAL_S)
+	if (_sumTime >= SYNC_TIME_INTERVAL)
 	{
 		if (_session)
 		{

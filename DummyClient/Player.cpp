@@ -31,7 +31,7 @@ void Player::Update()
 
 void Player::Render()
 {
-	Renderer::Instance().UpdateCamera(_position, Vec3(0,0,1), 20.f);
+	Renderer::Instance().UpdateCamera(_position, Vec3(0,0.8f,1.f), 20.f);
 	Renderer::Instance().DrawCube(_position, _rotation, Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
@@ -60,8 +60,27 @@ void Player::ApplyInput(const Input& input)
 {
 	WRITE_LOCK
 
-	double deltaTime = input.deltaTime;		
-	_position += _velocity * static_cast<float>(deltaTime);
+	ProcessKeyField(input.keyField);
+	_position += _velocity * static_cast<float>(LOGIC_TICK_INTERVAL);
+}
+
+void Player::ProcessKeyField(const uint32& keyField)
+{
+	float dx = 0.f, dz = 0.f;
+	if (keyField & (1 << 0))	// W
+		dz = 1.f;
+	if (keyField & (1 << 1))	// S
+		dz = -1.f;
+	if (keyField & (1 << 2))	// A
+		dx = 1.f;
+	if (keyField & (1 << 3))	// D
+		dx = -1.f;
+
+	Vec3 dir = { dx, 0.0f, dz };
+	dir.Normalize();
+
+	_velocity.x = dir.x * _moveSpeed;
+	_velocity.z = dir.z * _moveSpeed;
 }
 
 void Player::Reconcile(uint64 position, uint64 velocity_speed, uint64 rotation, uint32 ackSequence)
@@ -78,8 +97,6 @@ void Player::Reconcile(uint64 position, uint64 velocity_speed, uint64 rotation, 
 
 	_position = p;
 	_velocity = v;
-
-	cout << "Position (" << _position.x << ", " << _position.y << ", " << _position.z << ")\n";
 
 	Vector<Input> newPending;
 	for (auto& input : _pendingInputs)

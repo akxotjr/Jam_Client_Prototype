@@ -15,12 +15,12 @@ int main()
 		TimeManager::Instance().Update();
 		elapsedTime += TimeManager::Instance().GetDeltaTime();
 
-		while (elapsedTime >= TICK_INTERVAL_S)
+		while (elapsedTime >= LOGIC_TICK_INTERVAL)
 		{
 			game.Update();
-			game.Render();
-
-			elapsedTime -= TICK_INTERVAL_S;
+			elapsedTime -= LOGIC_TICK_INTERVAL;
 		}
+
+		game.Render();
 	}
 }

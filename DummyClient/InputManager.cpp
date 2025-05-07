@@ -22,17 +22,19 @@ Input InputManager::CaptureInput() const
 	if (uint32 keyField = GetKeyField())
 	{
 		double timestamp = TimeManager::Instance().GetClientTime();
-		double deltaTime = TimeManager::Instance().GetDeltaTime();
 		Vec2 mouse = { static_cast<float>(_mousePos.x), static_cast<float>(_mousePos.y) };
 
-		return {timestamp, keyField, mouse, 0, deltaTime};
+		return { timestamp, keyField, mouse, 0 };
 	}
 
-	return {0.0, 0, Vec2(0,0), 0, 0.0};
+	return { 0.0, 0, Vec2(0,0), 0 };
 }
 
 void InputManager::UpdateKeyField()
 {
+	if (!glfwGetWindowAttrib(_window, GLFW_FOCUSED))
+		return;
+
 	_keyField = 0;
 
 	for (const auto& [inputKey, vk] : INPUT_KEY_TO_VK)

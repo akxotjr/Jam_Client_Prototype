@@ -10,13 +10,15 @@ public:
 
 	virtual void				Init(SceneRef scene);
 	virtual void				Update() = 0;
-	virtual void				Render(/*HDC hdc*/) = 0;
+	virtual void				Render() = 0;
 
 
 	void						SetActorId(uint32 id) { _actorId = id; }
 	uint32						GetActorId() const { return _actorId; }
 
 	SceneRef					GetOwnerScene() const { return _owner.lock(); }
+
+	Vec3						GetPosition() const { return _position; } //temp
 
 	void						SetTransform(uint64 position, uint64 velocity_speed, uint64 rotation);
 
