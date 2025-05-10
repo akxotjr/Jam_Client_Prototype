@@ -5,7 +5,11 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "GameScene.h"
+#include "GameTcpSession.h"
 #include "Player.h"
+
+#include "ServerPacketHandler.h"
+
 
 void Renderer::Init()
 {
@@ -189,6 +193,12 @@ void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& 
 
 void Renderer::DrawUI()
 {
+    DrawDebugginUI();
+    DrawRoomUI();
+}
+
+void Renderer::DrawDebugginUI()
+{
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -210,6 +220,77 @@ void Renderer::DrawUI()
 
 
     ImGui::End();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Renderer::DrawRoomUI()
+{
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Room Menu");
+
+    bool isInRoom = SceneManager::Instance().GetIsInRoom();
+    uint32 myRoomId = SceneManager::Instance().GetRoomId();
+
+    if (!isInRoom)
+    {
+        if (ImGui::Button("Room Create"))
+        {
+            Protocol::C_CREATE_ROOM createRoomPkt;
+
+            auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(createRoomPkt);
+            auto session = SessionManager::Instance().GetTcpSession();
+
+            session->Send(sendBuffer);
+        }
+    }
+    else
+    {
+        ImGui::Text("You are in Room #%u", myRoomId);
+    }
+
+    ImGui::Separator();
+
+    if (isInRoom)
+    {
+        if (ImGui::Button("Game Start"))
+        {
+            Protocol::C_CREATE_ROOM enterGamePkt;
+
+            auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterGamePkt);
+            auto session = SessionManager::Instance().GetTcpSession();
+
+            session->Send(sendBuffer);
+        }
+    }
+    else
+    {
+        ImGui::BeginChild("RoomList", ImVec2(200, 200), true);
+        const auto& roomList = SceneManager::Instance().GetRoomList();
+
+        for (const auto& [roomId, playerList] : roomList)
+        {
+            ImGui::Text("Room %d (%d/%d)", roomId, playerList.size(), 4);
+            ImGui::SameLine();
+            if (ImGui::Button(("Enter##" + std::to_string(roomId)).c_str()))
+            {
+                Protocol::C_CREATE_ROOM enterRoomPkt;
+
+                auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterRoomPkt);
+                auto session = SessionManager::Instance().GetTcpSession();
+
+                session->Send(sendBuffer);
+            }
+        }
+        ImGui::EndChild();
+    }
+
+    ImGui::End();
+
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

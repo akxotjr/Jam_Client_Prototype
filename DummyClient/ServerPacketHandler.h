@@ -9,27 +9,33 @@ enum : uint16
 {
 	PKT_C_LOGIN = 1000,
 	PKT_S_LOGIN = 1001,
-	PKT_C_ENTER_GAME = 1002,
-	PKT_S_ENTER_GAME = 1003,
-	PKT_C_ACK = 1004,
-	PKT_S_ACK = 1005,
-	PKT_C_HANDSHAKE = 1006,
-	PKT_S_HANDSHAKE = 1007,
-	PKT_C_CHAT = 1008,
-	PKT_S_CHAT = 1009,
-	PKT_C_SYNC_TIME = 1010,
-	PKT_S_SYNC_TIME = 1011,
-	PKT_C_SPAWN_ACTOR = 1012,
-	PKT_S_SPAWN_ACTOR = 1013,
-	PKT_C_SYNC_ACTOR = 1014,
-	PKT_S_SYNC_ACTOR = 1015,
-	PKT_C_PLAYER_INPUT = 1016,
-	PKT_S_PLAYER_INPUT = 1017,
+	PKT_C_CREATE_ROOM = 1002,
+	PKT_S_CREATE_ROOM = 1003,
+	PKT_C_ENTER_ROOM = 1004,
+	PKT_S_ENTER_ROOM = 1005,
+	PKT_C_ENTER_GAME = 1006,
+	PKT_S_ENTER_GAME = 1007,
+	PKT_C_ACK = 1008,
+	PKT_S_ACK = 1009,
+	PKT_C_HANDSHAKE = 1010,
+	PKT_S_HANDSHAKE = 1011,
+	PKT_C_CHAT = 1012,
+	PKT_S_CHAT = 1013,
+	PKT_C_SYNC_TIME = 1014,
+	PKT_S_SYNC_TIME = 1015,
+	PKT_C_SPAWN_ACTOR = 1016,
+	PKT_S_SPAWN_ACTOR = 1017,
+	PKT_C_SYNC_ACTOR = 1018,
+	PKT_S_SYNC_ACTOR = 1019,
+	PKT_C_PLAYER_INPUT = 1020,
+	PKT_S_PLAYER_INPUT = 1021,
 };
 
 // Custom Handlers
 bool Handle_INVALID(SessionRef& session, BYTE* buffer, int32 len);
 bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt);
+bool Handle_S_CREATE_ROOM(SessionRef& session, Protocol::S_CREATE_ROOM& pkt);
+bool Handle_S_ENTER_ROOM(SessionRef& session, Protocol::S_ENTER_ROOM& pkt);
 bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt);
 bool Handle_S_ACK(SessionRef& session, Protocol::S_ACK& pkt);
 bool Handle_S_HANDSHAKE(SessionRef& session, Protocol::S_HANDSHAKE& pkt);
@@ -51,6 +57,10 @@ public:
 		}
 		GPacketHandler_Tcp[PKT_S_LOGIN] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<TcpPacketHeader, Protocol::S_LOGIN> (Handle_S_LOGIN, session, buffer, len); };
 		GPacketHandler_Udp[PKT_S_LOGIN] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<UdpPacketHeader, Protocol::S_LOGIN> (Handle_S_LOGIN, session, buffer, len); };
+		GPacketHandler_Tcp[PKT_S_CREATE_ROOM] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<TcpPacketHeader, Protocol::S_CREATE_ROOM> (Handle_S_CREATE_ROOM, session, buffer, len); };
+		GPacketHandler_Udp[PKT_S_CREATE_ROOM] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<UdpPacketHeader, Protocol::S_CREATE_ROOM> (Handle_S_CREATE_ROOM, session, buffer, len); };
+		GPacketHandler_Tcp[PKT_S_ENTER_ROOM] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<TcpPacketHeader, Protocol::S_ENTER_ROOM> (Handle_S_ENTER_ROOM, session, buffer, len); };
+		GPacketHandler_Udp[PKT_S_ENTER_ROOM] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<UdpPacketHeader, Protocol::S_ENTER_ROOM> (Handle_S_ENTER_ROOM, session, buffer, len); };
 		GPacketHandler_Tcp[PKT_S_ENTER_GAME] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<TcpPacketHeader, Protocol::S_ENTER_GAME> (Handle_S_ENTER_GAME, session, buffer, len); };
 		GPacketHandler_Udp[PKT_S_ENTER_GAME] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<UdpPacketHeader, Protocol::S_ENTER_GAME> (Handle_S_ENTER_GAME, session, buffer, len); };
 		GPacketHandler_Tcp[PKT_S_ACK] = [](SessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<TcpPacketHeader, Protocol::S_ACK> (Handle_S_ACK, session, buffer, len); };
@@ -108,6 +118,10 @@ public:
 	}
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_LOGIN& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_LOGIN); }
 	static SendBufferRef MakeSendBufferUdp(Protocol::C_LOGIN& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_LOGIN); }
+	static SendBufferRef MakeSendBufferTcp(Protocol::C_CREATE_ROOM& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_CREATE_ROOM); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_CREATE_ROOM& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_CREATE_ROOM); }
+	static SendBufferRef MakeSendBufferTcp(Protocol::C_ENTER_ROOM& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_ENTER_ROOM); }
+	static SendBufferRef MakeSendBufferUdp(Protocol::C_ENTER_ROOM& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_ENTER_ROOM); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_ENTER_GAME& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_ENTER_GAME); }
 	static SendBufferRef MakeSendBufferUdp(Protocol::C_ENTER_GAME& pkt) { return MakeSendBufferImpl<UdpPacketHeader>(pkt, PKT_C_ENTER_GAME); }
 	static SendBufferRef MakeSendBufferTcp(Protocol::C_ACK& pkt) { return MakeSendBufferImpl<TcpPacketHeader>(pkt, PKT_C_ACK); }

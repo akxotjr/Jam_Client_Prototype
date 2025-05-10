@@ -1,7 +1,4 @@
 #pragma once
-#include "Scene.h"
-
-//class Game;
 
 
 class SceneManager
@@ -9,20 +6,30 @@ class SceneManager
 	DECLARE_SINGLETON(SceneManager)
 
 public:
-	void					Init(/*shared_ptr<Game> game*/);
+	void					Init();
 	void					Update();
-	void					Render(/*HDC hdc*/);
+	void					Render();
 
 	void					ChangeScene(SceneType sceneType);
 
 	SceneRef				GetCurrentScene() { return _scene; }
-	//shared_ptr<Game>		GetGame() { return _game; }
 
+	void					SetRoomId(const uint32& roomId) { _roomId = roomId; }
+	void					SetIsInRoom(bool in) { _isInRoom = in; }
+	void					SetRoomList(const unordered_map<uint32, Vector<uint32>>& roomList) { _roomList = roomList; }
+
+	uint32					GetRoomId() const { return _roomId; }
+	int32					GetPlayerCount() { return _roomList[_roomId].size(); }
+	bool					GetIsInRoom() const { return _isInRoom; }
+	const unordered_map<uint32, Vector<uint32>>& GetRoomList() { return _roomList; }
 
 private:
 	SceneRef				_scene = nullptr;
 	SceneType				_sceneType = SceneType::None;
 
-	//shared_ptr<Game>		_game;
+	uint32					_roomId = 0;
+	bool					_isInRoom = false;
+
+	unordered_map<uint32, Vector<uint32>> _roomList;
 };
 

@@ -15,6 +15,8 @@ public:
 	void			DrawGrid();
 	void			DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& size, const glm::vec4& color);
 	void			DrawUI();
+	void DrawDebugginUI();
+	void DrawRoomUI();
 
 	void			UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloat cameraDist);
 

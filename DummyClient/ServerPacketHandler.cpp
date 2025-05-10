@@ -44,6 +44,46 @@ bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt)
 	return true;
 }
 
+bool Handle_S_CREATE_ROOM(SessionRef& session, Protocol::S_CREATE_ROOM& pkt)
+{
+	const uint32& myRoomId = pkt.roomid();
+	SceneManager::Instance().SetRoomId(myRoomId);
+
+	unordered_map<uint32, Vector<uint32>> roomList;
+	const auto& rooms = pkt.roominfo();
+	for (int32 i = 0; i < rooms.size(); i++)
+	{
+		const auto& roomInfo = rooms.Get(i);
+
+		const uint32& roomId = roomInfo.roomid();
+
+		if (roomId == myRoomId) continue;
+
+		Vector<uint32> playerIdList;
+		const auto& playerList = roomInfo.playerid();
+		for (int32 j = 0; j < playerList.size(); j++)
+		{
+			const auto& playerId = playerList.Get(i);
+			playerIdList.push_back(playerId);
+		}
+
+		roomList[roomId] = playerIdList;
+	}
+
+	SceneManager::Instance().SetRoomList(roomList);
+
+	return true;
+}
+
+bool Handle_S_ENTER_ROOM(SessionRef& session, Protocol::S_ENTER_ROOM& pkt)
+{
+	//const int32& admissionCount = pkt.playercount();
+
+	//SceneManager::Instance().SetAdmissionCount(admissionCount);
+
+	return true;
+}
+
 bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 {
 	std::cout << "[TCP] Recv : S_ENTER_GAME\n";

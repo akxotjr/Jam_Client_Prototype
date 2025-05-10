@@ -16,3 +16,9 @@ message ActorInfo	// 28 bytes
 	Transform transform = 2;
 	optional uint32 sequence = 3;
 }
+
+message RoomInfo
+{
+	uint32 roomId = 1;
+	repeated uint32 playerId = 2;
+}
