@@ -35,54 +35,62 @@ bool Handle_S_LOGIN(SessionRef& session, Protocol::S_LOGIN& pkt)
 
 	SessionManager::Instance().SetUserId(userId);
 
-	Protocol::C_ENTER_GAME enterGamePkt;
-	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterGamePkt);
-	session->Send(sendBuffer);
-
-	std::cout << "[TCP] Send : C_ENTER_GAME\n";	// debug
-
 	return true;
 }
 
 bool Handle_S_CREATE_ROOM(SessionRef& session, Protocol::S_CREATE_ROOM& pkt)
 {
-	const uint32& myRoomId = pkt.roomid();
-	SceneManager::Instance().SetRoomId(myRoomId);
+	std::cout << "[TCP] Recv : S_CREATE_ROOM\n";
+	if (!pkt.success()) return false;
 
-	unordered_map<uint32, Vector<uint32>> roomList;
-	const auto& rooms = pkt.roominfo();
-	for (int32 i = 0; i < rooms.size(); i++)
-	{
-		const auto& roomInfo = rooms.Get(i);
-
-		const uint32& roomId = roomInfo.roomid();
-
-		if (roomId == myRoomId) continue;
-
-		Vector<uint32> playerIdList;
-		const auto& playerList = roomInfo.playerid();
-		for (int32 j = 0; j < playerList.size(); j++)
-		{
-			const auto& playerId = playerList.Get(i);
-			playerIdList.push_back(playerId);
-		}
-
-		roomList[roomId] = playerIdList;
-	}
-
-	SceneManager::Instance().SetRoomList(roomList);
+	const uint32 roomId = pkt.roomid();
+	SceneManager::Instance().SetRoomId(roomId);
+	SceneManager::Instance().SetIsInRoom(true);
 
 	return true;
 }
 
 bool Handle_S_ENTER_ROOM(SessionRef& session, Protocol::S_ENTER_ROOM& pkt)
 {
-	//const int32& admissionCount = pkt.playercount();
+	std::cout << "[TCP] Recv : S_ENTER_ROOM\n";
+	if (!pkt.success()) return false;
 
-	//SceneManager::Instance().SetAdmissionCount(admissionCount);
+	const uint32 roomId = pkt.roomid();
+	SceneManager::Instance().SetRoomId(roomId);
+	SceneManager::Instance().SetIsInRoom(true);
 
 	return true;
 }
+
+bool Handle_S_SYNC_ROOMLIST(SessionRef& session, Protocol::S_SYNC_ROOMLIST& pkt)
+{
+	std::cout << "[TCP] Recv : S_SYNC_ROOMLIST\n";
+
+	const auto& roomList = pkt.roomlist().roominfo();
+
+	unordered_map<uint32, Vector<uint32>> rooms;
+
+	for (int32 i = 0; i < roomList.size(); i++)
+	{
+		const auto& roomInfo = roomList.Get(i);
+		uint32 roomId = roomInfo.roomid();
+
+		Vector<uint32> playerIdList;
+		const auto& playerList = roomInfo.playerlist();
+		for (int32 j = 0; j < playerList.size(); j++)
+		{
+			const auto playerId = playerList.Get(j);
+			playerIdList.push_back(playerId);
+		}
+
+		rooms[roomId] = playerIdList;
+	}
+
+	SceneManager::Instance().SetRoomList(rooms);
+
+	return true;
+}
+
 
 bool Handle_S_ENTER_GAME(SessionRef& session, Protocol::S_ENTER_GAME& pkt)
 {
@@ -160,7 +168,7 @@ bool Handle_S_CHAT(SessionRef& session, Protocol::S_CHAT& pkt)
 
 bool Handle_S_SYNC_TIME(SessionRef& session, Protocol::S_SYNC_TIME& pkt)
 {
-	std::cout << "[TCP] Recv : S_SYNC_TIME\n";
+	//std::cout << "[TCP] Recv : S_SYNC_TIME\n";
 
 	double timestamp = pkt.timestamp();
 	TimeManager::Instance().OnServerTimeReceived(timestamp);
@@ -169,7 +177,9 @@ bool Handle_S_SYNC_TIME(SessionRef& session, Protocol::S_SYNC_TIME& pkt)
 
 bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 {
-	std::cout << "[TCP] Recv : S_SPAWN_ACTOR\n";
+	std::cout << "[UDP] Recv : S_SPAWN_ACTOR\n";
+
+	SceneManager::Instance().SetIsInGame(true);
 
 	uint32 playerActorId = pkt.playeractorid();
 	const auto& actors = pkt.actorinfo();
@@ -215,7 +225,7 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 {
 	//std::cout << "[UDP] Recv : S_SYNC_ACTOR\n";
 
-	const double& timestamp = pkt.timestamp();
+	const double timestamp = pkt.timestamp();
 	const auto& actors = pkt.actorinfo();
 
 	auto gameScene = dynamic_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene());
@@ -224,12 +234,12 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 	{
 		const Protocol::ActorInfo& info = actors.Get(i);
 
-		const uint32& actorId = info.id();
+		const uint32 actorId = info.id();
 		const Protocol::Transform& transform = info.transform();
 
-		const uint64& position = transform.position();
-		const uint64& velocity_speed = transform.velocity_speed();
-		const uint64& rotation = transform.rotation();
+		const uint64 position = transform.position();
+		const uint64 velocity_speed = transform.velocity_speed();
+		const uint64 rotation = transform.rotation();
 
 		auto player = gameScene->GetPlayer();
 		if (!player) continue;
@@ -238,7 +248,7 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 		{
 			if (info.has_sequence())
 			{
-				const uint32& seq = info.sequence();
+				const uint32 seq = info.sequence();
 				player->Reconcile(position, velocity_speed, rotation, seq);
 			}
 		}

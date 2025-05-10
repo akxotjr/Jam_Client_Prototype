@@ -5,6 +5,8 @@ class SessionManager
 	DECLARE_SINGLETON(SessionManager)
 
 public:
+	void				Shutdown();
+
 	void				SetTcpSession(GameTcpSessionRef session) { _tcpSession = session; }
 	GameTcpSessionRef	GetTcpSession() { return _tcpSession; }
 

@@ -22,8 +22,8 @@ message C_CREATE_ROOM
 
 message S_CREATE_ROOM
 {
-	uint32 roomId = 1;
-	repeated RoomInfo roomInfo = 2;
+	bool success = 1;
+	uint32 roomId = 2;
 }
 
 message C_ENTER_ROOM
@@ -33,7 +33,17 @@ message C_ENTER_ROOM
 
 message S_ENTER_ROOM
 {
-	uint32 playerCount = 1;
+	bool success = 1;
+	uint32 roomId = 2;
+}
+
+message C_SYNC_ROOMLIST
+{
+}
+
+message S_SYNC_ROOMLIST
+{
+	RoomList roomList = 1;
 }
 
 message C_ENTER_GAME

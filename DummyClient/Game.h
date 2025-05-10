@@ -4,13 +4,13 @@ class Service;
 class Session;
 class Scene;
 
-class Game : public enable_shared_from_this<Game>
+class Game
 {
 public:
 	Game();
 	~Game();
 
-	void					Init(/*HWND hwnd*/);
+	void					Init();
 	void					Update();
 	void					Render();
 

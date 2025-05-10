@@ -6,10 +6,10 @@
 #include "InputManager.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
-
 #include "GameTcpSession.h"
 #include "GameUdpSession.h"
 #include "GameUdpReceiver.h"
+#include "SessionManager.h"
 
 using boost::asio::ip::address;
 
@@ -19,18 +19,17 @@ Game::Game()
 
 Game::~Game()
 {
-	Renderer::Instance().Shutdown();
 }
 
 void Game::Init()
 {
 	Renderer::Instance().Init();
-
 	ServerPacketHandler::Init();
-
+	SceneManager::Instance().Init();
 	InputManager::Instance().Init();
 	TimeManager::Instance().Init();
-	SceneManager::Instance().Init();
+
+
 	SceneManager::Instance().ChangeScene(SceneType::GameScene);
 
 	TransportConfig config = {

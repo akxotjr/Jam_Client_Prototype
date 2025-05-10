@@ -14,3 +14,5 @@ constexpr double SYNC_TIME_INTERVAL = 5.0;
 constexpr int32 WORLD_RANGE_MAX = 10000;
 constexpr int32 WORLD_RANGE_MIN = -10000;
 constexpr int32 WORLD_GRID_SIZE = 10;
+
+extern bool running;

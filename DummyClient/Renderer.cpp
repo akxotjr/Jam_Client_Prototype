@@ -193,16 +193,19 @@ void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& 
 
 void Renderer::DrawUI()
 {
-    DrawDebugginUI();
-    DrawRoomUI();
-}
-
-void Renderer::DrawDebugginUI()
-{
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    DrawDebugginUI();
+    DrawRoomUI();
+
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Renderer::DrawDebugginUI()
+{
     ImGui::Begin("Debug Information");
 
     float clientTime = TimeManager::Instance().GetClientTime();
@@ -218,22 +221,25 @@ void Renderer::DrawDebugginUI()
         ImGui::Text("Position (%.5f, %.5f, %.5f)", position.x, position.y, position.z);
     }
 
+    if (ImGui::Button("Exit"))
+    {
+        running = false;
+    }
+
 
     ImGui::End();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Renderer::DrawRoomUI()
 {
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
+    //ImGui_ImplOpenGL3_NewFrame();
+    //ImGui_ImplGlfw_NewFrame();
+    //ImGui::NewFrame();
 
     ImGui::Begin("Room Menu");
 
     bool isInRoom = SceneManager::Instance().GetIsInRoom();
+    bool isInGame = SceneManager::Instance().GetIsInGame();
     uint32 myRoomId = SceneManager::Instance().GetRoomId();
 
     if (!isInRoom)
@@ -246,6 +252,7 @@ void Renderer::DrawRoomUI()
             auto session = SessionManager::Instance().GetTcpSession();
 
             session->Send(sendBuffer);
+            std::cout << "[TCP] Send : C_CREATE_ROOM\n";
         }
     }
     else
@@ -257,19 +264,37 @@ void Renderer::DrawRoomUI()
 
     if (isInRoom)
     {
-        if (ImGui::Button("Game Start"))
+	    if (!isInGame)
+	    {
+            if (ImGui::Button("Game Start"))
+            {
+                Protocol::C_ENTER_GAME enterGamePkt;
+                auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterGamePkt);
+                auto session = SessionManager::Instance().GetTcpSession();
+                session->Send(sendBuffer);
+
+                std::cout << "[TCP] Send : C_ENTER_GAME\n";
+
+                SceneManager::Instance().SetIsInGame(true);
+            }
+	    }
+        else
         {
-            Protocol::C_CREATE_ROOM enterGamePkt;
+            ImGui::BeginChild("PlayerList", ImVec2(150, 150), true);
 
-            auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterGamePkt);
-            auto session = SessionManager::Instance().GetTcpSession();
+            const auto& playerList = SceneManager::Instance().GetPlayerList();
 
-            session->Send(sendBuffer);
+            for (auto& userId : playerList)
+            {
+                ImGui::Text("player id : %d", userId);
+            }
+
+            ImGui::EndChild();
         }
     }
     else
     {
-        ImGui::BeginChild("RoomList", ImVec2(200, 200), true);
+        ImGui::BeginChild("RoomList", ImVec2(150, 150), true);
         const auto& roomList = SceneManager::Instance().GetRoomList();
 
         for (const auto& [roomId, playerList] : roomList)
@@ -278,12 +303,14 @@ void Renderer::DrawRoomUI()
             ImGui::SameLine();
             if (ImGui::Button(("Enter##" + std::to_string(roomId)).c_str()))
             {
-                Protocol::C_CREATE_ROOM enterRoomPkt;
-
+                Protocol::C_ENTER_ROOM enterRoomPkt;
+                enterRoomPkt.set_roomid(roomId);
                 auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(enterRoomPkt);
                 auto session = SessionManager::Instance().GetTcpSession();
 
                 session->Send(sendBuffer);
+
+                std::cout << "[TCP] Send : C_ENTER_ROOM\n";
             }
         }
         ImGui::EndChild();
@@ -292,8 +319,8 @@ void Renderer::DrawRoomUI()
     ImGui::End();
 
 
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    //ImGui::Render();
+    //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Renderer::UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloat cameraDist)

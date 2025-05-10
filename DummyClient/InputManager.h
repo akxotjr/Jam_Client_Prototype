@@ -53,6 +53,8 @@ class InputManager
 
 public:
 	void				Init();
+	void				Shutdown();
+
 	void				Update();
 
 	Input				CaptureInput() const;

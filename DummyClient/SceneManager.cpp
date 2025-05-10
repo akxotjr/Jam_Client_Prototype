@@ -2,8 +2,11 @@
 #include "SceneManager.h"
 #include "GameScene.h"
 
-void SceneManager::Init()
+
+void SceneManager::Shutdown()
 {
+	_scene = nullptr;
+	_roomList.clear();
 }
 
 void SceneManager::Update()
@@ -12,10 +15,10 @@ void SceneManager::Update()
 		_scene->Update();
 }
 
-void SceneManager::Render(/*HDC hdc*/)
+void SceneManager::Render()
 {
 	if (_scene)
-		_scene->Render(/*hdc*/);
+		_scene->Render();
 }
 
 void SceneManager::ChangeScene(SceneType sceneType)

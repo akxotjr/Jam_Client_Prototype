@@ -3,6 +3,8 @@
 #include "DummyClient.h"
 #include "TimeManager.h"
 
+bool running = true;
+
 int main()
 {
 	Game game;
@@ -10,7 +12,7 @@ int main()
 
 	double elapsedTime = 0.0;
 
-	while (true)
+	while (running)
 	{
 		TimeManager::Instance().Update();
 		elapsedTime += TimeManager::Instance().GetDeltaTime();

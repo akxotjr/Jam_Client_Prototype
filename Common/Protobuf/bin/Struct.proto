@@ -20,5 +20,10 @@ message ActorInfo	// 28 bytes
 message RoomInfo
 {
 	uint32 roomId = 1;
-	repeated uint32 playerId = 2;
+	repeated uint32 playerList = 2;
+}
+
+message RoomList
+{
+	repeated RoomInfo roomInfo = 1;
 }

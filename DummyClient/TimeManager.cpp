@@ -9,6 +9,12 @@ void TimeManager::Init()
 	::QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&_prevCount));
 }
 
+void TimeManager::Shutdown()
+{
+	_update = nullptr;
+	_session = nullptr;
+}
+
 void TimeManager::Update()
 {
 	uint64 currentCount;
@@ -27,7 +33,7 @@ void TimeManager::Update()
 	{
 		if (_session)
 		{
-			std::cout << "[TCP] Send : C_SYNC_TIME\n";
+			//std::cout << "[TCP] Send : C_SYNC_TIME\n";
 			Protocol::C_SYNC_TIME timeSyncPkt;
 			SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBufferTcp(timeSyncPkt);
 			_session->Send(sendBuffer);

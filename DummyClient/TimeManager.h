@@ -9,6 +9,7 @@ class TimeManager
 
 public:
 	void			Init();
+	void			Shutdown();
 	void			Update();
 	void			OnServerTimeReceived(double serverTime);
 
@@ -28,9 +29,6 @@ public:
 
 	void			SetSession(SessionRef session) { _session = session; }
 
-private:
-	void			EmptyUpdate();
-	void			RealUpdate();
 
 private:
 	USE_LOCK

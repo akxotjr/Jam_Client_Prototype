@@ -3,9 +3,15 @@
 #include "Renderer.h"
 #include "TimeManager.h"
 
+
 void InputManager::Init()
 {
 	_window = Renderer::Instance().GetWindow();
+}
+
+void InputManager::Shutdown()
+{
+	_window = nullptr;
 }
 
 void InputManager::Update()
