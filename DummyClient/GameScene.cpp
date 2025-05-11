@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "GameScene.h"
-
+#include "RemoteActor.h"
 #include "Player.h"
 
 GameScene::GameScene()
@@ -24,10 +24,21 @@ void GameScene::Update()
 		_player->Update();
 }
 
-void GameScene::Render(/*HDC hdc*/)
+void GameScene::Render()
 {
-	Super::Render(/*hdc*/);
+	Super::Render();
 
 	if (_player)
 		_player->Render();
+}
+
+void GameScene::OnReceiveServerTime()
+{
+	for (auto& actor : _actors | views::values)
+	{
+		if (auto remoteActor = static_pointer_cast<RemoteActor>(actor))
+		{
+			remoteActor->UpdateInterpolatorBase();
+		}
+	}
 }

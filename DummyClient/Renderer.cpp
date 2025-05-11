@@ -162,13 +162,12 @@ void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& 
         return;
     }
 
-
     glUseProgram(_shaderProgram);
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position.x, position.y, position.z));
     model = glm::rotate(model, glm::radians(rotation.x), glm::vec3(1, 0, 0));
-    model = glm::rotate(model, glm::radians(rotation.y), glm::vec3(0, 1, 0));
+    model = glm::rotate(model, rotation.y, glm::vec3(0, 1, 0));
     model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
     model = glm::scale(model, glm::vec3(size.x, size.y, size.z));
 
@@ -208,8 +207,20 @@ void Renderer::DrawDebugginUI()
 {
     ImGui::Begin("Debug Information");
 
-    float clientTime = TimeManager::Instance().GetClientTime();
-    ImGui::Text("Client Time : %.5f", clientTime);
+    double clientTime = TimeManager::Instance().GetClientTime();
+    ImGui::Text("Client Time : %lf", clientTime);
+
+    double avgRtt = TimeManager::Instance().GetAvgRTT();
+    ImGui::Text("AvgRTT : %lf", avgRtt);
+
+    double latestRtt = TimeManager::Instance().GetAvgRTT();
+    ImGui::Text("LatestRTT : %lf", latestRtt);
+
+    double jitter = TimeManager::Instance().GetJitter();
+    ImGui::Text("Jitter : %lf", jitter);
+
+    uint32 fps = TimeManager::Instance().GetFps();
+    ImGui::Text("fps : %u", fps);
 
     uint32 userId = SessionManager::Instance().GetUserId();
     ImGui::Text("User ID : %u", userId);
@@ -220,6 +231,9 @@ void Renderer::DrawDebugginUI()
         Vec3 position = player->GetPosition();
         ImGui::Text("Position (%.5f, %.5f, %.5f)", position.x, position.y, position.z);
     }
+
+    Vec2 mousePos = InputManager::Instance().GetMousePosition();
+    ImGui::Text("Mouse Position : (%f, %f)", mousePos.x, mousePos.y);
 
     if (ImGui::Button("Exit"))
     {
@@ -325,18 +339,11 @@ void Renderer::DrawRoomUI()
 
 void Renderer::UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloat cameraDist)
 {
-    // playerDir = 플레이어가 바라보는 방향
-
-    // todo
-    //glm::vec3 directionXZ = glm::normalize(glm::vec3(playerDir.x, 0, -playerDir.z));
-    //glm::vec3 cameraOffset = glm::normalize(directionXZ + glm::vec3(0, heightRatio, 0)) * cameraDist;
-
-
-	glm::vec3 cameraOffset = glm::normalize(glm::vec3(-playerDir.x, 1, -playerDir.z)) * cameraDist;
+	glm::vec3 cameraOffset = glm::normalize(glm::vec3(-playerDir.x, -playerDir.y, -playerDir.z)) * cameraDist;
     glm::vec3 cameraPos = glm::vec3(playerPos.x, playerPos.y, playerPos.z) + cameraOffset;
 
     _view = glm::lookAt(cameraPos, glm::vec3(playerPos.x, playerPos.y, playerPos.z), _cameraUp);
-    _proj = glm::perspective(glm::radians(45.0f), 800.f / 600.f, 0.1f, 100.0f);
+    _proj = glm::perspective(glm::radians(45.0f), WINDOW_SIZE_X / WINDOW_SIZE_Y, 0.1f, 100.0f);
 }
 
 

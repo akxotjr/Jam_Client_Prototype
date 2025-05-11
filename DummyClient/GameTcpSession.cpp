@@ -17,12 +17,12 @@ void GameTcpSession::OnConnected()
 
 	std::cout << "[TCP] OnConnected\n"; // debug
 
-	{
-		std::cout << "[TCP] Send : C_SYNC_TIME\n"; // debug
-		Protocol::C_SYNC_TIME syncPkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(syncPkt);
-		Send(sendBuffer);
-	}
+	//{
+	//	std::cout << "[TCP] Send : C_SYNC_TIME\n"; // debug
+	//	Protocol::C_SYNC_TIME syncPkt;
+	//	auto sendBuffer = ServerPacketHandler::MakeSendBufferTcp(syncPkt);
+	//	Send(sendBuffer);
+	//}
 
 
 	{

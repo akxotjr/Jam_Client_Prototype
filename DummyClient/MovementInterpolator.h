@@ -23,14 +23,14 @@ public:
 	Vec3&				GetLastRenderedPosition() { return _renderPosition; }
 
 	// temp
-	void				SetBasedOnServerRate();
+	void				SetBasedOnServerTime();
 
 private:
-	void				Interpolate(double renderTime);
+	bool				Interpolate(double renderTime);
 	void				Extrapolate(double currentTime);
-	bool				CanInterpolate(double renderTime);
+	//bool				CanInterpolate(double renderTime);
 
-	Vec3				Lerp(Vec3& a, Vec3& b, float& t);
+	Vec3				Lerp(const Vec3& a, const Vec3& b, const float t);
 	Vec3				CatmullRom(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const double& t);
 
 private:

@@ -23,7 +23,7 @@ public:
 
 	unordered_map<uint32, ActorRef>&			GetActors() { return _actors; }
 
-private:
+protected:
 	unordered_map<uint32, ActorRef>				_actors;
 };
 

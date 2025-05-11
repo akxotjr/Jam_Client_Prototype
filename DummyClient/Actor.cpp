@@ -12,9 +12,9 @@ void Actor::Init(SceneRef scene)
 	_owner = scene;
 }
 
-void Actor::SetTransform(uint64 position, uint64 velocity_speed, uint64 rotation)
+void Actor::SetTransform(uint64 position, uint64 velocity_speed, uint32 rotation)
 {
 	TransformCompressor::UnPackPosition(position, _position.x, _position.y, _position.z);
 	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, _velocity.x, _velocity.y, _velocity.z, _moveSpeed);
-	TransformCompressor::UnPackRotation(rotation, _rotation.x, _rotation.y, _rotation.z);
+	TransformCompressor::UnPackRotation(rotation, _yaw, _yawSpeed);
 }

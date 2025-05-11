@@ -22,7 +22,7 @@
     <Filter Include="04.Scene">
       <UniqueIdentifier>{e93c8b37-6fe0-44ba-b79d-6d93a682b5a0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="97. Utils">
+    <Filter Include="97.Utils">
       <UniqueIdentifier>{2d5e5a2c-c9a1-496d-a486-3b0120b034e8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -85,10 +85,10 @@
       <Filter>01.Network</Filter>
     </ClInclude>
     <ClInclude Include="TransformCompressor.h">
-      <Filter>97. Utils</Filter>
+      <Filter>97.Utils</Filter>
     </ClInclude>
     <ClInclude Include="IdManager.h">
-      <Filter>97. Utils</Filter>
+      <Filter>97.Utils</Filter>
     </ClInclude>
     <ClInclude Include="Actor.h">
       <Filter>03.Actor</Filter>
@@ -165,10 +165,10 @@
       <Filter>01.Network</Filter>
     </ClCompile>
     <ClCompile Include="TransformCompressor.cpp">
-      <Filter>97. Utils</Filter>
+      <Filter>97.Utils</Filter>
     </ClCompile>
     <ClCompile Include="IdManager.cpp">
-      <Filter>97. Utils</Filter>
+      <Filter>97.Utils</Filter>
     </ClCompile>
     <ClCompile Include="Actor.cpp">
       <Filter>03.Actor</Filter>

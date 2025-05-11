@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TimeManager.h"
 #include "ServerPacketHandler.h"
+#include <cmath>
 
 
 void TimeManager::Init()
@@ -57,9 +58,12 @@ void TimeManager::Update()
 void TimeManager::OnServerTimeReceived(double serverTime)
 {
 	double now = GetRawLocalTime();
-	_rtt = now - _lastTimeSyncSent;
+	_latestRtt = now - _lastTimeSyncSent;
 
-	_baseServerTime = serverTime + _rtt * 0.5f;
+	_avgRtt = std::lerp(_avgRtt, _latestRtt, 0.2);
+	_jitter = std::abs(_latestRtt - _avgRtt);
+
+	_baseServerTime = serverTime - _latestRtt * 0.5f;
 	_baseLocalTime = now;
 }
 

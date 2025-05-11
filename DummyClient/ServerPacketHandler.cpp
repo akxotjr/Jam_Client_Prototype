@@ -172,6 +172,10 @@ bool Handle_S_SYNC_TIME(SessionRef& session, Protocol::S_SYNC_TIME& pkt)
 
 	double timestamp = pkt.timestamp();
 	TimeManager::Instance().OnServerTimeReceived(timestamp);
+
+	auto gameScene = static_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene());
+	gameScene->OnReceiveServerTime();
+
 	return true;
 }
 
@@ -180,6 +184,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 	std::cout << "[UDP] Recv : S_SPAWN_ACTOR\n";
 
 	SceneManager::Instance().SetIsInGame(true);
+	InputManager::Instance().SetMouseVisible(false);
 
 	uint32 playerActorId = pkt.playeractorid();
 	const auto& actors = pkt.actorinfo();
@@ -198,7 +203,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 
 		uint64 position = transform.position();
 		uint64 velocity_speed = transform.velocity_speed();
-		uint64 rotation = transform.rotation();
+		uint32 rotation = transform.rotation();
 
 		if (actorId == playerActorId)
 		{
@@ -239,7 +244,7 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 
 		const uint64 position = transform.position();
 		const uint64 velocity_speed = transform.velocity_speed();
-		const uint64 rotation = transform.rotation();
+		const uint32 rotation = transform.rotation();
 
 		auto player = gameScene->GetPlayer();
 		if (!player) continue;

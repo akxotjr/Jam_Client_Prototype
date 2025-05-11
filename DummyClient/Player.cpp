@@ -31,8 +31,8 @@ void Player::Update()
 
 void Player::Render()
 {
-	Renderer::Instance().UpdateCamera(_position, Vec3(0,0.8f,1.f), 20.f);
-	Renderer::Instance().DrawCube(_position, _rotation, Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	Renderer::Instance().UpdateCamera(_position, GetPlayerDirection(), 20.f);
+	Renderer::Instance().DrawCube(_position, Vec3(0.0f, _yaw, 0.0f), Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 
@@ -43,8 +43,6 @@ void Player::SendInputToServer(const Input& input) const
 	Protocol::C_PLAYER_INPUT pkt;
 	pkt.set_sequence(input.sequence);
 	pkt.set_keyfield(input.keyField);
-	pkt.set_mouseposx(input.mousePosition.x);
-	pkt.set_mouseposy(input.mousePosition.y);
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(pkt);
 	auto session = SessionManager::Instance().GetUdpSession();
@@ -83,20 +81,13 @@ void Player::ProcessKeyField(const uint32& keyField)
 	_velocity.z = dir.z * _moveSpeed;
 }
 
-void Player::Reconcile(uint64 position, uint64 velocity_speed, uint64 rotation, uint32 ackSequence)
+void Player::Reconcile(uint64 position, uint64 velocity_speed, uint32 rotation, uint32 ackSequence)
 {
 	WRITE_LOCK
 
-	Vec3 p = {};
-	Vec3 v = {};
-	Vec3 r = {};
-	float s = 0.f;
-	TransformCompressor::UnPackPosition(position, p.x, p.y, p.z);
-	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, v.x, v.y, v.z, s);
-	TransformCompressor::UnPackRotation(rotation, r.x, r.y, r.z);
-
-	_position = p;
-	_velocity = v;
+	TransformCompressor::UnPackPosition(position, _position.x, _position.y, _position.z);
+	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, _velocity.x, _velocity.y, _velocity.z, _moveSpeed);
+	TransformCompressor::UnPackRotation(rotation, _yaw, _yawSpeed);
 
 	Vector<Input> newPending;
 	for (auto& input : _pendingInputs)
@@ -108,7 +99,19 @@ void Player::Reconcile(uint64 position, uint64 velocity_speed, uint64 rotation, 
 		}
 	}
 
-	_pendingInputs = newPending;		// TODO
+	_pendingInputs = newPending;
 }
 
+Vec3 Player::GetPlayerDirection()
+{
+	float pitch = InputManager::Instance().GetPitch();
+	_yaw = InputManager::Instance().GetYaw();
 
+	Vec3 playerDir;
+
+	playerDir.x = cosf(pitch) * sinf(_yaw);
+	playerDir.y = sinf(pitch);
+	playerDir.z = cosf(pitch) * cosf(_yaw);
+
+	return playerDir;
+}

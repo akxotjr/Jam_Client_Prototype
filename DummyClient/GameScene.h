@@ -18,6 +18,8 @@ public:
 	void					SetPlayer(const PlayerRef& player) { _player = player; }
 	PlayerRef				GetPlayer() { return _player; }
 
+	void OnReceiveServerTime();
+
 private:
 	PlayerRef				_player = nullptr;
 };

@@ -16,6 +16,7 @@ enum class EInputKey : uint32
 	QSkill = 11,        // Q
 	ESkill = 12,        // E
 	TabOpen = 13,       // Tab
+	Pause = 14,			// ESC
 };
 
 static const std::unordered_map<EInputKey, int32> INPUT_KEY_TO_VK = {
@@ -32,18 +33,17 @@ static const std::unordered_map<EInputKey, int32> INPUT_KEY_TO_VK = {
 	{ EInputKey::Skill4, '4' },
 	{ EInputKey::QSkill, 'Q' },
 	{ EInputKey::ESkill, 'E' },
-	{ EInputKey::TabOpen, VK_TAB }
+	{ EInputKey::TabOpen, VK_TAB },
+	{ EInputKey::Pause, VK_ESCAPE },
 };
 
 
 struct Input
 {
-	Input(double ts, uint32 kf, Vec2 pos, int seq)
-		: timestamp(ts), keyField(kf), mousePosition(pos), sequence(seq) {}
+	Input(double ts, uint32 kf, int seq) : timestamp(ts), keyField(kf), sequence(seq) {}
 
 	double	timestamp = 0.0;
 	uint32	keyField = 0;
-	Vec2	mousePosition = {};
 	uint32	sequence = 0;
 };
 
@@ -60,16 +60,36 @@ public:
 	Input				CaptureInput() const;
 
 	uint32				GetKeyField() const { return _keyField; }
+	Vec2&				GetMousePosition() { return _mousePos; }
+
+	float				GetYaw() { return _yaw; }
+	float				GetPitch() { return _pitch; }
+
+	void				SetMouseVisible(bool visible);
+
+	bool				JustPressed(EInputKey key);
+	void				TogglePause();
 
 private:
 	void				UpdateKeyField();
+	void				UpdateMouse();
 
 private:
 	GLFWwindow*			_window = nullptr;
+
+	bool				_pause = false;
 
 	uint32				_keyField = 0;
 	uint32				_keyDownField = 0;
 	uint32				_keyUpField = 0;
 
+	std::unordered_map<EInputKey, bool> _prevKeyStates;
+
+
 	Vec2				_mousePos;
+	Vec2				_lastMousePos;
+	float				_horizontalSensitivity = 0.001f;
+	float				_verticalSensitivity = 0.001f;
+	float				_yaw = 0.0f;
+	float				_pitch = 0.0f;
 };

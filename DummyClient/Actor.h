@@ -20,7 +20,7 @@ public:
 
 	Vec3						GetPosition() const { return _position; } //temp
 
-	void						SetTransform(uint64 position, uint64 velocity_speed, uint64 rotation);
+	void						SetTransform(uint64 position, uint64 velocity_speed, uint32 rotation);
 
 protected:
 	std::weak_ptr<Scene>		_owner;
@@ -31,5 +31,8 @@ protected:
 	Vec3						_rotation = {};
 	Vec3						_velocity = {};
 	float						_moveSpeed = 0.0f;
+
+	float						_yaw = 0.0f;
+	float						_yawSpeed = 0.0f;
 };
 

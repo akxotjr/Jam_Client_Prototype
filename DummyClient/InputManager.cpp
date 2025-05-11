@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "InputManager.h"
 #include "Renderer.h"
+#include "SceneManager.h"
 #include "TimeManager.h"
 
 
@@ -16,11 +17,14 @@ void InputManager::Shutdown()
 
 void InputManager::Update()
 {
-	UpdateKeyField();
+	if (!glfwGetWindowAttrib(_window, GLFW_FOCUSED))
+		return;
 
-	double mx, my;
-	glfwGetCursorPos(_window, &mx, &my);
-	_mousePos = Vec2{ static_cast<float>(mx), static_cast<float>(my) };
+	bool isInGame = SceneManager::Instance().GetIsInGame();
+	if (!isInGame) return;
+
+	UpdateKeyField();
+	UpdateMouse();
 }
 
 Input InputManager::CaptureInput() const
@@ -28,19 +32,44 @@ Input InputManager::CaptureInput() const
 	if (uint32 keyField = GetKeyField())
 	{
 		double timestamp = TimeManager::Instance().GetClientTime();
-		Vec2 mouse = { static_cast<float>(_mousePos.x), static_cast<float>(_mousePos.y) };
-
-		return { timestamp, keyField, mouse, 0 };
+		return { timestamp, keyField, 0 };
 	}
 
-	return { 0.0, 0, Vec2(0,0), 0 };
+	return { 0.0, 0, 0 };
+}
+
+void InputManager::SetMouseVisible(bool visible)
+{
+	if (visible)
+	{
+		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+	else
+	{
+		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	}
+}
+
+bool InputManager::JustPressed(EInputKey key)
+{
+	int vk = INPUT_KEY_TO_VK.at(key);
+	bool isDown = (::GetAsyncKeyState(vk) & 0x8000) != 0;
+	bool wasDown = _prevKeyStates[key];
+	_prevKeyStates[key] = isDown;
+	return (isDown && !wasDown);
+}
+
+void InputManager::TogglePause()
+{
+	_pause = !_pause;
+	if (_pause)
+		SetMouseVisible(true);
+	else
+		SetMouseVisible(false);
 }
 
 void InputManager::UpdateKeyField()
 {
-	if (!glfwGetWindowAttrib(_window, GLFW_FOCUSED))
-		return;
-
 	_keyField = 0;
 
 	for (const auto& [inputKey, vk] : INPUT_KEY_TO_VK)
@@ -48,4 +77,23 @@ void InputManager::UpdateKeyField()
 		if (::GetAsyncKeyState(vk) & 0x8000) // Press 
 			_keyField |= (1 << static_cast<uint32>(inputKey));
 	}
+
+	if (JustPressed(EInputKey::Pause))
+		TogglePause();
+}
+
+void InputManager::UpdateMouse()
+{
+	if (_pause) return;
+
+	double mx, my;
+	glfwGetCursorPos(_window, &mx, &my);
+
+	float dx = static_cast<float>(mx - WINDOW_CENTER_X);
+	float dy = static_cast<float>(my - WINDOW_CENTER_Y);
+
+	_yaw += dx * _horizontalSensitivity;
+	_pitch = std::clamp(_pitch - dy * _verticalSensitivity, -89.0f, 89.0f);
+
+	glfwSetCursorPos(_window, WINDOW_CENTER_X, WINDOW_CENTER_Y);
 }

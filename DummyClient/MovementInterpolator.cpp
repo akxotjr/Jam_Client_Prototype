@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "MovementInterpolator.h"
 #include "TimeManager.h"
+#include <cmath>
 
 MovementInterpolator::MovementInterpolator()
 	: _interpolationDelay(0.05), _extrapolationLimit(0.25), _renderPosition(Vec3{0,0,0})
@@ -12,11 +13,7 @@ void MovementInterpolator::Process(OUT Vec3& renderPosition, OUT Vec3& renderRot
 	double currentTime = TimeManager::Instance().GetClientTime();
 	double renderTime = currentTime - _interpolationDelay;
 
-	if (CanInterpolate(renderTime))
-	{
-		Interpolate(renderTime);
-	}
-	else
+	if (!Interpolate(renderTime))
 	{
 		Extrapolate(currentTime);
 	}
@@ -28,34 +25,73 @@ void MovementInterpolator::Process(OUT Vec3& renderPosition, OUT Vec3& renderRot
 void MovementInterpolator::AddSnapshot(const Snapshot& snap)
 {
 	WRITE_LOCK
-	_snapshotBuffer.push_back(snap);
+	//_snapshotBuffer.push_back(snap);
 
-	while (_snapshotBuffer.size() > 2 && _snapshotBuffer.front().timestamp < snap.timestamp - 0.5f)
-	{
-		_snapshotBuffer.pop_front();
-	}
+	//if (_snapshotBuffer.size() > 2 && _snapshotBuffer.front().timestamp < snap.timestamp - _interpolationDelay)
+	//{
+	//	_snapshotBuffer.pop_front();
+	//}
+
+	auto it = std::upper_bound(
+		_snapshotBuffer.begin(), _snapshotBuffer.end(),
+		snap.timestamp,
+		[](double t, const Snapshot& s) { return t < s.timestamp; }
+	);
+
+	_snapshotBuffer.insert(it, snap);
+
+	// 오래된 snapshot 제거
+	double cutoff = snap.timestamp - 0.5f;
+	auto eraseIt = std::find_if(_snapshotBuffer.begin(), _snapshotBuffer.end(),
+		[cutoff](const Snapshot& s) { return s.timestamp >= cutoff; });
+
+	_snapshotBuffer.erase(_snapshotBuffer.begin(), eraseIt);
 }
 
 
-void MovementInterpolator::Interpolate(double renderTime)
+bool MovementInterpolator::Interpolate(double renderTime)
 {
-	READ_LOCK
-	for (size_t i = 0; i + 1 < _snapshotBuffer.size(); i++)
-	{
-		Snapshot& prev = _snapshotBuffer[i];
-		Snapshot& next = _snapshotBuffer[i + 1];
+	//READ_LOCK
+	//for (size_t i = 0; i + 1 < _snapshotBuffer.size(); i++)
+	//{
+	//	Snapshot& prev = _snapshotBuffer[i];
+	//	Snapshot& next = _snapshotBuffer[i + 1];
 
-		if (prev.timestamp <= renderTime && next.timestamp >= renderTime)
-		{
-			float t = static_cast<float>((renderTime - prev.timestamp) / (next.timestamp - prev.timestamp));
-			_renderPosition = Lerp(prev.position, next.position, t);
-			_renderRotation = Lerp(prev.rotation, next.rotation, t);
-			return;
-		}
+	//	if (prev.timestamp <= renderTime && next.timestamp >= renderTime)
+	//	{
+	//		float t = static_cast<float>((renderTime - prev.timestamp) / (next.timestamp - prev.timestamp));
+	//		_renderPosition = Lerp(prev.position, next.position, t);
+	//		_renderRotation = Lerp(prev.rotation, next.rotation, t);
+	//		return;
+	//	}
+	//}
+
+	//_renderPosition = _snapshotBuffer.back().position;
+	//_renderRotation = _snapshotBuffer.back().rotation;
+
+	READ_LOCK
+
+	if (_snapshotBuffer.size() < 2)
+		return false;
+
+	auto comp = [](const Snapshot& s, double t) {
+		return s.timestamp < t;
+		};
+
+	auto it = std::lower_bound(_snapshotBuffer.begin(), _snapshotBuffer.end(), renderTime, comp);
+
+	if (it == _snapshotBuffer.begin() || it == _snapshotBuffer.end())
+	{
+		return false;
 	}
 
-	_renderPosition = _snapshotBuffer.back().position;
-	_renderRotation = _snapshotBuffer.back().rotation;
+	const Snapshot& next = *it;
+	const Snapshot& prev = *(it - 1);
+
+	float t = static_cast<float>((renderTime - prev.timestamp) / (next.timestamp - prev.timestamp));
+	_renderPosition = Lerp(prev.position, next.position, t);
+	_renderRotation = Lerp(prev.rotation, next.rotation, t);
+	return true;
 }
 
 void MovementInterpolator::Extrapolate(double currentTime)
@@ -81,38 +117,36 @@ void MovementInterpolator::Extrapolate(double currentTime)
 	//rotation = _lastRenderedRotation;
 }
 
-bool MovementInterpolator::CanInterpolate(double renderTime)
-{
-	WRITE_LOCK	// TODO: ?
-	if (_snapshotBuffer.size() < 2)
-	{
-		return false;
-	}
+//bool MovementInterpolator::CanInterpolate(double renderTime)
+//{
+//	if (_snapshotBuffer.size() < 2)
+//	{
+//		return false;
+//	}
+//
+//	for (size_t i = 0; i  + 1 < _snapshotBuffer.size(); i++)
+//	{
+//		if (_snapshotBuffer[i].timestamp <= renderTime && _snapshotBuffer[i + 1].timestamp >= renderTime)
+//		{
+//			return true;
+//		}
+//	}
+//	
+//	return false;
+//}
 
-	for (size_t i = 0; i  + 1 < _snapshotBuffer.size(); i++)
-	{
-		if (_snapshotBuffer[i].timestamp <= renderTime && _snapshotBuffer[i + 1].timestamp >= renderTime)
-		{
-			return true;
-		}
-	}
-	
-	return false;
-}
-
-void MovementInterpolator::SetBasedOnServerRate()
+void MovementInterpolator::SetBasedOnServerTime()
 {
-	double avgRTT = TimeManager::Instance().GetRoundTripTime();
+	double avgRTT = TimeManager::Instance().GetAvgRTT();
 	double jitter = TimeManager::Instance().GetJitter();
 
-	double safetyMargin = 0.03f;
+	WRITE_LOCK
 
-	//_interpolationDelay = 0.05f + avgRTT * 0.5f + jitter + safetyMargin;
-
-	//_interpolationDelay = std::clamp(_interpolationDelay, 0.05f, 0.3f);
+	_interpolationDelay = LOGIC_TICK_INTERVAL + avgRTT * 0.5 + jitter;
+	_interpolationDelay = std::clamp(_interpolationDelay, MIN_INTERPOLATION_DELAY, MAX_INTERPOLATION_DELAY);
 }
 
-Vec3 MovementInterpolator::Lerp(Vec3& a, Vec3& b, float& t)
+Vec3 MovementInterpolator::Lerp(const Vec3& a, const Vec3& b, const float t)
 {
 	return a * (1.0f - t) + b * t;
 }

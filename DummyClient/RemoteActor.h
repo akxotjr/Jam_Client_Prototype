@@ -16,7 +16,8 @@ public:
 	virtual void		Update() override;
 	virtual void		Render(/*HDC hdc*/) override;
 
-	void				UpdateSnapshot(uint64 position, uint64 velocity_speed, uint64 rotation, double timestamp);
+	void				UpdateSnapshot(uint64 position, uint64 velocity_speed, uint32 rotation, double timestamp);
+	void				UpdateInterpolatorBase();
 
 private:
 	unique_ptr<MovementInterpolator>	_interpolator;
