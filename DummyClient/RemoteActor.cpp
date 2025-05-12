@@ -28,7 +28,7 @@ void RemoteActor::UpdateSnapshot(uint64 position, uint64 velocity_speed, uint32 
 {
 	TransformCompressor::UnPackPosition(position, _position.x, _position.y, _position.z);
 	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, _velocity.x, _velocity.y, _velocity.z, _moveSpeed);
-	TransformCompressor::UnPackRotation(rotation, _yaw, _yawSpeed);
+	TransformCompressor::UnPackRotation(rotation, _rotation.y, _rotation.x);
 
 	_interpolator->AddSnapshot(Snapshot{ .timestamp= timestamp, .position= _position, .velocity= _velocity, .rotation = _rotation });
 }

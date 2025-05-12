@@ -29,13 +29,13 @@ void InputManager::Update()
 
 Input InputManager::CaptureInput() const
 {
-	if (uint32 keyField = GetKeyField())
+	if (uint32 keyField = GetKeyField() || _yaw != 0.f || _pitch != 0.f)
 	{
 		double timestamp = TimeManager::Instance().GetClientTime();
-		return { timestamp, keyField, 0 };
+		return { timestamp, keyField, _yaw, _pitch, 0 };
 	}
 
-	return { 0.0, 0, 0 };
+	return { 0.0, 0, 0.0f, 0.0f, 0 };
 }
 
 void InputManager::SetMouseVisible(bool visible)
@@ -92,8 +92,8 @@ void InputManager::UpdateMouse()
 	float dx = static_cast<float>(mx - WINDOW_CENTER_X);
 	float dy = static_cast<float>(my - WINDOW_CENTER_Y);
 
-	_yaw += dx * _horizontalSensitivity;
-	_pitch = std::clamp(_pitch - dy * _verticalSensitivity, -89.0f, 89.0f);
+	_yaw -= dx * _horizontalSensitivity * DEG2RAD;
+	_pitch = std::clamp(_pitch - dy * _verticalSensitivity * DEG2RAD, -PI * 0.5f, PI * 0.5f); 
 
 	glfwSetCursorPos(_window, WINDOW_CENTER_X, WINDOW_CENTER_Y);
 }

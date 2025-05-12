@@ -18,6 +18,7 @@ void Player::Init(SceneRef scene)
 void Player::Update()
 {
 	Input input = InputManager::Instance().CaptureInput();
+
 	if (input.timestamp != 0.0)
 	{
 		input.sequence = _lastSequenceNumber++;
@@ -32,7 +33,7 @@ void Player::Update()
 void Player::Render()
 {
 	Renderer::Instance().UpdateCamera(_position, GetPlayerDirection(), 20.f);
-	Renderer::Instance().DrawCube(_position, Vec3(0.0f, _yaw, 0.0f), Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	Renderer::Instance().DrawCube(_position, _rotation, Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 
@@ -43,6 +44,8 @@ void Player::SendInputToServer(const Input& input) const
 	Protocol::C_PLAYER_INPUT pkt;
 	pkt.set_sequence(input.sequence);
 	pkt.set_keyfield(input.keyField);
+	pkt.set_yaw(input.yaw);
+	pkt.set_pitch(input.pitch);
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(pkt);
 	auto session = SessionManager::Instance().GetUdpSession();
@@ -58,11 +61,15 @@ void Player::ApplyInput(const Input& input)
 {
 	WRITE_LOCK
 
-	ProcessKeyField(input.keyField);
+	_rotation.x = input.pitch;
+	_rotation.y = input.yaw;
+
+	ProcessKeyField(input.keyField, input.yaw);
+
 	_position += _velocity * static_cast<float>(LOGIC_TICK_INTERVAL);
 }
 
-void Player::ProcessKeyField(const uint32& keyField)
+void Player::ProcessKeyField(const uint32 keyField, const float yaw)
 {
 	float dx = 0.f, dz = 0.f;
 	if (keyField & (1 << 0))	// W
@@ -77,8 +84,12 @@ void Player::ProcessKeyField(const uint32& keyField)
 	Vec3 dir = { dx, 0.0f, dz };
 	dir.Normalize();
 
-	_velocity.x = dir.x * _moveSpeed;
-	_velocity.z = dir.z * _moveSpeed;
+	Vec3 rotatedDir = {};
+	rotatedDir.x = dir.x * cosf(yaw) - dir.z * sinf(yaw);
+	rotatedDir.z = dir.x * sinf(yaw) + dir.z * cosf(yaw);
+
+	_velocity.x = rotatedDir.x * _moveSpeed;
+	_velocity.z = rotatedDir.z * _moveSpeed;
 }
 
 void Player::Reconcile(uint64 position, uint64 velocity_speed, uint32 rotation, uint32 ackSequence)
@@ -87,7 +98,7 @@ void Player::Reconcile(uint64 position, uint64 velocity_speed, uint32 rotation, 
 
 	TransformCompressor::UnPackPosition(position, _position.x, _position.y, _position.z);
 	TransformCompressor::UnpackVelocityAndSpeed(velocity_speed, _velocity.x, _velocity.y, _velocity.z, _moveSpeed);
-	TransformCompressor::UnPackRotation(rotation, _yaw, _yawSpeed);
+	TransformCompressor::UnPackRotation(rotation, _rotation.y, _rotation.x);
 
 	Vector<Input> newPending;
 	for (auto& input : _pendingInputs)
@@ -104,14 +115,13 @@ void Player::Reconcile(uint64 position, uint64 velocity_speed, uint32 rotation, 
 
 Vec3 Player::GetPlayerDirection()
 {
-	float pitch = InputManager::Instance().GetPitch();
-	_yaw = InputManager::Instance().GetYaw();
+	float pitch = _rotation.x; 
+	float yaw = _rotation.y;
 
-	Vec3 playerDir;
+	Vec3 dir;
+	dir.x = cosf(pitch) * sinf(yaw);
+	dir.y = sinf(pitch);
+	dir.z = cosf(pitch) * cosf(yaw);
 
-	playerDir.x = cosf(pitch) * sinf(_yaw);
-	playerDir.y = sinf(pitch);
-	playerDir.z = cosf(pitch) * cosf(_yaw);
-
-	return playerDir;
+	return dir;
 }

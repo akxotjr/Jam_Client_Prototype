@@ -117,24 +117,6 @@ void MovementInterpolator::Extrapolate(double currentTime)
 	//rotation = _lastRenderedRotation;
 }
 
-//bool MovementInterpolator::CanInterpolate(double renderTime)
-//{
-//	if (_snapshotBuffer.size() < 2)
-//	{
-//		return false;
-//	}
-//
-//	for (size_t i = 0; i  + 1 < _snapshotBuffer.size(); i++)
-//	{
-//		if (_snapshotBuffer[i].timestamp <= renderTime && _snapshotBuffer[i + 1].timestamp >= renderTime)
-//		{
-//			return true;
-//		}
-//	}
-//	
-//	return false;
-//}
-
 void MovementInterpolator::SetBasedOnServerTime()
 {
 	double avgRTT = TimeManager::Instance().GetAvgRTT();

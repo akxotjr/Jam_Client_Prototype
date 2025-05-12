@@ -40,10 +40,12 @@ static const std::unordered_map<EInputKey, int32> INPUT_KEY_TO_VK = {
 
 struct Input
 {
-	Input(double ts, uint32 kf, int seq) : timestamp(ts), keyField(kf), sequence(seq) {}
+	Input(double timestamp, uint32 keyfield, float yaw, float pitch, uint32 sequence) : timestamp(timestamp), keyField(keyfield), yaw(yaw), pitch(pitch), sequence(sequence) {}
 
 	double	timestamp = 0.0;
 	uint32	keyField = 0;
+	float	yaw = 0.0f;
+	float	pitch = 0.0f;
 	uint32	sequence = 0;
 };
 
@@ -62,8 +64,8 @@ public:
 	uint32				GetKeyField() const { return _keyField; }
 	Vec2&				GetMousePosition() { return _mousePos; }
 
-	float				GetYaw() { return _yaw; }
-	float				GetPitch() { return _pitch; }
+	float				GetYaw() const { return _yaw; }
+	float				GetPitch() const { return _pitch; }
 
 	void				SetMouseVisible(bool visible);
 
@@ -88,8 +90,8 @@ private:
 
 	Vec2				_mousePos;
 	Vec2				_lastMousePos;
-	float				_horizontalSensitivity = 0.001f;
-	float				_verticalSensitivity = 0.001f;
+	float				_horizontalSensitivity = 0.01f;
+	float				_verticalSensitivity = 0.01f;
 	float				_yaw = 0.0f;
 	float				_pitch = 0.0f;
 };

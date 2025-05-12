@@ -30,7 +30,7 @@ public:
 private:
 	void				SendInputToServer(const Input& input) const;
 	void				ApplyInput(const Input& input);
-	void				ProcessKeyField(const uint32& keyField);
+	void				ProcessKeyField(const uint32 keyField, const float yaw);
 
 private:
 	USE_LOCK
@@ -38,5 +38,7 @@ private:
 	Vector<Input>		_pendingInputs;
 	uint32				_lastSequenceNumber = 0;
 	Vec3				_predictedPosition = {};
+
+	Vec3				_playerDir = {};
 };
 

@@ -27,6 +27,8 @@ constexpr float YAW_SPEED_MIN = -10.0f;
 constexpr float YAW_SPEED_MAX = +10.0f;
 constexpr float YAW_SPEED_RANGE = YAW_SPEED_MAX - YAW_SPEED_MIN;
 
+constexpr float DEG2RAD = 3.1415927f / 180.0f;
+
 constexpr float PI = std::numbers::pi_v<float>;
 
 extern bool running;
