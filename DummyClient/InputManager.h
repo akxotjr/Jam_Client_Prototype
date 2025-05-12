@@ -82,6 +82,11 @@ private:
 	bool				_pause = false;
 
 	uint32				_keyField = 0;
+	mutable uint32		_lastSentKeyField = UINT32_MAX;
+	mutable float		_lastYaw = 0.f;
+	mutable float		_lastPitch = 0.f;
+
+
 	uint32				_keyDownField = 0;
 	uint32				_keyUpField = 0;
 
@@ -94,4 +99,7 @@ private:
 	float				_verticalSensitivity = 0.01f;
 	float				_yaw = 0.0f;
 	float				_pitch = 0.0f;
+
+	float				_degYaw = 0.0f;
+	float				_degPitch = 0.0f;
 };

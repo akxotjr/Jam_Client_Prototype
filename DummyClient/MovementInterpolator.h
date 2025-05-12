@@ -29,7 +29,6 @@ private:
 	bool				Interpolate(double renderTime);
 	void				Extrapolate(double currentTime);
 
-	Vec3				Lerp(const Vec3& a, const Vec3& b, const float t);
 	Vec3				CatmullRom(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d, const double& t);
 
 private:

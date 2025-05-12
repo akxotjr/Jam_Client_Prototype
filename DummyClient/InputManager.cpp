@@ -29,9 +29,16 @@ void InputManager::Update()
 
 Input InputManager::CaptureInput() const
 {
-	if (uint32 keyField = GetKeyField() || _yaw != 0.f || _pitch != 0.f)
+	uint32 keyField = GetKeyField();
+
+
+	if (keyField != _lastSentKeyField || _yaw != _lastYaw || _pitch != _lastPitch)
 	{
 		double timestamp = TimeManager::Instance().GetClientTime();
+		_lastSentKeyField = keyField;
+		_lastYaw = _yaw;
+		_lastPitch = _pitch;
+
 		return { timestamp, keyField, _yaw, _pitch, 0 };
 	}
 

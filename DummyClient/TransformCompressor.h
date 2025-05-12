@@ -16,14 +16,9 @@ public:
     static uint64   PackVelocityAndSpeed(float vx, float vy, float vz, float moveSpeed);
     static void     UnpackVelocityAndSpeed(uint64 packed, OUT float& vx, OUT float& vy, OUT float& vz, OUT float& moveSpeed);
 
-private:
     // Position
     static uint16   CompressPosition(float value);
     static float    ExpandPosition(uint16 packed);
-
-    // Rotation (x, y, z) [-180, +180] 범위 압축
-    //static uint16   CompressRotation(float value);
-    //static float    ExpandRotation(uint16 packed);
 };
 
 
