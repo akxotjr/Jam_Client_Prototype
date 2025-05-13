@@ -14,7 +14,7 @@ public:
 	/* Actor impl */
 	virtual void		Init(SceneRef scene) override;
 	virtual void		Update() override;
-	virtual void		Render(/*HDC hdc*/) override;
+	virtual void		Render() override;
 
 	void				UpdateSnapshot(uint64 position, uint64 velocity_speed, uint32 rotation, double timestamp);
 	void				UpdateInterpolatorBase();

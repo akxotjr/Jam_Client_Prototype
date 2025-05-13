@@ -25,6 +25,12 @@
     <Filter Include="97.Utils">
       <UniqueIdentifier>{2d5e5a2c-c9a1-496d-a486-3b0120b034e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.Actor\Contents">
+      <UniqueIdentifier>{d6a5ce02-1551-497f-9605-b70f71f7f292}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03.Actor\Engine">
+      <UniqueIdentifier>{efe5eea9-27e0-491d-80d4-36a7f27fa7e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -60,9 +66,6 @@
     <ClInclude Include="Player.h">
       <Filter>03.Actor</Filter>
     </ClInclude>
-    <ClInclude Include="MovementInterpolator.h">
-      <Filter>03.Actor</Filter>
-    </ClInclude>
     <ClInclude Include="Defines.h">
       <Filter>99.Headers</Filter>
     </ClInclude>
@@ -90,15 +93,6 @@
     <ClInclude Include="IdManager.h">
       <Filter>97.Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Actor.h">
-      <Filter>03.Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="RemoteActor.h">
-      <Filter>03.Actor</Filter>
-    </ClInclude>
-    <ClInclude Include="Types.h">
-      <Filter>00.Main</Filter>
-    </ClInclude>
     <ClInclude Include="Renderer.h">
       <Filter>00.Main</Filter>
     </ClInclude>
@@ -107,6 +101,21 @@
     </ClInclude>
     <ClInclude Include="SessionManager.h">
       <Filter>02.Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>03.Actor\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementInterpolator.h">
+      <Filter>03.Actor\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Floor.h">
+      <Filter>03.Actor\Contents</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteActor.h">
+      <Filter>03.Actor\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>99.Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -143,9 +152,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>03.Actor</Filter>
     </ClCompile>
-    <ClCompile Include="MovementInterpolator.cpp">
-      <Filter>03.Actor</Filter>
-    </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>02.Manager</Filter>
     </ClCompile>
@@ -170,17 +176,23 @@
     <ClCompile Include="IdManager.cpp">
       <Filter>97.Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Actor.cpp">
-      <Filter>03.Actor</Filter>
-    </ClCompile>
-    <ClCompile Include="RemoteActor.cpp">
-      <Filter>03.Actor</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>00.Main</Filter>
     </ClCompile>
     <ClCompile Include="SessionManager.cpp">
       <Filter>02.Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>03.Actor\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementInterpolator.cpp">
+      <Filter>03.Actor\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteActor.cpp">
+      <Filter>03.Actor\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Floor.cpp">
+      <Filter>03.Actor\Contents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

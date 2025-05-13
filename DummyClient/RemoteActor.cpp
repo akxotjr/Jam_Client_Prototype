@@ -21,7 +21,7 @@ void RemoteActor::Update()
 void RemoteActor::Render()
 {
 	_interpolator->Process(_renderPosition, _renderRotation);
-	Renderer::Instance().DrawCube(_renderPosition, _renderRotation, Vec3(1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	Renderer::Instance().DrawCube(glm::vec3(_renderPosition.x, _renderPosition.y, _renderPosition.z), glm::vec3(_renderRotation.x, _renderRotation.y, _renderRotation.z), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
 void RemoteActor::UpdateSnapshot(uint64 position, uint64 velocity_speed, uint32 rotation, double timestamp)

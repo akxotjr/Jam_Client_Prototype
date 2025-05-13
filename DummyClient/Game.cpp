@@ -25,6 +25,7 @@ void Game::Init()
 {
 	Renderer::Instance().Init();
 	ServerPacketHandler::Init();
+	SessionManager::Instance().Init();
 	SceneManager::Instance().Init();
 	InputManager::Instance().Init();
 	TimeManager::Instance().Init();
@@ -51,7 +52,6 @@ void Game::Update()
 void Game::Render()
 {
 	Renderer::Instance().PreRender();
-	Renderer::Instance().DrawGrid();
 	SceneManager::Instance().Render();
 	Renderer::Instance().DrawUI();
 	Renderer::Instance().PostRender();

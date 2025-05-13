@@ -7,7 +7,6 @@
 #include "GameScene.h"
 #include "GameTcpSession.h"
 #include "Player.h"
-
 #include "ServerPacketHandler.h"
 
 
@@ -92,6 +91,8 @@ void Renderer::Init()
 
     InitGrid();
     InitCube();
+    InitPlane();
+    InitCrosshair();
 }
 
 void Renderer::Shutdown()
@@ -133,13 +134,13 @@ void Renderer::PostRender()
     glfwPollEvents();
 }
 
-void Renderer::DrawGrid()
+void Renderer::DrawGrid(const glm::vec4& color)
 {
     if (!_gridInitialized)
         InitGrid();
 
     glUseProgram(_shaderProgram);
-    glUniform4f(_shaderLocColor, 0.6f, 0.6f, 0.6f, 1.0f);
+    glUniform4f(_shaderLocColor, color.r, color.g, color.b, color.a);
 
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 mvp = _proj * _view * model;
@@ -150,8 +151,29 @@ void Renderer::DrawGrid()
     glBindVertexArray(0);
 }
 
+void Renderer::DrawPlane(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color)
+{
+    if (!_planeInitialized)
+        InitPlane();
 
-void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& size, const glm::vec4& color)
+    glUseProgram(_shaderProgram);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, position);
+    model = glm::scale(model, glm::vec3(scale.x, 1.0f, scale.y));
+
+    glm::mat4 mvp = _proj * _view * model;
+
+    glUniformMatrix4fv(_shaderLocMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+    glUniform4f(_shaderLocColor, color.r, color.g, color.b, color.a);
+
+    glBindVertexArray(_planeVAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
+
+void Renderer::DrawCube(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, const glm::vec4& color)
 {
     int success;
     glGetProgramiv(_shaderProgram, GL_LINK_STATUS, &success);
@@ -165,11 +187,11 @@ void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& 
     glUseProgram(_shaderProgram);
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position.x, position.y, position.z));
+    model = glm::translate(model, position);
     model = glm::rotate(model, rotation.x, glm::vec3(1, 0, 0));
     model = glm::rotate(model, rotation.y, glm::vec3(0, 1, 0));
     model = glm::rotate(model, rotation.z, glm::vec3(0, 0, 1));
-    model = glm::scale(model, glm::vec3(size.x, size.y, size.z));
+    model = glm::scale(model, scale);
 
     glm::mat4 mvp = _proj * _view * model;
 
@@ -192,6 +214,8 @@ void Renderer::DrawCube(const Vec3& position, const Vec3& rotation, const Vec3& 
 
 void Renderer::DrawUI()
 {
+    DrawCrosshair();
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -246,10 +270,6 @@ void Renderer::DrawDebugginUI()
 
 void Renderer::DrawRoomUI()
 {
-    //ImGui_ImplOpenGL3_NewFrame();
-    //ImGui_ImplGlfw_NewFrame();
-    //ImGui::NewFrame();
-
     ImGui::Begin("Room Menu");
 
     bool isInRoom = SceneManager::Instance().GetIsInRoom();
@@ -331,19 +351,47 @@ void Renderer::DrawRoomUI()
     }
 
     ImGui::End();
-
-
-    //ImGui::Render();
-    //ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Renderer::UpdateCamera(const Vec3& playerPos, const Vec3& playerDir, GLfloat cameraDist)
+void Renderer::DrawCrosshair()
 {
-	glm::vec3 cameraOffset = glm::normalize(glm::vec3(-playerDir.x, -playerDir.y, -playerDir.z)) * cameraDist;
-    glm::vec3 cameraPos = glm::vec3(playerPos.x, playerPos.y, playerPos.z) + cameraOffset;
+    bool isInGame = SceneManager::Instance().GetIsInGame();
+    if (!isInGame) return;
 
-    _view = glm::lookAt(cameraPos, glm::vec3(playerPos.x, playerPos.y, playerPos.z), _cameraUp);
-    _proj = glm::perspective(glm::radians(45.0f), WINDOW_SIZE_X / WINDOW_SIZE_Y, 0.1f, 100.0f);
+    glDisable(GL_DEPTH_TEST);
+    glUseProgram(_shaderProgram); 
+
+    glm::mat4 mvp = glm::mat4(1.0f);
+    glUniformMatrix4fv(glGetUniformLocation(_shaderProgram, "uMVP"), 1, GL_FALSE, glm::value_ptr(mvp));
+
+    glUniform4f(glGetUniformLocation(_shaderProgram, "uColor"), 0.0f, 0.0f, 0.0f, 1.0f); 
+    glLineWidth(3.0f);
+
+    glBindVertexArray(_crossVAO);
+    glDrawArrays(GL_LINES, 0, 4);
+    glBindVertexArray(0);
+    glEnable(GL_DEPTH_TEST);
+}
+
+void Renderer::UpdateCamera(const Vec3& playerPos, /*const Vec3& playerDir*/float yaw, float pitch, GLfloat cameraDist)
+{
+	//glm::vec3 cameraOffset = glm::normalize(glm::vec3(-playerDir.x, -playerDir.y, -playerDir.z)) * cameraDist;
+ //   glm::vec3 cameraPos = glm::vec3(playerPos.x, playerPos.y, playerPos.z) + cameraOffset;
+
+ //   _view = glm::lookAt(cameraPos, glm::vec3(playerPos.x, playerPos.y, playerPos.z), _cameraUp);
+ //   _proj = glm::perspective(glm::radians(45.0f), WINDOW_SIZE_X / WINDOW_SIZE_Y, 0.1f, 100.0f);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, pitch, glm::vec3(1, 0, 0));
+    model = glm::rotate(model, yaw, glm::vec3(0, 1, 0));
+
+    glm::vec4 rotatedCameraOffset = model * _cameraOffset * cameraDist;
+
+    glm::vec3 cameraPos = glm::vec3(playerPos.x, playerPos.y, playerPos.z) + glm::vec3(rotatedCameraOffset);
+
+    glm::vec3 targetPos = cameraPos + glm::vec3(cosf(pitch) * sinf(yaw), sin(pitch), cos(pitch) * cos(yaw));
+	_view = glm::lookAt(cameraPos, targetPos, _cameraUp);
+	_proj = glm::perspective(glm::radians(45.0f), WINDOW_SIZE_X / WINDOW_SIZE_Y, 0.1f, 100.0f);
 }
 
 
@@ -386,14 +434,14 @@ void Renderer::InitGrid()
 
     for (int z = WORLD_RANGE_MIN; z <= WORLD_RANGE_MAX; z += WORLD_GRID_SIZE)
     {
-        lines.emplace_back(WORLD_RANGE_MIN, -1.0f, z);
-        lines.emplace_back(WORLD_RANGE_MAX, -1.0f, z);
+        lines.emplace_back(WORLD_RANGE_MIN, 0.05f, z);
+        lines.emplace_back(WORLD_RANGE_MAX, 0.05f, z);
     }
 
     for (int x = WORLD_RANGE_MIN; x <= WORLD_RANGE_MAX; x += WORLD_GRID_SIZE)
     {
-        lines.emplace_back(x, -1.0f, WORLD_RANGE_MIN);
-        lines.emplace_back(x, -1.0f, WORLD_RANGE_MAX);
+        lines.emplace_back(x, 0.05f, WORLD_RANGE_MIN);
+        lines.emplace_back(x, 0.05f, WORLD_RANGE_MAX);
     }
 
     glGenVertexArrays(1, &_gridVAO);
@@ -410,6 +458,47 @@ void Renderer::InitGrid()
     _gridVertexCount = static_cast<GLsizei>(lines.size());
 
     _gridInitialized = true;
+}
+
+void Renderer::InitPlane()
+{
+    if (_planeInitialized)
+        return;
+
+    float planeVertices[] = {
+        // positions         // normals
+        -1.0f, 0.0f, -1.0f,   0.0f, 1.0f, 0.0f,
+         1.0f, 0.0f, -1.0f,   0.0f, 1.0f, 0.0f,
+         1.0f, 0.0f,  1.0f,   0.0f, 1.0f, 0.0f,
+        -1.0f, 0.0f,  1.0f,   0.0f, 1.0f, 0.0f,
+    };
+
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    glGenVertexArrays(1, &_planeVAO);
+    glGenBuffers(1, &_planeVBO);
+    glGenBuffers(1, &_planeEBO);
+
+    glBindVertexArray(_planeVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, _planeVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _planeEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+    _planeInitialized = true;
 }
 
 void Renderer::InitCube()
@@ -456,6 +545,36 @@ void Renderer::InitCube()
     glBindVertexArray(0);
 
     _cubeInitialized = true;
+}
+
+void Renderer::InitCrosshair()
+{
+    if (_crosshairInitialized)
+        return;
+
+    float crosshairVertices[] = {
+        // vertical
+         0.0f, -0.05f, 0.0f,
+         0.0f,  0.05f, 0.0f,
+
+         // horizon
+         -0.05f,  0.0f, 0.0f,
+          0.05f,  0.0f, 0.0f
+    };
+
+    glGenVertexArrays(1, &_crossVAO);
+    glGenBuffers(1, &_crossVBO);
+
+    glBindVertexArray(_crossVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, _crossVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(crosshairVertices), crosshairVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+    _crosshairInitialized = true;
 }
 
 

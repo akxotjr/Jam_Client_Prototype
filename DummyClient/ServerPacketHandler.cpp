@@ -2,6 +2,7 @@
 #include "ServerPacketHandler.h"
 #include "SessionManager.h"
 #include "Actor.h"
+#include "Floor.h"
 #include "Job.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
@@ -215,11 +216,22 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 		}
 		else
 		{
-			RemoteActorRef remoteActor = MakeShared<RemoteActor>();
-			remoteActor->SetActorId(actorId);
-			remoteActor->SetTransform(position, velocity_speed, rotation);
+			if (IdManager::GetActorType(actorId) == ActorTypePrefix::Floor)
+			{
+				FloorRef floor = MakeShared<Floor>();
+				floor->SetActorId(actorId);
+				floor->SetTransform(position, velocity_speed, rotation);
 
-			gameScene->AddActor(remoteActor);
+				gameScene->AddActor(floor);
+			}
+			else
+			{
+				RemoteActorRef remoteActor = MakeShared<RemoteActor>();
+				remoteActor->SetActorId(actorId);
+				remoteActor->SetTransform(position, velocity_speed, rotation);
+
+				gameScene->AddActor(remoteActor);
+			}
 		}
 	}
 

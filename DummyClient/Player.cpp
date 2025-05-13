@@ -32,8 +32,8 @@ void Player::Update()
 
 void Player::Render()
 {
-	Renderer::Instance().UpdateCamera(_renderPosition, GetPlayerDirection(), 20.f);
-	Renderer::Instance().DrawCube(_renderPosition, Vec3(0.0f, _renderRotation.y, 0.0f), Vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	Renderer::Instance().UpdateCamera(_renderPosition, _renderRotation.y, _renderRotation.x, 5.f);
+	Renderer::Instance().DrawCube(glm::vec3(_renderPosition.x, _renderPosition.y, _renderPosition.z), glm::vec3(0.0f, _renderRotation.y, 0.0f), glm::vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 
@@ -45,6 +45,7 @@ void Player::SendInputToServer(const Input& input) const
 	pkt.set_sequence(input.sequence);
 	pkt.set_keyfield(input.keyField);
 	pkt.set_yaw_pitch(TransformCompressor::PackRotation(input.yaw, input.pitch));
+	pkt.set_timestamp(input.timestamp);
 
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(pkt);
 	auto session = SessionManager::Instance().GetUdpSession();

@@ -31,7 +31,5 @@ protected:
 	Vec3						_rotation = {};
 	Vec3						_velocity = {};
 	float						_moveSpeed = 0.0f;
-
-	float						_yawSpeed = 0.0f;
 };
 
