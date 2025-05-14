@@ -23,7 +23,7 @@ constexpr int32 WORLD_GRID_SIZE = 10;
 constexpr double MIN_INTERPOLATION_DELAY = 0.04;
 constexpr double MAX_INTERPOLATION_DELAY = 0.08;
 
-constexpr float YAW_SPEED_MIN = -10.0f;
+constexpr float YAW_SPEED_MIN = -10.0f;   
 constexpr float YAW_SPEED_MAX = +10.0f;
 constexpr float YAW_SPEED_RANGE = YAW_SPEED_MAX - YAW_SPEED_MIN;
 

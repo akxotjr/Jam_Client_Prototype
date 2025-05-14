@@ -375,12 +375,6 @@ void Renderer::DrawCrosshair()
 
 void Renderer::UpdateCamera(const Vec3& playerPos, /*const Vec3& playerDir*/float yaw, float pitch, GLfloat cameraDist)
 {
-	//glm::vec3 cameraOffset = glm::normalize(glm::vec3(-playerDir.x, -playerDir.y, -playerDir.z)) * cameraDist;
- //   glm::vec3 cameraPos = glm::vec3(playerPos.x, playerPos.y, playerPos.z) + cameraOffset;
-
- //   _view = glm::lookAt(cameraPos, glm::vec3(playerPos.x, playerPos.y, playerPos.z), _cameraUp);
- //   _proj = glm::perspective(glm::radians(45.0f), WINDOW_SIZE_X / WINDOW_SIZE_Y, 0.1f, 100.0f);
-
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, pitch, glm::vec3(1, 0, 0));
     model = glm::rotate(model, yaw, glm::vec3(0, 1, 0));
