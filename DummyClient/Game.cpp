@@ -23,12 +23,12 @@ Game::~Game()
 
 void Game::Init()
 {
-	Renderer::Instance().Init();
-	ServerPacketHandler::Init();
-	SessionManager::Instance().Init();
-	SceneManager::Instance().Init();
-	InputManager::Instance().Init();
 	TimeManager::Instance().Init();
+	Renderer::Instance().Init();
+	InputManager::Instance().Init();
+	SceneManager::Instance().Init();
+	SessionManager::Instance().Init();
+	ServerPacketHandler::Init();
 
 
 	SceneManager::Instance().ChangeScene(SceneType::GameScene);
@@ -53,6 +53,7 @@ void Game::Render()
 {
 	Renderer::Instance().PreRender();
 	SceneManager::Instance().Render();
+	Renderer::Instance().DrawDebugObject();
 	Renderer::Instance().DrawUI();
 	Renderer::Instance().PostRender();
 }

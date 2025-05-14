@@ -33,7 +33,7 @@ void Player::Update()
 void Player::Render()
 {
 	Renderer::Instance().UpdateCamera(_renderPosition, _renderRotation.y, _renderRotation.x, 5.f);
-	Renderer::Instance().DrawCube(glm::vec3(_renderPosition.x, _renderPosition.y, _renderPosition.z), glm::vec3(0.0f, _renderRotation.y, 0.0f), glm::vec3(1.f, 1.f, 1.f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	Renderer::Instance().DrawCube(glm::vec3(_renderPosition.x, _renderPosition.y, _renderPosition.z), glm::vec3(0.0f, _renderRotation.y, 0.0f), glm::vec3(1.f, 1.f, 1.f), _color);
 }
 
 
@@ -154,4 +154,20 @@ Vec3 Player::GetPlayerDirection()
 	dir.z = cosf(pitch) * cosf(yaw);
 
 	return dir;
+}
+
+void Player::Fire(float targetX, float targetY, float targetZ)
+{
+	READ_LOCK
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::rotate(model, _rotation.x, glm::vec3(1, 0, 0));
+	model = glm::rotate(model, _rotation.y, glm::vec3(0, 1, 0));
+
+	glm::vec4 rotatedMuzzleOffset = model * _muzzleOffset;
+
+	glm::vec3 muzzlePos = glm::vec3(_position.x, _position.y, _position.z) + glm::vec3(rotatedMuzzleOffset);
+	glm::vec3 targetPos = { targetX, targetY, targetZ };
+
+	Renderer::Instance().AddDebugDrawObject(DebugDrawObject(muzzlePos, targetPos, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 0.5f));
+	Renderer::Instance().AddDebugDrawObject(DebugDrawObject(targetPos, glm::vec3(0, 0, 0), glm::vec3(0.2f, 0.2f, 0.2f), _color, 0.5f));
 }

@@ -14,6 +14,7 @@
 #include "IdManager.h"
 #include "Player.h"
 #include "RemoteActor.h"
+#include "TransformCompressor.h"
 
 
 PacketHandlerFunc GPacketHandler_Tcp[UINT16_MAX];
@@ -206,11 +207,16 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 		uint64 velocity_speed = transform.velocity_speed();
 		uint32 rotation = transform.rotation();
 
+		glm::vec4 color = {};
+		if (info.has_r())
+			color = { info.r(), info.g(), info.b(), 1.0f };
+
 		if (actorId == playerActorId)
 		{
 			PlayerRef player = MakeShared<Player>();
 			player->SetActorId(actorId);
 			player->SetTransform(position, velocity_speed, rotation);
+			player->SetColor(color);
 
 			gameScene->SetPlayer(player);
 		}
@@ -221,6 +227,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 				FloorRef floor = MakeShared<Floor>();
 				floor->SetActorId(actorId);
 				floor->SetTransform(position, velocity_speed, rotation);
+				floor->SetColor(color);
 
 				gameScene->AddActor(floor);
 			}
@@ -229,6 +236,7 @@ bool Handle_S_SPAWN_ACTOR(SessionRef& session, Protocol::S_SPAWN_ACTOR& pkt)
 				RemoteActorRef remoteActor = MakeShared<RemoteActor>();
 				remoteActor->SetActorId(actorId);
 				remoteActor->SetTransform(position, velocity_speed, rotation);
+				remoteActor->SetColor(color);
 
 				gameScene->AddActor(remoteActor);
 			}
@@ -273,7 +281,15 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 		{
 			auto remoteActor = static_pointer_cast<RemoteActor>(gameScene->GetActorByActorId(actorId));
 			if (remoteActor != nullptr)
+			{
 				remoteActor->UpdateSnapshot(position, velocity_speed, rotation, timestamp);
+
+				if (info.has_r())
+				{
+					glm::vec4 color = { info.r(), info.g(), info.b(), 1.0f };
+					remoteActor->SetColor(color);
+				}
+			}
 		}
 	}
 
@@ -282,5 +298,19 @@ bool Handle_S_SYNC_ACTOR(SessionRef& session, Protocol::S_SYNC_ACTOR& pkt)
 
 bool Handle_S_PLAYER_INPUT(SessionRef& session, Protocol::S_PLAYER_INPUT& pkt)
 {
+	return true;
+}
+
+bool Handle_S_HIT_RESULT(SessionRef& session, Protocol::S_HIT_RESULT& pkt)
+{
+	uint32 actorId = pkt.actorid();
+	uint64 position = pkt.position();
+
+	float px, py, pz;
+	TransformCompressor::UnPackPosition(position, px, py, pz);
+
+	auto player = static_pointer_cast<GameScene>(SceneManager::Instance().GetCurrentScene())->GetPlayer();
+	player->Fire(px, py, pz);
+
 	return true;
 }

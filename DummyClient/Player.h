@@ -27,6 +27,9 @@ public:
 
 	Vec3				GetPlayerDirection();
 
+	//temp
+	void				Fire(float targetX, float targetY, float targetZ);
+
 private:
 	void				SendInputToServer(const Input& input) const;
 	void				ApplyInput(const Input& input);
@@ -45,5 +48,7 @@ private:
 	Vec3				_renderPosition = {};
 	Vec3				_renderRotation = {};
 	Vec3				_renderVelocity = {};
+
+	glm::vec4			_muzzleOffset = { 0.0f, 0.0f, 2.0f, 1.0f };
 };
 

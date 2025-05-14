@@ -22,6 +22,9 @@ public:
 
 	void						SetTransform(uint64 position, uint64 velocity_speed, uint32 rotation);
 
+	void						SetColor(float r, float g, float b) { _color = { r, g, b, 1.0f }; }
+	void						SetColor(const glm::vec4& color) { _color = color; }
+
 protected:
 	std::weak_ptr<Scene>		_owner;
 
@@ -31,5 +34,7 @@ protected:
 	Vec3						_rotation = {};
 	Vec3						_velocity = {};
 	float						_moveSpeed = 0.0f;
+
+	glm::vec4					_color = {};
 };
 

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Renderer.h"
-#include "TimeManager.h"
 #include "SessionManager.h"
 #include "SceneManager.h"
 #include "Scene.h"
@@ -110,6 +109,25 @@ void Renderer::Shutdown()
         glDeleteBuffers(1, &_cubeEBO);
     }
 
+    if (_planeInitialized)
+    {
+        glDeleteVertexArrays(1, &_planeVAO);
+        glDeleteBuffers(1, &_planeVBO);
+        glDeleteBuffers(1, &_planeEBO);
+    }
+
+    if (_rayInitialized)
+    {
+        glDeleteVertexArrays(1, &_rayVAO);
+        glDeleteBuffers(1, &_rayVBO);
+    }
+
+    if (_crosshairInitialized)
+    {
+        glDeleteVertexArrays(1, &_crossVAO);
+        glDeleteBuffers(1, &_crossVBO);
+    }
+
     glDeleteProgram(_shaderProgram);
 
     ImGui_ImplOpenGL3_Shutdown();
@@ -197,18 +215,58 @@ void Renderer::DrawCube(const glm::vec3& position, const glm::vec3& rotation, co
 
     glUniformMatrix4fv(_shaderLocMVP, 1, GL_FALSE, glm::value_ptr(mvp));
 
-
-    glUniform4f(_shaderLocColor, color.x, color.y, color.z, color.w);
+    glUniform4f(_shaderLocColor, color.r, color.g, color.b, color.a);
 
     glBindVertexArray(_cubeVAO);
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
 
-    GLenum err;
-    while ((err = glGetError()) != GL_NO_ERROR)
+    //GLenum err;
+    //while ((err = glGetError()) != GL_NO_ERROR)
+    //{
+    //    std::cout << "OpenGL Error: " << err << '\n';
+    //}
+}
+
+void Renderer::DrawRay(const glm::vec3& start, const glm::vec3& end, const glm::vec4& color)
+{
+    if (!_rayInitialized)
+        InitRay();
+
+    glm::vec3 rayVertices[2] = { start, end };
+
+    glBindBuffer(GL_ARRAY_BUFFER, _rayVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(rayVertices), rayVertices);
+
+    glUseProgram(_shaderProgram);
+    glUniform4f(_shaderLocColor, color.r, color.g, color.b, color.a);
+
+    glm::mat4 mvp = _proj * _view * glm::mat4(1.0f);
+    glUniformMatrix4fv(_shaderLocMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+
+    glLineWidth(2.0f);
+    glBindVertexArray(_rayVAO);
+    glDrawArrays(GL_LINES, 0, 2);
+    glBindVertexArray(0);
+}
+
+void Renderer::DrawDebugObject()
+{
+    WRITE_LOCK
+    std::erase_if(_debugDrawObjects, [](const DebugDrawObject& obj) {return obj.expireTime <= TimeManager::Instance().GetClientTime(); });
+
+    for (auto& obj : _debugDrawObjects)
     {
-        std::cout << "OpenGL Error: " << err << '\n';
+	    switch (obj.type)
+	    {
+        case DebugDrawObject::Type::Ray:
+            DrawRay(obj.ray.start, obj.ray.end, obj.color);
+            break;
+	    case DebugDrawObject::Type::Cube:
+            DrawCube(obj.cube.position, obj.cube.rotation, obj.cube.scale, obj.color);
+            break;
+	    }
     }
 }
 
@@ -373,7 +431,7 @@ void Renderer::DrawCrosshair()
     glEnable(GL_DEPTH_TEST);
 }
 
-void Renderer::UpdateCamera(const Vec3& playerPos, /*const Vec3& playerDir*/float yaw, float pitch, GLfloat cameraDist)
+void Renderer::UpdateCamera(const Vec3& playerPos, float yaw, float pitch, GLfloat cameraDist)
 {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::rotate(model, pitch, glm::vec3(1, 0, 0));
@@ -388,6 +446,12 @@ void Renderer::UpdateCamera(const Vec3& playerPos, /*const Vec3& playerDir*/floa
 	_proj = glm::perspective(glm::radians(45.0f), WINDOW_SIZE_X / WINDOW_SIZE_Y, 0.1f, 100.0f);
 }
 
+
+void Renderer::AddDebugDrawObject(const DebugDrawObject& obj)
+{
+    WRITE_LOCK
+    _debugDrawObjects.push_back(obj);
+}
 
 void Renderer::FramebufferSizeCallbackStatic(GLFWwindow* window, int width, int height)
 {
@@ -539,6 +603,31 @@ void Renderer::InitCube()
     glBindVertexArray(0);
 
     _cubeInitialized = true;
+}
+
+void Renderer::InitRay()
+{
+    if (_rayInitialized)
+        return;
+
+    glm::vec3 rayVertices[2] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),    // start
+        glm::vec3(0.0f, 1.0f, 0.0f)     // end
+    };
+
+    glGenVertexArrays(1, &_rayVAO);
+    glGenBuffers(1, &_rayVBO);
+
+    glBindVertexArray(_rayVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, _rayVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rayVertices), rayVertices, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+    _rayInitialized = true;
 }
 
 void Renderer::InitCrosshair()
