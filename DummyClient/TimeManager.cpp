@@ -60,10 +60,10 @@ void TimeManager::OnServerTimeReceived(double serverTime)
 	double now = GetRawLocalTime();
 	_latestRtt = now - _lastTimeSyncSent;
 
-	_avgRtt = std::lerp(_avgRtt, _latestRtt, 0.2);
+	_avgRtt = std::lerp(_avgRtt, _latestRtt, 0.1);
 	_jitter = std::abs(_latestRtt - _avgRtt);
 
-	_baseServerTime = serverTime - _latestRtt * 0.5f;
+	_baseServerTime = serverTime - _latestRtt * 0.5f - LOGIC_TICK_INTERVAL;
 	_baseLocalTime = now;
 }
 
