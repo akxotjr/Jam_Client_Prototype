@@ -47,6 +47,8 @@ void Player::SendInputToServer(const Input& input) const
 	pkt.set_yaw_pitch(TransformCompressor::PackRotation(input.yaw, input.pitch));
 	pkt.set_timestamp(input.timestamp);
 
+	cout << "Client timetstamp = " << input.timestamp << endl;
+
 	auto sendBuffer = ServerPacketHandler::MakeSendBufferUdp(pkt);
 	auto session = SessionManager::Instance().GetUdpSession();
 	if (session == nullptr)
@@ -168,6 +170,6 @@ void Player::Fire(float targetX, float targetY, float targetZ)
 	glm::vec3 muzzlePos = glm::vec3(_position.x, _position.y, _position.z) + glm::vec3(rotatedMuzzleOffset);
 	glm::vec3 targetPos = { targetX, targetY, targetZ };
 
-	Renderer::Instance().AddDebugDrawObject(DebugDrawObject(muzzlePos, targetPos, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 0.5f));
+	Renderer::Instance().AddDebugDrawObject(DebugDrawObject(muzzlePos, targetPos, _color, 0.5f));
 	Renderer::Instance().AddDebugDrawObject(DebugDrawObject(targetPos, glm::vec3(0, 0, 0), glm::vec3(0.2f, 0.2f, 0.2f), _color, 0.5f));
 }
