@@ -295,9 +295,6 @@ void Renderer::DrawDebugginUI()
     double avgRtt = TimeManager::Instance().GetAvgRTT();
     ImGui::Text("AvgRTT : %lf", avgRtt);
 
-    double latestRtt = TimeManager::Instance().GetAvgRTT();
-    ImGui::Text("LatestRTT : %lf", latestRtt);
-
     double jitter = TimeManager::Instance().GetJitter();
     ImGui::Text("Jitter : %lf", jitter);
 
@@ -313,9 +310,6 @@ void Renderer::DrawDebugginUI()
         Vec3 position = player->GetPosition();
         ImGui::Text("Position (%.5f, %.5f, %.5f)", position.x, position.y, position.z);
     }
-
-    Vec2 mousePos = InputManager::Instance().GetMousePosition();
-    ImGui::Text("Mouse Position : (%f, %f)", mousePos.x, mousePos.y);
 
     if (ImGui::Button("Exit"))
     {
