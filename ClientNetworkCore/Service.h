@@ -68,28 +68,7 @@ public:
 	template<typename TCP, typename UDP>
 	void							SetSessionFactory();
 
-	void							RegisterToContextAsync(JobRef job);	//TODO
-
-
-	//temp
-	//uint32					GetUserId() { return _userId; }
-	//void					SetUserId(uint32 id) { _userId = id; }
-
-	//TcpSessionRef GetTcpSession() 
-	//{ 
-	//	if (_tcpSessions.empty())
-	//		int a = 0;
-
-	//	return *_tcpSessions.begin(); 
-	//}
-	//ReliableUdpSessionRef GetUdpSession() 
-	//{ 
-	//	if (_udpSessions.empty())
-	//		int a = 0;
-
-	//	return *_udpSessions.begin(); 
-	//}
-	//~temp
+	void							RegisterToContextAsync(JobRef job);
 
 private:
 	USE_LOCK
@@ -113,11 +92,6 @@ private:
 	SessionFactory										_udpSessionFactory;
 
 	UdpReceiverRef										_udpReceiver = nullptr;
-
-
-	//temp
-	//uint32 _userId = 0;
-	//~temp
 };
 
 

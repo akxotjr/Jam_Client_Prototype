@@ -141,17 +141,12 @@ public:
 	uint32									GenerateAckBitfield(uint16 latestSeq);
 
 private:	
-	//void									RegisterConnect();
-	//void									RegisterDisconnect();
 	void									RegisterSend(SendBufferRef sendBuffer);
-	//void									RegisterRecv();
 
 	void									ProcessConnect();
 	void									ProcessDisconnect();
 	void									ProcessSend(int32 numOfBytes);
-	//void									ProcessRecv(int32 numOfBytes);
 
-	//int32									IsParsingPacket(BYTE* buffer, int32 len);
 	void									Update(float serverTime);	// resend
 	bool									IsSeqGreater(uint16 a, uint16 b) { return static_cast<int16>(a - b) > 0; }
 
@@ -162,8 +157,6 @@ private:
 	Atomic<bool>							_sendRegistered = false;
 	queue<SendBufferRef>					_sendQueue;
 	Vector<SendBufferRef>					_currentSendBuffers;
-
-	//RecvBuffer								_recvBuffer;
 
 protected:
 	unordered_map<uint16, PendingPacket>	_pendingAckMap;

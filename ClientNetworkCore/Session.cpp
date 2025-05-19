@@ -81,18 +81,6 @@ void TcpSession::RegisterConnect()
 				std::cout << "[ERROR] Connection failed: " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
 			}
 		});
-
-	//boost::asio::async_connect(_socket, endpoints,
-	//	[this, self = shared_from_this()](const boost::system::error_code& ec, const tcp::endpoint& endpoint) {
-	//		if (!ec)
-	//		{
-	//			ProcessConnect();
-	//		}
-	//		else
-	//		{
-	//			std::cout << "[ERROR] Connection failed: " << ec.message() << " (code=" << ec.value() << ")" << std::endl;
-	//		}
-	//	});
 }
 
 void TcpSession::RegisterDisconnect()
