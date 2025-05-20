@@ -19,8 +19,6 @@
 #include "Enum.pb.h"
 #include "Protocol.pb.h"
 
-#include <physx/PxPhysicsAPI.h>
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>

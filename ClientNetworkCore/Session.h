@@ -63,7 +63,7 @@ class TcpSession : public Session
 
 public:
 	TcpSession(ServiceRef service, boost::asio::any_io_executor executor);
-	virtual ~TcpSession();
+	virtual ~TcpSession() override;
 
 	virtual void						Send(SendBufferRef sendBuffer) override;
 	virtual void						Connect() override;
@@ -125,7 +125,7 @@ class ReliableUdpSession : public Session
 
 public:
 	ReliableUdpSession(ServiceRef service, boost::asio::any_io_executor executor);
-	virtual ~ReliableUdpSession();
+	virtual ~ReliableUdpSession() override;
 
 
 	virtual void							Connect() override;
